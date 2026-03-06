@@ -1,0 +1,44 @@
+﻿<svg width="960" height="620" viewBox="0 0 960 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="56" y1="42" x2="902" y2="576" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8FB"/>
+      <stop offset="1" stop-color="#FCE9EF"/>
+    </linearGradient>
+    <linearGradient id="card" x1="186" y1="132" x2="772" y2="478" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDFE"/>
+      <stop offset="1" stop-color="#FFF1F7"/>
+    </linearGradient>
+    <linearGradient id="cta" x1="556" y1="384" x2="740" y2="478" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C11D49"/>
+      <stop offset="1" stop-color="#8A1430"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="12" y="12" width="936" height="596" rx="34" fill="url(#bg)" stroke="#E6BAC8"/>
+
+  <rect x="174" y="118" width="612" height="390" rx="24" fill="url(#card)" stroke="#E6BAC8"/>
+
+  <rect x="214" y="160" width="254" height="306" rx="18" fill="#FFF9FB" stroke="#E3B3C2"/>
+  <rect x="236" y="190" width="210" height="14" rx="7" fill="#C11D49" fill-opacity="0.82"/>
+  <rect x="236" y="218" width="170" height="10" rx="5" fill="#B45E74" fill-opacity="0.6"/>
+  <rect x="236" y="238" width="192" height="10" rx="5" fill="#B45E74" fill-opacity="0.4"/>
+
+  <rect x="236" y="270" width="210" height="84" rx="12" fill="#F8ECD8"/>
+  <text x="254" y="318" fill="#6F4A1B" font-size="24" font-family="Space Grotesk, Arial" font-weight="700">Demo Plan</text>
+
+  <rect x="236" y="370" width="210" height="14" rx="7" fill="#C11D49" fill-opacity="0.75"/>
+  <rect x="236" y="394" width="158" height="10" rx="5" fill="#B45E74" fill-opacity="0.5"/>
+
+  <rect x="506" y="160" width="238" height="186" rx="18" fill="#FFF9FB" stroke="#E3B3C2"/>
+  <circle cx="562" cy="216" r="22" fill="#F8ECD8"/>
+  <circle cx="624" cy="216" r="22" fill="#F7D7E2"/>
+  <circle cx="686" cy="216" r="22" fill="#C11D49"/>
+  <rect x="534" y="256" width="182" height="12" rx="6" fill="#9F1237" fill-opacity="0.85"/>
+  <rect x="534" y="278" width="152" height="10" rx="5" fill="#B45E74" fill-opacity="0.58"/>
+
+  <rect x="506" y="366" width="238" height="112" rx="18" fill="url(#cta)"/>
+  <text x="532" y="416" fill="#FFEAF1" font-size="28" font-family="Space Grotesk, Arial" font-weight="700">Book Demo</text>
+  <text x="532" y="443" fill="#FFD7E2" font-size="16" font-family="General Sans, Arial">Align workflow and integrations</text>
+
+  <text x="198" y="98" fill="#9F1237" font-size="24" font-family="Space Grotesk, Arial" font-weight="700">ADH Consultative Contact Experience</text>
+</svg>

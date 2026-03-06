@@ -1,0 +1,95 @@
+openapi: 3.1.0
+info:
+  title: AKUL DRAVIN BOS v2000 Core API
+  version: 2.0.0
+servers:
+  - url: https://api.akdravin.com/api/v1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      responses:
+        '200':
+          description: OK
+  /employees:
+    get:
+      summary: List employees
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create employee
+      responses:
+        '201':
+          description: Created
+  /payroll/run:
+    post:
+      summary: Run payroll
+      responses:
+        '202':
+          description: Accepted
+  /sales/deals:
+    get:
+      summary: List deals
+      responses:
+        '200':
+          description: OK
+  /marketing/campaigns:
+    get:
+      summary: List campaigns
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create campaign
+      responses:
+        '201':
+          description: Created
+  /finance/invoices:
+    get:
+      summary: List invoices
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create invoice
+      responses:
+        '201':
+          description: Created
+  /analytics/hr:
+    get:
+      summary: HR analytics dashboard
+      responses:
+        '200':
+          description: OK
+  /ai/predictions/attrition:
+    post:
+      summary: Predict attrition risk
+      responses:
+        '200':
+          description: OK
+  /permissions/roles:
+    get:
+      summary: Role permission matrix
+      responses:
+        '200':
+          description: OK
+  /workflows:
+    get:
+      summary: List workflow definitions
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create workflow definition
+      responses:
+        '201':
+          description: Created

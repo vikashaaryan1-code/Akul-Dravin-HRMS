@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: akul-dravin-v1000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-config
+  namespace: akul-dravin-v1000
+data:
+  NODE_ENV: production
+  DB_HOST: postgres-core
+  DB_PORT: '5432'
+  DB_NAME: akul_dravin_hrms
+  REDIS_HOST: redis
+  ELASTICSEARCH_URL: http://elasticsearch:9200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: akul-dravin-v1000
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      containers:
+        - name: backend-api
+          image: ghcr.io/akul-dravin/hrms-backend:v1000.0
+          ports:
+            - containerPort: 4200
+          envFrom:
+            - configMapRef:
+                name: platform-config
+          resources:
+            requests:
+              cpu: 300m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1536Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api
+  namespace: akul-dravin-v1000
+spec:
+  selector:
+    app: backend-api
+  ports:
+    - port: 4200
+      targetPort: 4200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-engine
+  namespace: akul-dravin-v1000
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-engine
+  template:
+    metadata:
+      labels:
+        app: ai-engine
+    spec:
+      containers:
+        - name: ai-engine
+          image: ghcr.io/akul-dravin/hrms-ai-engine:v1000.0
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-engine
+  namespace: akul-dravin-v1000
+spec:
+  selector:
+    app: ai-engine
+  ports:
+    - port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-web
+  namespace: akul-dravin-v1000
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend-web
+  template:
+    metadata:
+      labels:
+        app: frontend-web
+    spec:
+      containers:
+        - name: frontend-web
+          image: ghcr.io/akul-dravin/hrms-frontend:v1000.0
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 600m
+              memory: 768Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-web
+  namespace: akul-dravin-v1000
+spec:
+  selector:
+    app: frontend-web
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: platform-ingress
+  namespace: akul-dravin-v1000
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: app.akuldravin.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-web
+                port:
+                  number: 3000
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-api
+                port:
+                  number: 4200

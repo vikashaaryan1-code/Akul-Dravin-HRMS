@@ -1,0 +1,26 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="t d">
+  <title id="t">Akul Dravin Icon</title>
+  <desc id="d">Crimson and gold geometric diamond mark</desc>
+  <defs>
+    <linearGradient id="r1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d7335d"/>
+      <stop offset="100%" stop-color="#8a112d"/>
+    </linearGradient>
+    <linearGradient id="r2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b3193f"/>
+      <stop offset="100%" stop-color="#730a23"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eadabf"/>
+      <stop offset="100%" stop-color="#c9ad79"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(32 32)">
+    <polygon points="0,-28 28,0 0,28 -28,0" fill="url(#r1)"/>
+    <polygon points="0,-21 21,0 0,21 -21,0" fill="url(#g1)"/>
+    <polygon points="0,-28 28,0 6,0" fill="#e0456a" opacity="0.95"/>
+    <polygon points="0,28 -28,0 -6,0" fill="url(#r2)"/>
+    <polygon points="0,-21 0,21 -21,0" fill="#dcc7a1" opacity="0.95"/>
+    <polygon points="0,-21 21,0 0,0" fill="#f0e6d4" opacity="0.95"/>
+  </g>
+</svg>

@@ -1,0 +1,16 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0F8B8D" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#0F172A" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="420" rx="28" fill="url(#g1)"/>
+  <rect x="50" y="60" width="350" height="120" rx="18" fill="#E85A2A" fill-opacity="0.85"/>
+  <rect x="430" y="60" width="220" height="120" rx="18" fill="#111827" stroke="#94A3B8"/>
+  <rect x="680" y="60" width="470" height="120" rx="18" fill="#111827" stroke="#94A3B8"/>
+  <rect x="50" y="210" width="530" height="160" rx="18" fill="#111827" stroke="#94A3B8"/>
+  <rect x="610" y="210" width="540" height="160" rx="18" fill="#111827" stroke="#94A3B8"/>
+  <text x="82" y="112" fill="#FFF7ED" font-family="Arial, sans-serif" font-size="24" font-weight="700">Office Command Overview</text>
+  <text x="82" y="146" fill="#FCD34D" font-family="Arial, sans-serif" font-size="18">Attendance, performance, security and automation</text>
+</svg>

@@ -1,0 +1,11 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="420" rx="28" fill="#0F172A"/>
+  <rect x="40" y="40" width="1120" height="340" rx="24" fill="#111827" stroke="#334155"/>
+  <polyline points="90,300 210,250 340,270 470,220 610,230 760,180 920,200 1080,130" stroke="#0F8B8D" stroke-width="8" fill="none"/>
+  <rect x="90" y="90" width="280" height="110" rx="16" fill="#E85A2A" fill-opacity="0.88"/>
+  <rect x="400" y="90" width="220" height="110" rx="16" fill="#1F2937" stroke="#64748B"/>
+  <rect x="650" y="90" width="220" height="110" rx="16" fill="#1F2937" stroke="#64748B"/>
+  <rect x="900" y="90" width="180" height="110" rx="16" fill="#1F2937" stroke="#64748B"/>
+  <text x="120" y="140" fill="#FFF7ED" font-family="Arial, sans-serif" font-size="22" font-weight="700">Work Tracking</text>
+  <text x="120" y="170" fill="#FDE68A" font-family="Arial, sans-serif" font-size="16">Login, logout, task and hours monitoring</text>
+</svg>

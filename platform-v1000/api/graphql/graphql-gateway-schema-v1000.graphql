@@ -1,0 +1,104 @@
+scalar DateTime
+scalar JSON
+
+type DashboardKpi {
+  label: String!
+  value: String!
+  trend: String!
+}
+
+type DashboardView {
+  role: String!
+  title: String!
+  kpis: [DashboardKpi!]!
+  insights: [String!]!
+}
+
+type Employee {
+  id: ID!
+  companyId: ID
+  name: String!
+  department: String!
+  designation: String!
+  status: String!
+}
+
+type PayrollResult {
+  algorithmVersion: String!
+  grossPayout: Float!
+  netPayout: Float!
+  currency: String!
+  payload: JSON!
+}
+
+type DocumentRecord {
+  id: ID!
+  documentType: String!
+  documentName: String!
+  status: String!
+  fileUrl: String
+  generatedAt: DateTime
+}
+
+type WorkflowRecord {
+  id: ID!
+  workflowCode: String!
+  name: String!
+  module: String!
+  status: String!
+  successRate: Float!
+  runCount: Int!
+}
+
+type Query {
+  dashboard(role: String!): DashboardView!
+  employees(companyId: ID, limit: Int = 20): [Employee!]!
+  documents(companyId: ID, employeeId: ID): [DocumentRecord!]!
+  workflows(companyId: ID): [WorkflowRecord!]!
+}
+
+input TargetSalaryInput {
+  baseSalary: Float!
+  variableSalary: Float!
+  targetValue: Float!
+  achievedValue: Float!
+  spiffBonus: Float
+}
+
+input DaysWiseSalaryInput {
+  monthlyBaseSalary: Float!
+  workingDaysInMonth: Float!
+  paidLeaveDays: Float!
+  unpaidLeaveDays: Float!
+  halfDays: Float!
+  targetBonus: Float
+}
+
+input BonusSlaInput {
+  baseVariableBonus: Float!
+  achievementPercent: Float!
+  qualityScore: Float
+  attendanceScore: Float
+  breachCount: Int
+}
+
+input GenerateDocumentInput {
+  companyId: ID
+  employeeId: ID
+  documentType: String!
+  documentName: String!
+  payload: JSON
+}
+
+input TriggerWorkflowInput {
+  triggerReason: String
+  payload: JSON
+}
+
+type Mutation {
+  calculateTargetSalary(input: TargetSalaryInput!): PayrollResult!
+  calculateDaysWiseSalary(input: DaysWiseSalaryInput!): PayrollResult!
+  calculateBonusSla(input: BonusSlaInput!): PayrollResult!
+  generateDocument(input: GenerateDocumentInput!): DocumentRecord!
+  triggerWorkflow(workflowId: ID!, input: TriggerWorkflowInput): WorkflowRecord!
+}

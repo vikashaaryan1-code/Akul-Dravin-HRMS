@@ -1,0 +1,11 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-config
+  namespace: akul-v39
+data:
+  NODE_ENV: production
+  API_BASE_PATH: /api/v1
+  DEFAULT_REGION: ap-south-1
+  DEFAULT_TIMEZONE: Asia/Kolkata
+  AI_ORCHESTRATOR_URL: http://ai-orchestrator:8100

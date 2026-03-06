@@ -1,0 +1,54 @@
+{
+    "name":  "akul-dravin-hrms",
+    "private":  true,
+    "version":  "0.0.0",
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "concurrently --names \"frontend-next,backend-ms\" --prefix-colors \"cyan,yellow\" \"npm --prefix frontend-next run dev\" \"npm --prefix backend/hrms-microservices run start:dev\"",
+                    "dev:frontend":  "npm --prefix frontend-next run dev",
+                    "dev:backend":  "npm --prefix backend/hrms-microservices run start:dev",
+                    "dev:next":  "npm --prefix frontend-next run dev",
+                    "dev:platform":  "concurrently --names \"frontend-next,backend-ms\" --prefix-colors \"cyan,yellow\" \"npm --prefix frontend-next run dev\" \"npm --prefix backend/hrms-microservices run start:dev\"",
+                    "dev:legacy":  "concurrently --names \"frontend-vite,backend-legacy\" --prefix-colors \"cyan,yellow\" \"vite\" \"node backend/server.js\"",
+                    "dev:frontend:legacy":  "vite",
+                    "dev:backend:legacy":  "node backend/server.js",
+                    "build":  "npm --prefix frontend-next run build \u0026\u0026 npm --prefix backend/hrms-microservices run build",
+                    "build:frontend":  "npm --prefix frontend-next run build",
+                    "build:backend":  "npm --prefix backend/hrms-microservices run build",
+                    "build:next":  "npm --prefix frontend-next run build",
+                    "build:platform":  "npm --prefix frontend-next run build \u0026\u0026 npm --prefix backend/hrms-microservices run build",
+                    "build:legacy":  "tsc -b \u0026\u0026 vite build",
+                    "lint":  "eslint .",
+                    "preview":  "npm --prefix frontend-next run start",
+                    "preview:legacy":  "vite preview"
+                },
+    "dependencies":  {
+                         "@capacitor/cli":  "^8.1.0",
+                         "@capacitor/core":  "^8.1.0",
+                         "@tailwindcss/vite":  "^4.2.1",
+                         "lucide-react":  "^0.577.0",
+                         "react":  "^19.2.0",
+                         "react-dom":  "^19.2.0",
+                         "react-router-dom":  "^7.13.1",
+                         "tailwindcss":  "^4.2.1"
+                     },
+    "devDependencies":  {
+                            "@eslint/js":  "^9.39.1",
+                            "@types/node":  "^24.10.1",
+                            "@types/react":  "^19.2.7",
+                            "@types/react-dom":  "^19.2.3",
+                            "@vitejs/plugin-react":  "^5.1.1",
+                            "babel-plugin-react-compiler":  "^1.0.0",
+                            "concurrently":  "^9.2.1",
+                            "eslint":  "^9.39.1",
+                            "eslint-plugin-react-hooks":  "^7.0.1",
+                            "eslint-plugin-react-refresh":  "^0.4.24",
+                            "globals":  "^16.5.0",
+                            "typescript":  "~5.9.3",
+                            "typescript-eslint":  "^8.48.0",
+                            "vite":  "^8.0.0-beta.13"
+                        },
+    "overrides":  {
+                      "vite":  "^8.0.0-beta.13"
+                  }
+}

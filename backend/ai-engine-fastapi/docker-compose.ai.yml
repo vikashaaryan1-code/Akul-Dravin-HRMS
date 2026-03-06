@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  resume-parser:
+    build: .
+    command: uvicorn services.resume_parser_service.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - '8001:8001'
+
+  candidate-matching:
+    build: .
+    command: uvicorn services.candidate_matching_service.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - '8002:8002'
+
+  interview-analysis:
+    build: .
+    command: uvicorn services.interview_analysis_service.main:app --host 0.0.0.0 --port 8003
+    ports:
+      - '8003:8003'
+
+  workforce-analytics:
+    build: .
+    command: uvicorn services.workforce_analytics_service.main:app --host 0.0.0.0 --port 8004
+    ports:
+      - '8004:8004'
+
+  attrition-prediction:
+    build: .
+    command: uvicorn services.attrition_prediction_service.main:app --host 0.0.0.0 --port 8005
+    ports:
+      - '8005:8005'
+
+  hr-assistant:
+    build: .
+    command: uvicorn services.hr_assistant_service.main:app --host 0.0.0.0 --port 8006
+    ports:
+      - '8006:8006'
+
+  orchestrator:
+    build: .
+    command: uvicorn services.orchestrator_service.main:app --host 0.0.0.0 --port 9000
+    ports:
+      - '9000:9000'
+    depends_on:
+      - resume-parser
+      - candidate-matching
+      - interview-analysis
+      - workforce-analytics
+      - attrition-prediction
+      - hr-assistant

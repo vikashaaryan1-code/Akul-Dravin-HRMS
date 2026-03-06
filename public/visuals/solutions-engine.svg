@@ -1,0 +1,27 @@
+﻿<svg width="960" height="620" viewBox="0 0 960 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="58" y1="40" x2="902" y2="576" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8FB"/>
+      <stop offset="1" stop-color="#FBE9EF"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="12" y="12" width="936" height="596" rx="34" fill="url(#bg)" stroke="#E6BAC8"/>
+  <rect x="150" y="104" width="660" height="412" rx="24" fill="#FFFDFE" stroke="#E6BAC8"/>
+
+  <rect x="194" y="146" width="572" height="70" rx="14" fill="#C11D49"/>
+  <text x="226" y="190" fill="#FFE8EF" font-size="30" font-family="Space Grotesk, Arial" font-weight="700">Solution Delivery Engine</text>
+
+  <rect x="194" y="242" width="168" height="106" rx="14" fill="#F8ECD8" stroke="#D8B481"/>
+  <rect x="396" y="242" width="168" height="106" rx="14" fill="#F7D8E2" stroke="#E1B0C1"/>
+  <rect x="598" y="242" width="168" height="106" rx="14" fill="#F8ECD8" stroke="#D8B481"/>
+
+  <rect x="194" y="374" width="572" height="102" rx="14" fill="#FFF2F7" stroke="#E6BAC8"/>
+  <path d="M230 425L320 392L410 418L500 380L590 410L680 394" stroke="#9F1237" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <text x="218" y="300" fill="#6F4A1B" font-size="20" font-family="Space Grotesk, Arial" font-weight="700">Automation</text>
+  <text x="422" y="300" fill="#8C1634" font-size="20" font-family="Space Grotesk, Arial" font-weight="700">Adoption</text>
+  <text x="628" y="300" fill="#6F4A1B" font-size="20" font-family="Space Grotesk, Arial" font-weight="700">Scale</text>
+
+  <text x="186" y="92" fill="#9F1237" font-size="24" font-family="Space Grotesk, Arial" font-weight="700">ADH Solutions Portfolio</text>
+</svg>

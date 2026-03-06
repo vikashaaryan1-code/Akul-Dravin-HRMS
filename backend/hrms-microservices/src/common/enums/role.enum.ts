@@ -1,0 +1,16 @@
+export enum Role {
+  ROOT_OWNER = 'root-owner',
+  PLATFORM_ADMIN = 'platform-admin',
+  SUPER_ADMIN = 'super-admin',
+  WHITE_LABEL_PARTNER = 'white-label-partner',
+  COMPANY_ADMIN = 'company-admin',
+  BRANCH_ADMIN = 'branch-admin',
+  HR_MANAGER = 'hr-manager',
+  TEAM_MANAGER = 'team-manager',
+  TEAM_LEADER = 'team-leader',
+  SALES_MANAGER = 'sales-manager',
+  RECRUITER = 'recruiter',
+  EMPLOYEE = 'employee',
+  GUEST = 'guest',
+  JOB_SEEKER = 'job-seeker',
+}

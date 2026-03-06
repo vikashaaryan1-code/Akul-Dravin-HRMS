@@ -1,0 +1,57 @@
+﻿<svg width="960" height="620" viewBox="0 0 960 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="40" x2="860" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7FA"/>
+      <stop offset="1" stop-color="#FDE8EF"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="220" y1="130" x2="780" y2="500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C11D49"/>
+      <stop offset="1" stop-color="#88122F"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="290" y1="190" x2="640" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8ECD8"/>
+      <stop offset="1" stop-color="#C9AB75"/>
+    </linearGradient>
+    <filter id="soft" x="120" y="90" width="720" height="440" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#8C1635" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <rect x="12" y="12" width="936" height="596" rx="34" fill="url(#bg)" stroke="#E6BAC8"/>
+  <circle cx="184" cy="134" r="88" fill="#F6D7E1"/>
+  <circle cx="796" cy="498" r="104" fill="#F3D9BA" fill-opacity="0.8"/>
+
+  <g filter="url(#soft)">
+    <rect x="156" y="116" width="648" height="388" rx="28" fill="#FFFDFE" stroke="#E6BAC8"/>
+  </g>
+
+  <rect x="186" y="152" width="300" height="70" rx="16" fill="url(#brand)"/>
+  <rect x="202" y="170" width="86" height="12" rx="6" fill="#FFE7EF"/>
+  <rect x="202" y="192" width="160" height="10" rx="5" fill="#FFD3DF"/>
+  <circle cx="454" cy="187" r="18" fill="#F8ECD8"/>
+
+  <rect x="186" y="244" width="184" height="108" rx="16" fill="#FFF4F8" stroke="#E6BAC8"/>
+  <rect x="204" y="266" width="104" height="10" rx="5" fill="#C11D49" fill-opacity="0.8"/>
+  <rect x="204" y="286" width="142" height="9" rx="4.5" fill="#B45E74" fill-opacity="0.55"/>
+  <rect x="204" y="305" width="116" height="9" rx="4.5" fill="#B45E74" fill-opacity="0.45"/>
+  <rect x="204" y="324" width="82" height="9" rx="4.5" fill="#B45E74" fill-opacity="0.35"/>
+
+  <rect x="390" y="244" width="184" height="108" rx="16" fill="#FFF4F8" stroke="#E6BAC8"/>
+  <rect x="408" y="266" width="92" height="10" rx="5" fill="#9F1237" fill-opacity="0.85"/>
+  <path d="M408 322L430 302L452 312L478 280L504 294L536 272L556 294" stroke="#C11D49" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="594" y="244" width="180" height="232" rx="18" fill="url(#brand)"/>
+  <rect x="618" y="272" width="132" height="12" rx="6" fill="#FFE7EF"/>
+  <rect x="618" y="296" width="102" height="10" rx="5" fill="#FFD7E2"/>
+  <rect x="618" y="320" width="132" height="10" rx="5" fill="#FFD7E2"/>
+  <rect x="618" y="344" width="82" height="10" rx="5" fill="#FFD7E2"/>
+
+  <rect x="186" y="370" width="388" height="106" rx="16" fill="url(#gold)"/>
+  <circle cx="230" cy="423" r="24" fill="#9F1237"/>
+  <circle cx="296" cy="423" r="24" fill="#88122F"/>
+  <circle cx="362" cy="423" r="24" fill="#C11D49"/>
+  <rect x="400" y="406" width="154" height="12" rx="6" fill="#6A1A2F" fill-opacity="0.65"/>
+  <rect x="400" y="428" width="124" height="10" rx="5" fill="#6A1A2F" fill-opacity="0.42"/>
+
+  <text x="206" y="140" fill="#9F1237" font-size="20" font-family="Space Grotesk, Arial" font-weight="700">ADH Workforce Command View</text>
+</svg>
