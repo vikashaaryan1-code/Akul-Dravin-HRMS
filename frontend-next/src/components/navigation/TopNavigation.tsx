@@ -43,34 +43,35 @@ export function TopNavigation({ onMenuClick }: TopNavigationProps) {
   const userName = user?.fullName || 'Akul Dravin Admin';
   const initials = useMemo(() => getInitials(userName), [userName]);
   const visibleNavItems = useMemo(() => filterNavItemsByRole(TOP_NAV_ITEMS, safeRole), [safeRole]);
+  const quickNavItems = useMemo(() => visibleNavItems.slice(0, 7), [visibleNavItems]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-950/80">
-      <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-3 px-3 sm:px-4 lg:px-6">
+      <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-2 px-3 sm:px-4 lg:px-6">
         <button
           type="button"
           onClick={onMenuClick}
           aria-label="Open menu"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
         >
           <Menu size={18} />
         </button>
 
-        <Link href={`/dashboard?role=${safeRole}`} className="hidden items-center gap-2 sm:inline-flex">
+        <Link href={`/dashboard?role=${safeRole}`} className="inline-flex shrink-0 items-center gap-2">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-ember to-amber text-xs font-bold text-white">
             AD
           </span>
-          <span className="text-sm font-bold tracking-[0.18em] text-slate-900 dark:text-slate-100">{PLATFORM_BRAND}</span>
+          <span className="hidden text-sm font-bold tracking-[0.18em] text-slate-900 sm:inline dark:text-slate-100">{PLATFORM_BRAND}</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 xl:flex">
-          {visibleNavItems.map((item) => {
+        <nav className="hidden min-w-0 max-w-[34rem] items-center gap-1 overflow-x-auto 2xl:flex [&::-webkit-scrollbar]:hidden">
+          {quickNavItems.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={`${item.href}?role=${safeRole}`}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
                     ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
                     : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
@@ -82,17 +83,17 @@ export function TopNavigation({ onMenuClick }: TopNavigationProps) {
           })}
         </nav>
 
-        <div className="hidden flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 md:flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-          <Search size={15} />
+        <div className="hidden min-w-0 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 lg:flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+          <Search size={15} className="shrink-0" />
           <input
             type="search"
-            placeholder="Search employees, tasks, performance, location, payroll..."
-            className="w-full bg-transparent outline-none placeholder:text-slate-400"
+            placeholder="Search employees, tasks, payroll, analytics..."
+            className="w-full min-w-0 bg-transparent outline-none placeholder:text-slate-400"
           />
         </div>
 
         <span
-          className={`hidden rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:inline-flex ${
+          className={`hidden shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] xl:inline-flex ${
             isAuthenticated
               ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
               : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200'
@@ -104,7 +105,7 @@ export function TopNavigation({ onMenuClick }: TopNavigationProps) {
         <select
           value={safeRole}
           onChange={(event) => setActiveRole(event.target.value as typeof safeRole)}
-          className="hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none sm:block dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          className="hidden max-w-[190px] shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none lg:block dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
           aria-label="Active role"
         >
           {PLATFORM_ROLE_OPTIONS.map((option) => (
@@ -117,13 +118,13 @@ export function TopNavigation({ onMenuClick }: TopNavigationProps) {
         <button
           type="button"
           onClick={toggleTheme}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           aria-label="Toggle theme"
         >
           {theme === 'light' ? <MoonStar size={16} /> : <Sun size={16} />}
         </button>
 
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => setNotificationPanelOpen(!notificationPanelOpen)}
@@ -140,7 +141,7 @@ export function TopNavigation({ onMenuClick }: TopNavigationProps) {
           <NotificationPanel />
         </div>
 
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => setProfileOpen((value) => !value)}
