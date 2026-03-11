@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SubscriptionEntity } from '../../database/entities/subscription.entity';
+import { Subscription } from '../../database/entities/subscription.entity';
 import { InvoiceEntity } from '../../database/entities/invoice.entity';
 
 @Injectable()
 export class SubscriptionBillingService {
   constructor(
-    @InjectRepository(SubscriptionEntity)
-    private readonly subscriptionRepository: Repository<SubscriptionEntity>,
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepository: Repository<Subscription>,
     @InjectRepository(InvoiceEntity)
     private readonly invoiceRepository: Repository<InvoiceEntity>,
   ) {}
 
-  findAllSubscriptions(): Promise<SubscriptionEntity[]> {
+  findAllSubscriptions(): Promise<Subscription[]> {
     return this.subscriptionRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  createSubscription(payload: Partial<SubscriptionEntity>): Promise<SubscriptionEntity> {
+  createSubscription(payload: Partial<Subscription>): Promise<Subscription> {
     const entity = this.subscriptionRepository.create(payload);
     return this.subscriptionRepository.save(entity);
   }
 
-  async updateSubscription(id: string, payload: Partial<SubscriptionEntity>): Promise<SubscriptionEntity | null> {
+  async updateSubscription(id: string, payload: Partial<Subscription>): Promise<Subscription | null> {
     const existing = await this.subscriptionRepository.findOne({ where: { id } });
     if (!existing) {
       return null;

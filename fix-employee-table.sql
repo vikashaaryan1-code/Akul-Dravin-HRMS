@@ -1,0 +1,1 @@
+ALTER TABLE employees ALTER COLUMN company_id DROP NOT NULL;

@@ -57,7 +57,7 @@ export function TopNavigation({ onMenuClick }: TopNavigationProps) {
           <Menu size={18} />
         </button>
 
-        <Link href={`/dashboard?role=${safeRole}`} className="inline-flex shrink-0 items-center gap-2">
+        <Link href="/" className="inline-flex shrink-0 items-center gap-2">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-ember to-amber text-xs font-bold text-white">
             AD
           </span>

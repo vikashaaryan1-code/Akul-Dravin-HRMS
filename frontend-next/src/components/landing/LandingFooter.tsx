@@ -77,10 +77,8 @@ export function LandingFooter() {
       </div>
 
       <div className="mx-auto mt-8 max-w-7xl border-t border-slate-200 pt-5 text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} AKUL DRAVIN HRMS & ERP v1000.0. All rights reserved.</p>
+        <p> {new Date().getFullYear()} AKUL DRAVIN HRMS & ERP v1000.0. All rights reserved.</p>
       </div>
     </footer>
   );
 }
-
-

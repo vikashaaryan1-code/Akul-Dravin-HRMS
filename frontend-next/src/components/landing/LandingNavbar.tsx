@@ -5,7 +5,7 @@ export function LandingNavbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8">
-        <Link href="#home" className="group inline-flex items-center gap-3">
+        <Link href="/" className="group inline-flex items-center gap-3">
           <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-ember to-amber shadow-panel" />
           <span className="text-sm font-semibold tracking-[0.22em] text-ink sm:text-base">AKUL DRAVIN</span>
         </Link>

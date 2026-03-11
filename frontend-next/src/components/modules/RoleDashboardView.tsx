@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { MetricCard } from '@/components/modules/MetricCard';
 import { TrendAreaChart } from '@/components/charts/TrendAreaChart';
@@ -15,6 +16,7 @@ import { useApiResource } from '@/hooks/useApiResource';
 import { useUIStore } from '@/store/ui-store';
 import { canPerformAction } from '@/utils/action-permissions';
 import { ROLE_DESCRIPTION, toRoleLabel, toSafePlatformRole } from '@/utils/platform-config';
+import { useAuthStore } from '@/store/auth-store';
 
 export function RoleDashboardView() {
   const activeRole = useUIStore((state) => state.activeRole);
@@ -24,6 +26,9 @@ export function RoleDashboardView() {
 
   const canBookDemo = canPerformAction(safeRole, 'dashboard.book-demo');
   const canExportDashboard = canPerformAction(safeRole, 'dashboard.export');
+
+  const clearSession = useAuthStore((state) => state.clearSession);
+  const router = useRouter();
 
   const { data, isLive, loading, error } = useApiResource({
     loader: async () => {
@@ -71,7 +76,7 @@ export function RoleDashboardView() {
       return model.aiInsights;
     }
 
-    const topModules = data.analytics.recentModules.slice(0, 3).join(', ') || 'No recent modules';
+    const topModules = (data.analytics.recentModules || []).slice(0, 3).join(', ') || 'No recent modules';
     return [
       `Analytics events recorded: ${data.analytics.totalEvents}`,
       `Notification queue size: ${data.notificationCount}`,
@@ -169,6 +174,19 @@ export function RoleDashboardView() {
       </section>
 
       <InsightListCard title="AI Insights" items={liveInsights} />
+
+      <div className="flex justify-center pt-4">
+        <button
+          type="button"
+          onClick={() => {
+            clearSession();
+            router.push('/');
+          }}
+          className="rounded-full border border-red-300 bg-red-50 px-6 py-3 text-sm font-semibold text-red-700 hover:bg-red-100 dark:border-red-700 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/40"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }

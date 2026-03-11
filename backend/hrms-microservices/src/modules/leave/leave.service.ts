@@ -2,7 +2,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LeaveTypeEntity } from '../../database/entities/leave-type.entity';
-import { LeaveRequestEntity } from '../../database/entities/leave-request.entity';
+import { LeaveRequest } from '../../database/entities/leave-request.entity';
 import { CreateLeaveTypeDto } from './dto/create-leave-type.dto';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
@@ -14,34 +14,31 @@ export class LeaveService {
   constructor(
     @InjectRepository(LeaveTypeEntity)
     private readonly leaveTypeRepository: Repository<LeaveTypeEntity>,
-    @InjectRepository(LeaveRequestEntity)
-    private readonly leaveRequestRepository: Repository<LeaveRequestEntity>,
+    @InjectRepository(LeaveRequest)
+    private readonly leaveRequestRepository: Repository<LeaveRequest>,
   ) {}
 
   findAllLeaveTypes(): Promise<LeaveTypeEntity[]> {
     return this.leaveTypeRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  createLeaveType(dto: CreateLeaveTypeDto): Promise<LeaveTypeEntity> {
+  async createLeaveType(dto: CreateLeaveTypeDto): Promise<LeaveTypeEntity> {
     const entity = this.leaveTypeRepository.create({
-      tenantId: dto.tenantId ?? null,
       companyId: dto.companyId,
-      leaveCode: dto.leaveCode,
-      leaveName: dto.leaveName,
-      daysPerYear: dto.daysPerYear,
-      carryForwardLimit: dto.carryForwardLimit ?? '0',
-      encashable: dto.encashable ?? false,
+      code: dto.leaveCode,
+      name: dto.leaveName,
+      daysPerYear: Number(dto.daysPerYear),
       isActive: true,
     });
     this.logger.log(`Creating leave type ${dto.leaveCode}`);
     return this.leaveTypeRepository.save(entity);
   }
 
-  findAllLeaveRequests(): Promise<LeaveRequestEntity[]> {
+  findAllLeaveRequests(): Promise<LeaveRequest[]> {
     return this.leaveRequestRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  async findLeaveRequest(id: string): Promise<LeaveRequestEntity> {
+  async findLeaveRequest(id: string): Promise<LeaveRequest> {
     const request = await this.leaveRequestRepository.findOne({ where: { id } });
     if (!request) {
       throw new NotFoundException(`Leave request not found: ${id}`);
@@ -49,34 +46,31 @@ export class LeaveService {
     return request;
   }
 
-  async createLeaveRequest(dto: CreateLeaveRequestDto): Promise<LeaveRequestEntity> {
+  async createLeaveRequest(dto: CreateLeaveRequestDto): Promise<LeaveRequest> {
     if (new Date(dto.endDate) < new Date(dto.startDate)) {
       throw new BadRequestException('endDate must be greater than or equal to startDate');
     }
 
     const entity = this.leaveRequestRepository.create({
-      tenantId: dto.tenantId ?? null,
       employeeId: dto.employeeId,
       leaveTypeId: dto.leaveTypeId,
       startDate: dto.startDate,
       endDate: dto.endDate,
-      totalDays: dto.totalDays,
-      reason: dto.reason ?? null,
+      totalDays: Number(dto.totalDays),
+      reason: dto.reason ?? '',
       status: 'pending',
-      approvedBy: null,
-      approvedAt: null,
     });
 
     this.logger.log(`Creating leave request for employee=${dto.employeeId}`);
     return this.leaveRequestRepository.save(entity);
   }
 
-  async updateLeaveRequestStatus(id: string, dto: UpdateLeaveRequestDto): Promise<LeaveRequestEntity> {
+  async updateLeaveRequestStatus(id: string, dto: UpdateLeaveRequestDto): Promise<LeaveRequest> {
     const request = await this.findLeaveRequest(id);
 
     request.status = dto.status;
-    request.approvedBy = dto.approvedBy ?? null;
-    request.approvedAt = dto.status === 'approved' ? new Date() : null;
+    if (dto.approvedBy) request.approverId = dto.approvedBy;
+    if (dto.status === 'approved') request.approvedAt = new Date();
 
     this.logger.log(`Updating leave request id=${id} status=${dto.status}`);
     await this.leaveRequestRepository.save(request);

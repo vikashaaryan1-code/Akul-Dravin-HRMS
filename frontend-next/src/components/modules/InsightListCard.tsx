@@ -16,7 +16,7 @@ export function InsightListCard({ title, items }: InsightListCardProps) {
       <ul className="space-y-2">
         {items.map((item) => (
           <li key={item} className="text-sm text-slate-600 dark:text-slate-300">
-            • {item}
+            â€¢ {item}
           </li>
         ))}
       </ul>

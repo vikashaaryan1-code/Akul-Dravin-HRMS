@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Megaphone, MessagesSquare, Rocket, Target } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Megaphone, MessagesSquare, Rocket, Target, Mail, MessageSquare, Send } from 'lucide-react';
 import { DonutChartCard } from '@/components/charts/DonutChartCard';
 import { StackedBarChart } from '@/components/charts/StackedBarChart';
 import { TrendAreaChart } from '@/components/charts/TrendAreaChart';
@@ -28,6 +28,8 @@ const campaignTone = (status: string): 'default' | 'success' | 'warning' | 'dang
 
 export function MarketingModuleView() {
   const activeRole = useUIStore((state) => state.activeRole);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [sendType, setSendType] = useState<'email' | 'sms'>('email');
 
   const { data, isLive, loading, error } = useApiResource({
     loader: async () => {
@@ -95,12 +97,45 @@ export function MarketingModuleView() {
     [crmLeads],
   );
 
+  const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+    
+    try {
+      await fetch('http://localhost:4200/api/v1/marketing-automation/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, type: sendType }),
+      });
+      alert(`${sendType.toUpperCase()} sent successfully!`);
+      setShowSendModal(false);
+    } catch (err) {
+      alert('Failed to send');
+    }
+  };
+
   return (
     <div className="space-y-5">
       <PageTitle
         title="Marketing Automation"
         description="Execute multi-channel campaigns, track conversions, and sync demand generation with CRM and sales pipelines."
       />
+
+      <div className="flex gap-3 mb-4">
+        <button
+          onClick={() => { setSendType('email'); setShowSendModal(true); }}
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-lg hover:shadow-lg"
+        >
+          <Mail size={20} />Send Email Campaign
+        </button>
+        <button
+          onClick={() => { setSendType('sms'); setShowSendModal(true); }}
+          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-lg hover:shadow-lg"
+        >
+          <MessageSquare size={20} />Send SMS Campaign
+        </button>
+      </div>
 
       <ModuleLinksBar
         links={[
@@ -203,6 +238,58 @@ export function MarketingModuleView() {
           />
         </GlassCard>
       </section>
+
+      {showSendModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl">
+            <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-6 rounded-t-2xl">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                {sendType === 'email' ? <Mail size={24} /> : <MessageSquare size={24} />}
+                Send {sendType.toUpperCase()} Campaign
+              </h2>
+            </div>
+            <form onSubmit={handleSend} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Campaign Name</label>
+                <input name="campaignName" required className="w-full px-4 py-2 border rounded-lg" placeholder="e.g., New Year Offer" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Recipient List</label>
+                <select name="recipientList" required className="w-full px-4 py-2 border rounded-lg">
+                  <option value="all_employees">All Employees</option>
+                  <option value="all_candidates">All Candidates</option>
+                  <option value="active_leads">Active CRM Leads</option>
+                  <option value="custom">Custom List</option>
+                </select>
+              </div>
+              {sendType === 'email' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Subject</label>
+                    <input name="subject" required className="w-full px-4 py-2 border rounded-lg" placeholder="Email subject" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Email Body</label>
+                    <textarea name="body" required rows={6} className="w-full px-4 py-2 border rounded-lg" placeholder="Email content..."></textarea>
+                  </div>
+                </>
+              )}
+              {sendType === 'sms' && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">SMS Message (160 chars max)</label>
+                  <textarea name="message" required maxLength={160} rows={4} className="w-full px-4 py-2 border rounded-lg" placeholder="SMS text..."></textarea>
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button type="submit" className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 rounded-lg hover:shadow-lg flex items-center justify-center gap-2">
+                  <Send size={18} />Send Now
+                </button>
+                <button type="button" onClick={() => setShowSendModal(false)} className="flex-1 bg-gray-200 py-3 rounded-lg hover:bg-gray-300">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

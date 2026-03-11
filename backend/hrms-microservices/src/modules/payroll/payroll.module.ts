@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PayrollEntity } from '../../database/entities/payroll.entity';
-import { PayrollController } from './payroll.controller';
+import { Payslip } from '../../database/entities/payslip.entity';
 import { PayrollService } from './payroll.service';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { PayrollController } from './payroll.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PayrollEntity])],
+  imports: [TypeOrmModule.forFeature([Payslip])],
   controllers: [PayrollController],
-  providers: [PayrollService, RolesGuard],
+  providers: [PayrollService],
   exports: [PayrollService],
 })
 export class PayrollModule {}

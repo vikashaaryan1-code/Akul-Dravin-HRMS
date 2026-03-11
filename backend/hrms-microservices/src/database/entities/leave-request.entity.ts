@@ -1,34 +1,53 @@
-﻿import { Column, Entity, Index } from 'typeorm';
-import { TenantScopedEntity } from './tenant-scoped.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Employee } from './employee.entity';
+import { LeaveType } from './leave-type.entity';
 
-@Entity({ name: 'leave_requests' })
-export class LeaveRequestEntity extends TenantScopedEntity {
-  @Index()
-  @Column({ name: 'employee_id', type: 'uuid' })
-  employeeId!: string;
+@Entity('leave_requests')
+export class LeaveRequest {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Index()
-  @Column({ name: 'leave_type_id', type: 'uuid' })
-  leaveTypeId!: string;
+  @Column({ name: 'employee_id' })
+  employeeId: string;
 
-  @Column({ name: 'start_date', type: 'date' })
-  startDate!: string;
+  @ManyToOne(() => Employee)
+  @JoinColumn({ name: 'employee_id' })
+  employee: Employee;
 
-  @Column({ name: 'end_date', type: 'date' })
-  endDate!: string;
+  @Column({ name: 'leave_type_id' })
+  leaveTypeId: string;
 
-  @Column({ name: 'total_days', type: 'numeric', precision: 6, scale: 2 })
-  totalDays!: string;
+  @ManyToOne(() => LeaveType)
+  @JoinColumn({ name: 'leave_type_id' })
+  leaveType: LeaveType;
 
-  @Column({ type: 'varchar', length: 40, default: 'pending' })
-  status!: string;
+  @Column({ type: 'date', name: 'start_date' })
+  startDate: Date;
 
-  @Column({ type: 'text', nullable: true })
-  reason!: string | null;
+  @Column({ type: 'date', name: 'end_date' })
+  endDate: Date;
 
-  @Column({ name: 'approved_by', type: 'uuid', nullable: true })
-  approvedBy!: string | null;
+  @Column({ type: 'decimal', precision: 5, scale: 2, name: 'total_days' })
+  totalDays: number;
 
-  @Column({ name: 'approved_at', type: 'timestamp with time zone', nullable: true })
-  approvedAt!: Date | null;
+  @Column({ type: 'text' })
+  reason: string;
+
+  @Column({ type: 'varchar', length: 50, default: 'pending' })
+  status: string;
+
+  @Column({ name: 'approver_id', nullable: true })
+  approverId: string;
+
+  @Column({ type: 'text', name: 'approver_remarks', nullable: true })
+  approverRemarks: string;
+
+  @Column({ type: 'timestamp', name: 'approved_at', nullable: true })
+  approvedAt: Date;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }

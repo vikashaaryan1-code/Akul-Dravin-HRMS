@@ -1,30 +1,81 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AttendanceEntity } from '../../database/entities/attendance.entity';
+import { Repository, Between } from 'typeorm';
+import { Attendance } from '../../database/entities/attendance.entity';
 
 @Injectable()
 export class AttendanceService {
   constructor(
-    @InjectRepository(AttendanceEntity)
-    private readonly attendanceRepository: Repository<AttendanceEntity>,
+    @InjectRepository(Attendance)
+    private attendanceRepository: Repository<Attendance>,
   ) {}
 
-  findAll(): Promise<AttendanceEntity[]> {
-    return this.attendanceRepository.find({ order: { createdAt: 'DESC' } });
+  async checkIn(employeeId: string, location?: { lat: number; lng: number; address: string }) {
+    const today = new Date().toISOString().split('T')[0];
+    const existing = await this.attendanceRepository.findOne({
+      where: { employeeId, date: new Date(today) },
+    });
+
+    if (existing) throw new Error('Already checked in today');
+
+    const now = new Date();
+    const attendance = this.attendanceRepository.create({
+      employeeId,
+      date: new Date(today),
+      checkIn: now.toTimeString().split(' ')[0],
+      checkInLocation: location?.address,
+      checkInLat: location?.lat,
+      checkInLng: location?.lng,
+      status: 'present',
+    });
+
+    return this.attendanceRepository.save(attendance);
   }
 
-  findOne(id: string): Promise<AttendanceEntity | null> {
-    return this.attendanceRepository.findOne({ where: { id } });
+  async checkOut(employeeId: string, location?: { lat: number; lng: number; address: string }) {
+    const today = new Date().toISOString().split('T')[0];
+    const attendance = await this.attendanceRepository.findOne({
+      where: { employeeId, date: new Date(today) },
+    });
+
+    if (!attendance) throw new Error('No check-in found for today');
+    if (attendance.checkOut) throw new Error('Already checked out');
+
+    const now = new Date();
+    const checkInTime = new Date(`${today}T${attendance.checkIn}`);
+    const checkOutTime = now;
+    const hours = (checkOutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
+
+    attendance.checkOut = now.toTimeString().split(' ')[0];
+    attendance.checkOutLocation = location?.address ?? '';
+    attendance.checkOutLat = location?.lat ?? 0;
+    attendance.checkOutLng = location?.lng ?? 0;
+    attendance.totalHours = parseFloat(hours.toFixed(2));
+
+    return this.attendanceRepository.save(attendance);
   }
 
-  create(payload: Partial<AttendanceEntity>): Promise<AttendanceEntity> {
-    const entity = this.attendanceRepository.create(payload);
-    return this.attendanceRepository.save(entity);
+  async findAll(filters: any) {
+    const where: any = {};
+    if (filters.employeeId) where.employeeId = filters.employeeId;
+    if (filters.startDate && filters.endDate) {
+      where.date = Between(new Date(filters.startDate), new Date(filters.endDate));
+    }
+    return this.attendanceRepository.find({ where, relations: ['employee'], order: { date: 'DESC' } });
   }
 
-  async update(id: string, payload: Partial<AttendanceEntity>): Promise<AttendanceEntity | null> {
-    await this.attendanceRepository.update(id, payload);
-    return this.findOne(id);
+  async getStats(employeeId: string, month: string, year: number) {
+    const startDate = new Date(`${year}-${month}-01`);
+    const endDate = new Date(year, parseInt(month), 0);
+    
+    const records = await this.attendanceRepository.find({
+      where: { employeeId, date: Between(startDate, endDate) },
+    });
+
+    return {
+      totalDays: records.length,
+      presentDays: records.filter(r => r.status === 'present').length,
+      totalHours: records.reduce((sum, r) => sum + (r.totalHours || 0), 0),
+    };
   }
 }

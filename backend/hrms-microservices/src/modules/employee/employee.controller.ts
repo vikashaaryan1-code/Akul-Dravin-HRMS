@@ -1,37 +1,47 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { EmployeeEntity } from '../../database/entities/employee.entity';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '../../common/enums/role.enum';
+import { Employee } from './employee.entity';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('employees')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Get()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER)
-  findAll() {
+  findAll(): Promise<Employee[]> {
     return this.employeeService.findAll();
   }
 
+  @Get('stats')
+  getStats(): Promise<any> {
+    return this.employeeService.getStats();
+  }
+
   @Get(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER, Role.EMPLOYEE)
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<Employee> {
     return this.employeeService.findOne(id);
   }
 
   @Post()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  create(@Body() payload: Partial<EmployeeEntity>) {
-    return this.employeeService.create(payload);
+  async create(@Body() data: Partial<Employee>): Promise<Employee> {
+    try {
+      console.log('Creating employee with data:', JSON.stringify(data, null, 2));
+      const result = await this.employeeService.create(data);
+      console.log('Employee created successfully:', result.id);
+      return result;
+    } catch (error) {
+      console.error('Error creating employee:', error.message);
+      console.error('Stack:', error.stack);
+      throw error;
+    }
   }
 
   @Patch(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  update(@Param('id') id: string, @Body() payload: Partial<EmployeeEntity>) {
-    return this.employeeService.update(id, payload);
+  update(@Param('id') id: string, @Body() data: Partial<Employee>): Promise<Employee> {
+    return this.employeeService.update(id, data);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string): Promise<void> {
+    return this.employeeService.remove(id);
   }
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { SubscriptionBillingService } from './subscription-billing.service';
-import { SubscriptionEntity } from '../../database/entities/subscription.entity';
+import { Subscription } from '../../database/entities/subscription.entity';
 import { InvoiceEntity } from '../../database/entities/invoice.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -20,13 +20,13 @@ export class SubscriptionBillingController {
 
   @Post('subscriptions')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
-  createSubscription(@Body() payload: Partial<SubscriptionEntity>) {
+  createSubscription(@Body() payload: Partial<Subscription>) {
     return this.subscriptionBillingService.createSubscription(payload);
   }
 
   @Patch('subscriptions/:id')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
-  updateSubscription(@Param('id') id: string, @Body() payload: Partial<SubscriptionEntity>) {
+  updateSubscription(@Param('id') id: string, @Body() payload: Partial<Subscription>) {
     return this.subscriptionBillingService.updateSubscription(id, payload);
   }
 

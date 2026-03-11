@@ -7,7 +7,9 @@ import { microserviceDefinitions } from './config/microservice.config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn'],
+  });
 
   app.enableCors({
     origin: (process.env.CORS_ORIGIN?.split(',').map((item) => item.trim()).filter(Boolean)) ?? [
@@ -28,6 +30,9 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: false,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
 
@@ -37,13 +42,16 @@ async function bootstrap() {
       options: {
         host: '0.0.0.0',
         port: service.port,
+        retryAttempts: 3,
+        retryDelay: 1000,
       },
     });
   }
 
   await app.startAllMicroservices();
   const port = Number(process.env.PORT ?? 4200);
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Backend running on http://localhost:${port}/api/v1`);
 }
 
 bootstrap();

@@ -1,45 +1,27 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, Param } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
-import { AttendanceEntity } from '../../database/entities/attendance.entity';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '../../common/enums/role.enum';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('attendance')
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
+  @Post('check-in')
+  checkIn(@Body() body: { employeeId: string; location?: { lat: number; lng: number; address: string } }) {
+    return this.attendanceService.checkIn(body.employeeId, body.location);
+  }
+
+  @Post('check-out')
+  checkOut(@Body() body: { employeeId: string; location?: { lat: number; lng: number; address: string } }) {
+    return this.attendanceService.checkOut(body.employeeId, body.location);
+  }
+
   @Get()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER)
-  findAll() {
-    return this.attendanceService.findAll();
+  findAll(@Query() filters: any) {
+    return this.attendanceService.findAll(filters);
   }
 
-  @Get(':id')
-  @Roles(
-    Role.ROOT_OWNER,
-    Role.PLATFORM_ADMIN,
-    Role.SUPER_ADMIN,
-    Role.COMPANY_ADMIN,
-    Role.BRANCH_ADMIN,
-    Role.HR_MANAGER,
-    Role.EMPLOYEE,
-  )
-  findOne(@Param('id') id: string) {
-    return this.attendanceService.findOne(id);
-  }
-
-  @Post()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER, Role.EMPLOYEE)
-  create(@Body() payload: Partial<AttendanceEntity>) {
-    return this.attendanceService.create(payload);
-  }
-
-  @Patch(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER)
-  update(@Param('id') id: string, @Body() payload: Partial<AttendanceEntity>) {
-    return this.attendanceService.update(id, payload);
+  @Get('stats/:employeeId')
+  getStats(@Param('employeeId') employeeId: string, @Query('month') month: string, @Query('year') year: string) {
+    return this.attendanceService.getStats(employeeId, month, parseInt(year));
   }
 }

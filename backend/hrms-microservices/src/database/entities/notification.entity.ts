@@ -1,30 +1,28 @@
-import { Column, Entity, Index } from 'typeorm';
-import { TenantScopedEntity } from './tenant-scoped.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
-@Entity({ name: 'notifications' })
-export class NotificationEntity extends TenantScopedEntity {
-  @Index()
-  @Column({ name: 'user_id', type: 'uuid' })
-  userId!: string;
+@Entity('notifications')
+export class Notification {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  channel!: string;
+  @Column({ name: 'user_id' })
+  userId: string;
 
-  @Column({ type: 'varchar', length: 60 })
-  type!: string;
-
-  @Column({ type: 'varchar', length: 180 })
-  title!: string;
+  @Column({ type: 'varchar', length: 200 })
+  title: string;
 
   @Column({ type: 'text' })
-  message!: string;
+  message: string;
 
-  @Column({ type: 'timestamp with time zone', name: 'scheduled_at', nullable: true })
-  scheduledAt!: Date | null;
+  @Column({ type: 'varchar', length: 50 })
+  type: string;
 
-  @Column({ type: 'timestamp with time zone', name: 'sent_at', nullable: true })
-  sentAt!: Date | null;
+  @Column({ type: 'boolean', default: false })
+  read: boolean;
 
-  @Column({ type: 'varchar', length: 40, default: 'queued' })
-  status!: string;
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  link: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }

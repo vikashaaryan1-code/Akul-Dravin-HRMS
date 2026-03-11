@@ -1,0 +1,41 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Goal } from './goal.entity';
+
+@Injectable()
+export class GoalService {
+  constructor(
+    @InjectRepository(Goal)
+    private goalRepository: Repository<Goal>,
+  ) {}
+
+  async findAll(): Promise<Goal[]> {
+    return this.goalRepository.find({ order: { createdAt: 'DESC' } });
+  }
+
+  async findOne(id: string): Promise<Goal> {
+    return this.goalRepository.findOne({ where: { id } });
+  }
+
+  async create(data: Partial<Goal>): Promise<Goal> {
+    const goal = this.goalRepository.create(data);
+    return this.goalRepository.save(goal);
+  }
+
+  async update(id: string, data: Partial<Goal>): Promise<Goal> {
+    await this.goalRepository.update(id, data);
+    return this.findOne(id);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.goalRepository.delete(id);
+  }
+
+  async getStats(): Promise<any> {
+    const total = await this.goalRepository.count();
+    const inProgress = await this.goalRepository.count({ where: { status: 'in_progress' } });
+    const completed = await this.goalRepository.count({ where: { status: 'completed' } });
+    return { total, inProgress, completed };
+  }
+}

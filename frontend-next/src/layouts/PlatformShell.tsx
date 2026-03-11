@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { SideNavigation } from '@/components/navigation/SideNavigation';
 import { TopNavigation } from '@/components/navigation/TopNavigation';
 import { PlatformRouteBanner } from '@/components/navigation/PlatformRouteBanner';
+import { ChatbotIcon } from '@/components/chatbot/ChatbotIcon';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useRoleFromQuery } from '@/hooks/useRoleFromQuery';
 import { useThemeSync } from '@/hooks/useThemeSync';
@@ -49,6 +50,7 @@ export function PlatformShell({ children }: PropsWithChildren) {
           {children}
         </main>
       </div>
+      <ChatbotIcon />
     </div>
   );
 }

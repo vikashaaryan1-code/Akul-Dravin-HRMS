@@ -34,3 +34,5 @@ export class EmployeeEntity extends TenantScopedEntity {
   @Column({ type: 'varchar', length: 30, default: 'active' })
   status!: string;
 }
+
+export { EmployeeEntity as Employee };

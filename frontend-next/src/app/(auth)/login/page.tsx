@@ -19,19 +19,19 @@ export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState<PlatformRole>('platform-admin');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cardLoaded, setCardLoaded] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlEmail = params.get('email');
     const urlRole = params.get('role');
 
-    if (urlEmail) {
-      setEmail(urlEmail);
-    }
-
+    if (urlEmail) setEmail(urlEmail);
     if (urlRole && PLATFORM_ROLE_OPTIONS.some((item) => item.role === urlRole)) {
       setSelectedRole(urlRole as PlatformRole);
     }
+
+    setTimeout(() => setCardLoaded(true), 200);
   }, []);
 
   const roleHelper = useMemo(() => `Selected workspace: ${toRoleLabel(selectedRole)}`, [selectedRole]);
@@ -57,87 +57,108 @@ export default function LoginPage() {
   const continueDemo = () => {
     setSession({
       accessToken: 'demo-token',
-      user: {
-        id: 'demo-user',
-        email,
-        fullName: 'Demo User',
-        tenantId: null,
-        role: selectedRole,
-      },
+      user: { id: 'demo-user', email, fullName: 'Demo User', tenantId: null, role: selectedRole },
     });
     setActiveRole(selectedRole);
     router.push(`/dashboard?role=${selectedRole}`);
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.16),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.14),_transparent_40%)] px-4 py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-3xl border border-white/60 bg-white/85 p-8 shadow-panel backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/85"
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#05070d] px-4 py-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(0,245,255,0.03)_1px,_transparent_1px)] bg-[length:40px_40px] animate-[move_20s_linear_infinite]" />
+      
+      <Link
+        href="/"
+        className="absolute top-6 left-6 flex items-center gap-2 text-[#00f5ff] transition-all hover:text-white hover:[text-shadow:0_0_10px_#00f5ff]"
       >
-        <div className="inline-flex items-center gap-2 rounded-full border border-aqua/30 bg-aqua/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-aqua">
-          <ShieldCheck size={13} />
-          Enterprise Access
+        <ArrowRight className="rotate-180" size={20} />
+        <span className="text-sm font-medium">Back</span>
+      </Link>
+      
+      <div className="relative" style={{ perspective: '1200px' }}>
+        <div
+          className={`relative w-[650px] h-[420px] rounded-xl border-2 border-[#00f5ff] bg-black/35 backdrop-blur-xl shadow-[0_0_10px_#00f5ff,0_0_20px_#00f5ff,0_0_40px_rgba(0,245,255,0.4),inset_0_0_20px_rgba(0,245,255,0.3)] overflow-hidden transition-all duration-1000 ${
+            cardLoaded ? '' : ''
+          }`}
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: cardLoaded ? 'rotateY(0deg) rotateX(0deg)' : 'rotateY(-90deg) rotateX(5deg)'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'rotateY(5deg) rotateX(3deg)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = cardLoaded ? 'rotateY(0deg) rotateX(0deg)' : 'rotateY(0deg) rotateX(0deg)'}
+        >
+          <div className="absolute top-0 left-0 w-[55%] h-full bg-gradient-to-br from-[#00f5ff] via-[#00d4e6] to-[#00b8cc] pointer-events-none" style={{ clipPath: 'polygon(0 0, 100% 0, 70% 100%, 0 100%)', zIndex: 1 }}>
+            <div className="w-full h-full flex items-center justify-center">
+              <h1 className="text-3xl font-bold tracking-[10px] text-black [text-shadow:0_0_10px_rgba(0,0,0,0.3)]">WELCOME</h1>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="absolute right-0 top-0 w-[60%] h-full flex flex-col items-center justify-center gap-3 pl-20 pr-8" style={{ zIndex: 2 }}>
+            <h2 className="text-2xl font-bold text-white">Login</h2>
+
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full max-w-[300px] border border-[#00f5ff] bg-transparent px-3 py-1.5 text-sm text-white outline-none transition-all focus:shadow-[0_0_10px_#00f5ff] focus:border-[#00f5ff]"
+              placeholder="Username"
+            />
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full max-w-[300px] border border-[#00f5ff] bg-transparent px-3 py-1.5 text-sm text-white outline-none transition-all focus:shadow-[0_0_10px_#00f5ff] focus:border-[#00f5ff]"
+              placeholder="Password"
+            />
+
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value as PlatformRole)}
+              className="w-full max-w-[300px] border border-[#00f5ff] bg-black/50 px-3 py-1.5 text-sm text-white outline-none transition-all focus:shadow-[0_0_10px_#00f5ff] focus:border-[#00f5ff]"
+            >
+              {PLATFORM_ROLE_OPTIONS.map((option) => (
+                <option key={option.role} value={option.role} className="bg-black">
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            {error && <p className="text-xs text-red-400">{error}</p>}
+
+            <button
+              disabled={submitting}
+              className="w-full max-w-[300px] cursor-pointer border-none bg-gradient-to-r from-[#00f5ff] to-[#0066ff] px-8 py-1.5 text-sm text-white shadow-[0_0_10px_#00f5ff,0_0_20px_#00f5ff] transition-all hover:scale-105 hover:shadow-[0_0_20px_#00f5ff,0_0_40px_#00f5ff] disabled:opacity-50"
+            >
+              {submitting ? 'SIGNING IN...' : 'LOGIN'}
+            </button>
+
+            <button
+              type="button"
+              onClick={continueDemo}
+              className="text-xs text-[#00f5ff] underline hover:text-white"
+            >
+              Continue Demo
+            </button>
+
+            <div className="mt-2 flex items-center gap-2 text-sm">
+              <span className="text-gray-400">Don't have an account?</span>
+              <Link
+                href="/signup"
+                className="relative font-medium text-[#00f5ff] transition-all hover:text-white hover:[text-shadow:0_0_10px_#00f5ff,0_0_20px_#00f5ff,0_0_30px_#00f5ff] after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:bg-[#00f5ff] after:shadow-[0_0_10px_#00f5ff] after:transition-all after:duration-400 hover:after:w-full"
+              >
+                Create Account
+              </Link>
+            </div>
+          </form>
         </div>
-        <h1 className="mt-3 text-3xl font-bold text-ink dark:text-slate-100">Sign In</h1>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Connect to AKUL DRAVIN backend APIs and open your role workspace.</p>
+      </div>
 
-        <label className="mt-6 block text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Work Email</label>
-        <input
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          className="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-aqua dark:border-slate-700 dark:bg-slate-950"
-          placeholder="admin@company.com"
-        />
-
-        <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-aqua dark:border-slate-700 dark:bg-slate-950"
-          placeholder="••••••••"
-        />
-
-        <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Open Workspace As</label>
-        <select
-          value={selectedRole}
-          onChange={(event) => setSelectedRole(event.target.value as PlatformRole)}
-          className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-aqua dark:border-slate-700 dark:bg-slate-950"
-        >
-          {PLATFORM_ROLE_OPTIONS.map((option) => (
-            <option key={option.role} value={option.role}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <p className="mt-2 text-xs text-slate-500">{roleHelper}</p>
-
-        {error ? <p className="mt-4 rounded-xl bg-amber/15 px-3 py-2 text-xs text-ember">{error}</p> : null}
-
-        <button
-          disabled={submitting}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-ink to-aqua px-5 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {submitting ? 'Signing in...' : 'Login'}
-          <ArrowRight size={14} />
-        </button>
-
-        <button
-          type="button"
-          onClick={continueDemo}
-          className="mt-3 w-full rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-        >
-          Continue Demo
-        </button>
-
-        <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-300">
-          New user? <Link className="font-semibold text-aqua" href="/signup">Start free trial</Link>
-        </p>
-        <p className="mt-2 text-center text-xs text-slate-500">
-          <Link href="/" className="underline underline-offset-2">Back to website</Link>
-        </p>
-      </form>
+      <style jsx>{`
+        @keyframes move {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(200px); }
+        }
+      `}</style>
     </main>
   );
 }

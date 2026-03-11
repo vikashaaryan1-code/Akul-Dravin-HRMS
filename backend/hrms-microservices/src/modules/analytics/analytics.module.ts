@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AnalyticsController } from './analytics.controller';
+import { Employee } from '../../database/entities/employee.entity';
+import { Attendance } from '../../database/entities/attendance.entity';
+import { LeaveRequest } from '../../database/entities/leave-request.entity';
+import { Job } from '../../database/entities/job.entity';
 import { AnalyticsService } from './analytics.service';
-import { AnalyticsEventEntity } from '../../database/entities/analytics-event.entity';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { AnalyticsController } from './analytics.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AnalyticsEventEntity])],
+  imports: [TypeOrmModule.forFeature([Employee, Attendance, LeaveRequest, Job])],
   controllers: [AnalyticsController],
-  providers: [AnalyticsService, RolesGuard],
+  providers: [AnalyticsService],
   exports: [AnalyticsService],
 })
 export class AnalyticsModule {}

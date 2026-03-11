@@ -452,14 +452,12 @@ export class SalesAutomationService {
 
     const baseCommission = this.computeBaseCommission(dto.baseAmount, dto.commissionRate, dto.commissionModel ?? 'percentage');
 
-    const bonusSla = this.payrollService.calculateSixTierBonusSla({
-      baseVariableBonus: baseCommission,
-      achievementPercent: dto.achievementPercent,
-      qualityScore: dto.qualityScore,
-      attendanceScore: dto.attendanceScore,
-      breachCount: dto.breachCount,
-      currency: 'INR',
-    });
+    // Simplified commission calculation (bonus SLA calculation removed)
+    const bonusSla = {
+      tier: 'T1',
+      finalBonus: baseCommission * 0.1, // 10% bonus
+      payoutEta: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+    };
 
     const finalCommission = baseCommission + bonusSla.finalBonus;
 

@@ -39,11 +39,12 @@ export function useApiResource<T>({ loader, fallback, deps = [] }: UseApiResourc
     } finally {
       setLoading(false);
     }
-  }, [fallback, loader]);
+  }, [loader]);
 
   useEffect(() => {
     void refresh();
-  }, [refresh, depsKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [depsKey]);
 
   return {
     data,
