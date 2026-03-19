@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, Plus, Edit2, Trash2, Search, UserCheck, UserX, UserCog } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, Search, UserCheck, UserX, UserCog, Download, Upload } from 'lucide-react';
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState([]);
@@ -87,6 +87,94 @@ export default function EmployeesPage() {
     }
   };
 
+  const handleExport = () => {
+    const csvContent = [
+      ['Employee ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Date of Birth', 'Gender', 'Joining Date', 'Salary', 'Status', 'Address', 'Company ID'].join(','),
+      ...employees.map(emp => [
+        emp.employeeId,
+        emp.firstName,
+        emp.lastName,
+        emp.email,
+        emp.phone || '',
+        emp.dateOfBirth || '',
+        emp.gender || '',
+        emp.joiningDate,
+        emp.salary,
+        emp.status,
+        `"${(emp.address || '').replace(/"/g, '""')}"`,
+        emp.companyId || '00000000-0000-0000-0000-000000000000'
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `employees_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const text = event.target?.result as string;
+        const lines = text.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(',');
+        
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          const employee = {
+            employeeId: values[0]?.trim(),
+            firstName: values[1]?.trim(),
+            lastName: values[2]?.trim(),
+            email: values[3]?.trim(),
+            phone: values[4]?.trim(),
+            dateOfBirth: values[5]?.trim(),
+            gender: values[6]?.trim(),
+            joiningDate: values[7]?.trim(),
+            salary: values[8]?.trim(),
+            status: values[9]?.trim() || 'active',
+            address: values[10]?.trim().replace(/^"|"$/g, '').replace(/""/g, '"'),
+            companyId: values[11]?.trim() || '00000000-0000-0000-0000-000000000000'
+          };
+
+          try {
+            const response = await fetch('http://localhost:4200/api/v1/employees', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(employee),
+            });
+
+            if (response.ok) {
+              successCount++;
+            } else {
+              errorCount++;
+            }
+          } catch (error) {
+            errorCount++;
+          }
+        }
+
+        alert(`Import completed!\nSuccess: ${successCount}\nFailed: ${errorCount}`);
+        fetchEmployees();
+        fetchStats();
+      } catch (error) {
+        console.error('Import error:', error);
+        alert('Failed to import employees. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const filteredEmployees = employees.filter(emp =>
     `${emp.firstName} ${emp.lastName} ${emp.email} ${emp.employeeId}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -98,13 +186,27 @@ export default function EmployeesPage() {
           <h1 className="text-3xl font-bold text-gray-800">Employee Management</h1>
           <p className="text-gray-600 mt-1">Manage your workforce</p>
         </div>
-        <button
-          onClick={() => { setShowModal(true); setEditingEmployee(null); }}
-          className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
-        >
-          <Plus size={20} />
-          Add Employee
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
+          >
+            <Download size={20} />
+            Export
+          </button>
+          <label className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all cursor-pointer">
+            <Upload size={20} />
+            Import
+            <input type="file" accept=".csv" onChange={handleImport} className="hidden" />
+          </label>
+          <button
+            onClick={() => { setShowModal(true); setEditingEmployee(null); }}
+            className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
+          >
+            <Plus size={20} />
+            Add Employee
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -206,8 +308,8 @@ export default function EmployeesPage() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-8">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto my-8">
             <div className="sticky top-0 bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-6 rounded-t-2xl">
               <h2 className="text-2xl font-bold">{editingEmployee ? 'Edit Employee' : 'Add New Employee'}</h2>
             </div>
@@ -217,6 +319,7 @@ export default function EmployeesPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Employee ID *</label>
                   <input name="employeeId" defaultValue={editingEmployee?.employeeId} required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500" />
                 </div>
+                <input name="companyId" type="hidden" defaultValue={editingEmployee?.companyId || '00000000-0000-0000-0000-000000000000'} />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
                   <input name="firstName" defaultValue={editingEmployee?.firstName} required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500" />

@@ -51,6 +51,7 @@ export const TOP_NAV_ITEMS: PlatformNavItem[] = [
   { label: 'Procurement', href: '/procurement' },
   { label: 'Analytics', href: '/analytics' },
   { label: 'Permissions', href: '/permissions' },
+  { label: 'Feature Permissions', href: '/feature-permissions' },
   { label: 'Settings', href: '/settings' },
 ];
 
@@ -60,6 +61,8 @@ const LEGACY_NAV_ITEMS: PlatformNavItem[] = [
   { label: 'Onboarding', href: '/onboarding' },
   { label: 'Interviews', href: '/interviews' },
   { label: 'Candidates', href: '/candidates' },
+  { label: 'Jobs', href: '/jobs' },
+  { label: 'Job Applications', href: '/job-applications' },
   { label: 'LMS', href: '/lms' },
   { label: 'Gamification', href: '/gamification' },
   { label: 'Leave', href: '/leave' },
@@ -104,6 +107,7 @@ export const ROUTE_ACCESS: Record<string, PlatformRole[]> = {
   '/procurement': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'sales-manager'],
   '/analytics': ALL_ROLES,
   '/permissions': ADMIN_ROLES,
+  '/feature-permissions': ADMIN_ROLES,
   '/settings': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'team-leader', 'sales-manager', 'recruiter', 'employee'],
   '/automation': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'sales-manager'],
   '/marketplace': ['platform-admin', 'company-admin', 'hr-manager', 'recruiter', 'guest'],
@@ -119,6 +123,8 @@ export const ROUTE_ACCESS: Record<string, PlatformRole[]> = {
   '/compliance': ADMIN_ROLES,
   '/offboarding': TALENT_ROLES,
   '/ai-hub': ['platform-admin', 'company-admin', 'hr-manager', 'sales-manager'],
+  '/jobs': TALENT_ROLES,
+  '/job-applications': TALENT_ROLES,
   '/job-board': TALENT_ROLES,
   '/recruiter-hub': TALENT_ROLES,
   '/recruiter-revenue': ['platform-admin', 'company-admin', 'hr-manager', 'recruiter', 'sales-manager'],

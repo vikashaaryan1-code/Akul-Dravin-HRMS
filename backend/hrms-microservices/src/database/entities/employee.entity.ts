@@ -1,14 +1,14 @@
 import { Column, Entity, Index } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
 
-@Entity({ name: 'employees' })
+@Entity({ name: 'employees_legacy' })
 export class EmployeeEntity extends TenantScopedEntity {
   @Column({ name: 'company_id', type: 'uuid' })
   companyId!: string;
 
   @Index({ unique: true })
-  @Column({ name: 'employee_code', type: 'varchar', length: 64 })
-  employeeCode!: string;
+  @Column({ name: 'employee_code', type: 'varchar', length: 64, nullable: true })
+  employeeCode?: string;
 
   @Column({ name: 'first_name', type: 'varchar', length: 100 })
   firstName!: string;

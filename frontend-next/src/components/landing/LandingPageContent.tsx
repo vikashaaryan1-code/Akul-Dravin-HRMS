@@ -5,6 +5,7 @@ import { CtaSection } from '@/components/landing/CtaSection';
 import { DashboardPreviewSection } from '@/components/landing/DashboardPreviewSection';
 import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import { HeroSection } from '@/components/landing/HeroSection';
+import { JobBoardSection } from '@/components/landing/JobBoardSection';
 import { LandingFooter } from '@/components/landing/LandingFooter';
 import { LandingNavbar } from '@/components/landing/LandingNavbar';
 import { MarketplaceSection } from '@/components/landing/MarketplaceSection';
@@ -19,6 +20,7 @@ export function LandingPageContent() {
       <LandingNavbar />
       <HeroSection />
       <FeaturesSection />
+      <JobBoardSection />
       <AutomationSection />
       <DashboardPreviewSection />
       <PricingSection />

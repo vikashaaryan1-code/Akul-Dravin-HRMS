@@ -28,7 +28,7 @@ export function SideNavigation({ activeRole, isOpen, onClose }: SideNavigationPr
       />
       <aside
         className={clsx(
-          'fixed left-0 top-0 z-40 flex h-full w-72 flex-col border-r border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl transition-transform lg:sticky lg:top-16 lg:z-10 lg:h-[calc(100vh-4rem)] lg:translate-x-0 lg:border-slate-200/80 lg:shadow-none dark:border-slate-700 dark:bg-slate-950/95',
+          'fixed left-0 top-0 z-40 flex h-full w-[22rem] flex-col border-r border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl transition-transform lg:sticky lg:top-16 lg:z-10 lg:h-[calc(100vh-4rem)] lg:translate-x-0 lg:border-slate-200/80 lg:shadow-none dark:border-slate-700 dark:bg-slate-950/95',
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >

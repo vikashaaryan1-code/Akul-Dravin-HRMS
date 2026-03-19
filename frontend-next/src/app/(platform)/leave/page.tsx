@@ -58,9 +58,10 @@ export default function LeaveTypesPage() {
     try {
       const response = await fetch('http://localhost:4200/api/v1/leave/types');
       const data = await response.json();
-      setLeaveTypes(data);
+      setLeaveTypes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching leave types:', error);
+      setLeaveTypes([]);
     } finally {
       setLoading(false);
     }

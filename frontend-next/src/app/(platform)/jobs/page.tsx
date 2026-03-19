@@ -8,7 +8,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4200/
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ companyId: '', title: '', description: '', location: '', employmentType: 'Full-time', experienceLevel: 'Mid-level', salaryMin: '', salaryMax: '', skills: '', openings: 1, closingDate: '' });
+  const [form, setForm] = useState({ companyId: '00000000-0000-0000-0000-000000000000', title: '', description: '', location: '', employmentType: 'Full-time', experienceLevel: 'Mid-level', salaryMin: '', salaryMax: '', skills: '', openings: 1, closingDate: '', status: 'open' });
 
   useEffect(() => {
     fetchJobs();
@@ -28,7 +28,7 @@ export default function JobsPage() {
       body: JSON.stringify(form),
     });
     setShowModal(false);
-    setForm({ companyId: '', title: '', description: '', location: '', employmentType: 'Full-time', experienceLevel: 'Mid-level', salaryMin: '', salaryMax: '', skills: '', openings: 1, closingDate: '' });
+    setForm({ companyId: '00000000-0000-0000-0000-000000000000', title: '', description: '', location: '', employmentType: 'Full-time', experienceLevel: 'Mid-level', salaryMin: '', salaryMax: '', skills: '', openings: 1, closingDate: '', status: 'open' });
     fetchJobs();
   };
 

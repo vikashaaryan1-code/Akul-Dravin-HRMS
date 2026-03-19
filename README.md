@@ -53,3 +53,37 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:4200/api/v1
 ```
 
 Create `frontend-next/.env.local` if you want to override it.
+
+## Job Board Feature
+
+The platform includes a complete job board system with:
+
+- **Public job listings** on the homepage
+- **Application flow** with authentication
+- **Admin dashboard** for job management
+- **Application review system** for HR
+- **Webhook API** for automatic job posting
+
+### Seed Sample Jobs
+
+To populate the job board with sample data:
+
+```bash
+cd backend/hrms-microservices
+node seed-jobs.js
+```
+
+Then visit `http://localhost:3000` to see jobs on the homepage.
+
+### Documentation
+
+- **Complete Guide:** [JOB_BOARD_FEATURE.md](JOB_BOARD_FEATURE.md)
+- **Webhook API:** [WEBHOOK_API_DOCUMENTATION.md](WEBHOOK_API_DOCUMENTATION.md)
+
+### Quick Test
+
+1. Visit homepage and click "Apply Now" on any job
+2. Login or create account
+3. Fill application form and submit
+4. Login as admin and navigate to "Job Applications"
+5. Review and manage applications

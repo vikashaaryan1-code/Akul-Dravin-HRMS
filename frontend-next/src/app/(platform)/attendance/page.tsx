@@ -31,7 +31,9 @@ export default function AttendancePage() {
     try {
       const res = await fetch(`${API_BASE}/employees`);
       const data = await res.json();
+      console.log('Fetched employees:', data);
       if (Array.isArray(data) && data.length > 0) {
+        console.log('Setting employeeId to:', data[0].id);
         setEmployeeId(data[0].id);
       }
     } catch (error) {
@@ -41,9 +43,13 @@ export default function AttendancePage() {
 
   const fetchRecords = async () => {
     if (!employeeId) return;
+    console.log('Fetching attendance for employeeId:', employeeId);
     try {
-      const res = await fetch(`${API_BASE}/attendance?employeeId=${employeeId}`);
+      const url = `${API_BASE}/attendance?employeeId=${employeeId}`;
+      console.log('Fetching from URL:', url);
+      const res = await fetch(url);
       const data = await res.json();
+      console.log('Fetched attendance records:', data);
       setRecords(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch records:', error);
@@ -218,7 +224,7 @@ export default function AttendancePage() {
                   <td className="px-6 py-4 text-sm text-ink">{new Date(rec.date).toLocaleDateString()}</td>
                   <td className="px-6 py-4 text-sm text-ink">{rec.checkIn || '-'}</td>
                   <td className="px-6 py-4 text-sm text-ink">{rec.checkOut || '-'}</td>
-                  <td className="px-6 py-4 text-sm text-ink">{rec.totalHours?.toFixed(2) || '-'}</td>
+                  <td className="px-6 py-4 text-sm text-ink">{rec.totalHours ? parseFloat(rec.totalHours).toFixed(2) : '-'}</td>
                   <td className="px-6 py-4">
                     <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">{rec.status}</span>
                   </td>

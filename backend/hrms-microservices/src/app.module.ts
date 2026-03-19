@@ -38,6 +38,7 @@ import { LeaveTypeModule } from './modules/leave-type/leave-type.module';
 import { LeaveRequestModule } from './modules/leave-request/leave-request.module';
 import { EmployeeDocumentModule } from './modules/employee-document/employee-document.module';
 import { JobModule } from './modules/job/job.module';
+import { JobApplicationModule } from './modules/job-application/job-application.module';
 import { ApplicationModule } from './modules/application/application.module';
 import { InterviewModule } from './modules/interview/interview.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
@@ -87,6 +88,8 @@ import { BackgroundVerificationModule } from './modules/background-verification/
 import { VideoInterviewModule } from './modules/video-interview/video-interview.module';
 import { PingPlanModule } from './modules/ping-plan/ping-plan.module';
 import { PerformanceRewardsModule } from './modules/performance-rewards/performance-rewards.module';
+import { WebhookModule } from './modules/webhook/webhook.module';
+import { FeaturePermissionsModule } from './modules/feature-permissions/feature-permissions.module';
 import { AuthContextMiddleware } from './common/middleware/auth-context.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 
@@ -146,6 +149,7 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
     LeaveRequestModule,
     EmployeeDocumentModule,
     JobModule,
+    JobApplicationModule,
     ApplicationModule,
     InterviewModule,
     SubscriptionModule,
@@ -195,6 +199,8 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
     VideoInterviewModule,
     PingPlanModule,
     PerformanceRewardsModule,
+    WebhookModule,
+    FeaturePermissionsModule,
   ],
 })
 export class AppModule implements NestModule {

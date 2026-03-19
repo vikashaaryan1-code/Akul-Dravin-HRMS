@@ -45,7 +45,14 @@ export default function LoginPage() {
       const response = await platformApi.login({ email, password });
       setSession(response);
       setActiveRole(selectedRole);
-      router.push(`/dashboard?role=${selectedRole}`);
+      
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      if (redirect === 'job-application') {
+        router.push('/job-application');
+      } else {
+        router.push(`/dashboard?role=${selectedRole}`);
+      }
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : 'Unable to login.';
       setError(`${message} You can continue in demo mode.`);
@@ -60,22 +67,37 @@ export default function LoginPage() {
       user: { id: 'demo-user', email, fullName: 'Demo User', tenantId: null, role: selectedRole },
     });
     setActiveRole(selectedRole);
-    router.push(`/dashboard?role=${selectedRole}`);
+    
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    if (redirect === 'job-application') {
+      router.push('/job-application');
+    } else {
+      router.push(`/dashboard?role=${selectedRole}`);
+    }
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#05070d] px-4 py-10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(0,245,255,0.03)_1px,_transparent_1px)] bg-[length:40px_40px] animate-[move_20s_linear_infinite]" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      {/* Background iframe showing homepage */}
+      <iframe
+        src="/"
+        className="absolute inset-0 w-full h-full pointer-events-none opacity-20 blur-sm"
+        title="Background"
+      />
+      
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/60" />
       
       <Link
         href="/"
-        className="absolute top-6 left-6 flex items-center gap-2 text-[#00f5ff] transition-all hover:text-white hover:[text-shadow:0_0_10px_#00f5ff]"
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-[#00f5ff] transition-all hover:text-white hover:[text-shadow:0_0_10px_#00f5ff]"
       >
         <ArrowRight className="rotate-180" size={20} />
-        <span className="text-sm font-medium">Back</span>
+        <span className="text-sm font-medium">Back to Home</span>
       </Link>
       
-      <div className="relative" style={{ perspective: '1200px' }}>
+      <div className="relative z-10" style={{ perspective: '1200px' }}>
         <div
           className={`relative w-[650px] h-[420px] rounded-xl border-2 border-[#00f5ff] bg-black/35 backdrop-blur-xl shadow-[0_0_10px_#00f5ff,0_0_20px_#00f5ff,0_0_40px_rgba(0,245,255,0.4),inset_0_0_20px_rgba(0,245,255,0.3)] overflow-hidden transition-all duration-1000 ${
             cardLoaded ? '' : ''
@@ -157,6 +179,10 @@ export default function LoginPage() {
         @keyframes move {
           0% { transform: translateY(0); }
           100% { transform: translateY(200px); }
+        }
+        
+        iframe {
+          transform: scale(1.1);
         }
       `}</style>
     </main>

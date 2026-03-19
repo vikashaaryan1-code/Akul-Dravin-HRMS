@@ -43,9 +43,9 @@ export function PlatformShell({ children }: PropsWithChildren) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.12),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.11),_transparent_40%)] text-slate-900 transition-colors dark:bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.25),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.18),_transparent_40%)] dark:text-slate-100">
       <TopNavigation onMenuClick={() => setSidebarOpen(true)} />
-      <div className="mx-auto flex w-full max-w-[1500px] gap-4 px-2 py-3 sm:px-3 lg:gap-5 lg:px-4">
+      <div className="mx-auto flex w-full max-w-[1800px] py-3">
         <SideNavigation activeRole={safeRole} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="w-full space-y-4 pb-6 lg:ml-72">
+        <main className="flex-1 space-y-4 pb-6 px-4">
           <PlatformRouteBanner />
           {children}
         </main>

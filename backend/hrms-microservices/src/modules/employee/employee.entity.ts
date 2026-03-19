@@ -5,13 +5,13 @@ export class Employee {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ name: 'employeeId' })
   employeeId: string;
 
-  @Column()
+  @Column({ name: 'firstName' })
   firstName: string;
 
-  @Column()
+  @Column({ name: 'lastName' })
   lastName: string;
 
   @Column({ unique: true })
@@ -53,7 +53,7 @@ export class Employee {
   @Column({ nullable: true })
   branchId: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'company_id', nullable: true, default: '00000000-0000-0000-0000-000000000000' })
   companyId: string;
 
   @Column({ nullable: true })
