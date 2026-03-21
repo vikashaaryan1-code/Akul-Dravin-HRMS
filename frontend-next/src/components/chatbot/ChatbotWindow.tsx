@@ -22,7 +22,7 @@ export function ChatbotWindow({ onClose }: ChatbotWindowProps) {
     // Send welcome message on first load
     if (messages.length === 0) {
       addMessage({
-        id: `welcome-${Date.now()}`,
+        id: 'welcome',
         text: "Hello! 👋 Welcome to AKUL DRAVIN HRMS. Please enter your email address to continue.",
         sender: 'bot',
         timestamp: new Date(),

@@ -27,7 +27,10 @@ export const useChatbotStore = create<ChatbotStore>((set) => ({
   userEmail: null,
   awaitingPassword: false,
   tempEmail: null,
-  addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
+  addMessage: (message) => set((state) => {
+    if (state.messages.find(m => m.id === message.id)) return state;
+    return { messages: [...state.messages, message] };
+  }),
   clearMessages: () => set({ messages: [] }),
   setAuthenticated: (email) => set({ isAuthenticated: true, userEmail: email, awaitingPassword: false, tempEmail: null }),
   resetAuth: () => set({ isAuthenticated: false, userEmail: null, messages: [], awaitingPassword: false, tempEmail: null }),
