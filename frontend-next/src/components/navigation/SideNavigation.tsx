@@ -4,8 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import clsx from 'clsx';
-import { SIDE_NAV_ITEMS, canAccessRoute, filterNavItemsByRole } from '@/utils/platform-config';
+import { SIDE_NAV_ITEMS, canAccessRoute } from '@/utils/platform-config';
+import { useDynamicPermissions } from '@/hooks/useDynamicPermissions';
 import type { PlatformRole } from '@/types/platform';
+
+const ADMIN_ROLES: PlatformRole[] = ['platform-admin', 'company-admin', 'hr-manager'];
 
 type SideNavigationProps = {
   activeRole: PlatformRole;
@@ -15,7 +18,37 @@ type SideNavigationProps = {
 
 export function SideNavigation({ activeRole, isOpen, onClose }: SideNavigationProps) {
   const pathname = usePathname();
-  const visibleNavItems = filterNavItemsByRole(SIDE_NAV_ITEMS, activeRole);
+  const { canViewFeature, loading, permissions } = useDynamicPermissions(activeRole);
+
+  const visibleNavItems = SIDE_NAV_ITEMS.filter((item) => {
+    // Feature Permissions only for admins
+    if (item.label === 'Feature Permissions') {
+      return ADMIN_ROLES.includes(activeRole);
+    }
+    
+    // Admins see everything
+    if (ADMIN_ROLES.includes(activeRole)) return true;
+    
+    // For non-admins: if permissions exist in DB, use them; otherwise show all
+    if (loading) return false;
+    
+    const hasAnyPermissions = permissions.length > 0;
+    if (!hasAnyPermissions) {
+      // No permissions configured = show everything
+      return true;
+    }
+    
+    // Permissions exist = only show what's allowed
+    return canViewFeature(item.label);
+  });
+
+  console.log(`[${activeRole}] Permissions count:`, permissions.length);
+  console.log(`[${activeRole}] Permissions:`, permissions);
+  console.log(`[${activeRole}] Visible nav items:`, visibleNavItems.length, visibleNavItems.map(i => i.label));
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <>

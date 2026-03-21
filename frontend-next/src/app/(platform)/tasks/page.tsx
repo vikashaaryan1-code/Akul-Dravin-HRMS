@@ -1,17 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CheckSquare, Clock, AlertCircle } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4200/api/v1';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', assignedTo: '', priority: 'medium', dueDate: '', category: '' });
 
   useEffect(() => {
     fetchTasks();
+    fetchUsers();
   }, []);
 
   const fetchTasks = async () => {
@@ -19,10 +21,15 @@ export default function TasksPage() {
       const res = await fetch(`${API_BASE}/tasks`);
       const data = await res.json();
       setTasks(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Failed to fetch tasks:', error);
-      setTasks([]);
-    }
+    } catch { setTasks([]); }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/users`);
+      const data = await res.json();
+      setUsers(Array.isArray(data) ? data : []);
+    } catch { setUsers([]); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,6 +52,8 @@ export default function TasksPage() {
     });
     fetchTasks();
   };
+
+  const getUserName = (userId: string) => users.find(u => u.id === userId)?.fullName || userId;
 
   const statuses = ['todo', 'in-progress', 'review', 'done'];
 
@@ -71,18 +80,21 @@ export default function TasksPage() {
                         task.priority === 'high' ? 'bg-red-100 text-red-800' :
                         task.priority === 'medium' ? 'bg-amber-100 text-amber-800' :
                         'bg-green-100 text-green-800'
-                      }`}>
-                        {task.priority}
-                      </span>
+                      }`}>{task.priority}</span>
                     </div>
                     {task.description && <p className="text-xs text-ink/60 mb-2">{task.description}</p>}
+                    {task.assignedTo && <p className="text-xs text-ink/50 mb-1">Assigned: {getUserName(task.assignedTo)}</p>}
                     {task.dueDate && (
                       <div className="flex items-center gap-1 text-xs text-ink/60">
                         <Clock className="w-3 h-3" />
                         {new Date(task.dueDate).toLocaleDateString()}
                       </div>
                     )}
-                    <select value={task.status} onChange={(e) => updateStatus(task.id, e.target.value)} className="w-full mt-2 px-2 py-1 text-xs border rounded">
+                    <select
+                      value={task.status}
+                      onChange={(e) => updateStatus(task.id, e.target.value)}
+                      className="w-full mt-2 px-2 py-1 text-xs border rounded"
+                    >
                       {statuses.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
@@ -108,11 +120,14 @@ export default function TasksPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-ink mb-1">Assign To</label>
-                <input type="text" value={form.assignedTo} onChange={(e) => setForm({ ...form, assignedTo: e.target.value })} className="w-full px-3 py-2 border rounded-lg" required />
+                <select value={form.assignedTo} onChange={(e) => setForm({ ...form, assignedTo: e.target.value })} className="w-full px-3 py-2 border rounded-lg" required>
+                  <option value="">Select employee...</option>
+                  {users.map(u => <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>)}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-ink mb-1">Priority</label>
-                <select value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} className="w-full px-3 py-2 border rounded-lg" required>
+                <select value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} className="w-full px-3 py-2 border rounded-lg">
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
@@ -123,7 +138,7 @@ export default function TasksPage() {
                 <input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} className="w-full px-3 py-2 border rounded-lg" />
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="flex-1 px-4 py-2 bg-aqua text-white rounded-lg">Create</button>
+                <button type="submit" className="flex-1 px-4 py-2 bg-aqua text-white rounded-lg">Create & Notify</button>
                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 bg-ink/10 text-ink rounded-lg">Cancel</button>
               </div>
             </form>

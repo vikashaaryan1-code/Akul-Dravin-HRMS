@@ -82,6 +82,7 @@ export class PayrollService {
     if (filters.employeeId) where.employeeId = filters.employeeId;
     if (filters.month) where.month = filters.month;
     if (filters.year) where.year = parseInt(filters.year);
+    if (filters.tenantId) where.tenantId = filters.tenantId;
     return this.payslipRepository.find({ where, relations: ['employee'], order: { year: 'DESC', month: 'DESC' } });
   }
 

@@ -11,19 +11,19 @@ export function CtaSection() {
               Modernize Your Office Operations with AI
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
-              Replace disconnected tools with one enterprise office portal covering attendance, permissions, productivity, location, payroll, and performance analytics.
+              Replace disconnected tools with one enterprise HRMS platform covering attendance, permissions, productivity, location, payroll, and performance analytics.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
             <Link
-              href="/signup"
+              href="/subscription"
               className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
               Start Free Trial
             </Link>
             <Link
-              href="/login"
+              href="/dashboard?role=platform-admin"
               className="inline-flex items-center justify-center rounded-full border border-white/35 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               Request Demo

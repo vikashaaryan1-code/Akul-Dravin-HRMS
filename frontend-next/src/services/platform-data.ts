@@ -210,7 +210,7 @@ export const roleDashboardData: Record<PlatformRole, RoleDashboardModel> = {
     ],
   },
   employee: {
-    heading: 'Employee Office Portal',
+    heading: 'Employee HRMS Portal',
     summary: 'Check attendance, assigned tasks, performance score, salary forecast, and service requests in one portal.',
     kpis: [
       { id: 'k1', label: 'Attendance Today', value: 'Present', trend: '9:07 AM check-in', trendDirection: 'up' },

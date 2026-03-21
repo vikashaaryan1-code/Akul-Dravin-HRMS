@@ -26,7 +26,7 @@ export function LandingNavbar() {
             Login
           </Link>
           <Link
-            href="/signup"
+            href="/subscription"
             className="rounded-full bg-gradient-to-r from-ember to-amber px-5 py-2 text-sm font-semibold text-white shadow-panel transition hover:opacity-90"
           >
             Start Free Trial
@@ -55,7 +55,7 @@ export function LandingNavbar() {
             Login
           </Link>
           <Link
-            href="/signup"
+            href="/subscription"
             className="rounded-full bg-gradient-to-r from-ember to-amber px-3 py-2 text-center text-xs font-semibold text-white"
           >
             Start Free Trial

@@ -47,11 +47,15 @@ export default function FeaturePermissionsPage() {
 
   const fetchPermissions = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const authState = localStorage.getItem('akul-dravin-auth-state');
+      const token = authState ? JSON.parse(authState).state?.accessToken : null;
+      
+      console.log('Fetching all permissions from database...');
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/feature-permissions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log('All permissions in database:', data);
       setPermissions(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch permissions:', error);
@@ -62,7 +66,11 @@ export default function FeaturePermissionsPage() {
   };
 
   const getPermission = (role: string, feature: string) => {
-    return permissions.find(p => p.role === role && p.feature === feature) || {
+    const found = permissions.find(p => p.role === role && p.feature === feature);
+    if (found) {
+      console.log(`Found permission for ${role} - ${feature}:`, found);
+    }
+    return found || {
       role,
       feature,
       canView: false,
@@ -86,20 +94,53 @@ export default function FeaturePermissionsPage() {
     });
   };
 
+  const getRoleStats = (roleValue: string) => {
+    const rolePerms = permissions.filter(p => p.role === roleValue);
+    const wrongPerms = rolePerms.filter(p => !p.canView && (p.canEdit || p.canDelete));
+    return {
+      total: rolePerms.length,
+      hasIssues: wrongPerms.length > 0,
+      issueCount: wrongPerms.length
+    };
+  };
+
+  const clearRolePermissions = (roleValue: string) => {
+    setPermissions(prev => prev.filter(p => p.role !== roleValue));
+  };
+
   const savePermissions = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('token');
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/feature-permissions/bulk`, {
+      const authState = localStorage.getItem('akul-dravin-auth-state');
+      const token = authState ? JSON.parse(authState).state?.accessToken : null;
+      
+      // Filter out permissions that have at least one checkbox checked
+      const validPermissions = permissions.filter(p => p.canView || p.canEdit || p.canDelete);
+      
+      console.log('Saving permissions:', validPermissions);
+      console.log('Total permissions to save:', validPermissions.length);
+      
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/feature-permissions/bulk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(permissions),
+        body: JSON.stringify(validPermissions),
       });
-      toast({ title: 'Success', description: 'Permissions saved successfully' });
+      
+      console.log('Save response status:', res.status);
+      const responseData = await res.json();
+      console.log('Save response data:', responseData);
+      
+      if (res.ok) {
+        toast({ title: 'Success', description: `Saved ${validPermissions.length} permissions successfully` });
+        await fetchPermissions();
+      } else {
+        toast({ title: 'Error', description: `Failed to save: ${responseData.message || res.statusText}`, variant: 'destructive' });
+      }
     } catch (error) {
+      console.error('Save error:', error);
       toast({ title: 'Error', description: 'Failed to save permissions', variant: 'destructive' });
     } finally {
       setSaving(false);
@@ -122,10 +163,31 @@ export default function FeaturePermissionsPage() {
         </Button>
       </div>
 
-      {ROLES.map(role => (
+      {ROLES.map(role => {
+        const stats = getRoleStats(role.value);
+        return (
         <Card key={role.value}>
           <CardHeader>
-            <CardTitle>{role.label}</CardTitle>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <CardTitle>{role.label}</CardTitle>
+                {stats.total > 0 && (
+                  <span className="text-sm text-gray-500">({stats.total} permissions)</span>
+                )}
+                {stats.hasIssues && (
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                    ⚠️ {stats.issueCount} without View
+                  </span>
+                )}
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => clearRolePermissions(role.value)}
+              >
+                Clear All
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -176,7 +238,8 @@ export default function FeaturePermissionsPage() {
             </div>
           </CardContent>
         </Card>
-      ))}
+      );
+      })}
     </div>
   );
 }

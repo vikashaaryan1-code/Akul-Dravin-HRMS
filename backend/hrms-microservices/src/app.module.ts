@@ -90,6 +90,8 @@ import { PingPlanModule } from './modules/ping-plan/ping-plan.module';
 import { PerformanceRewardsModule } from './modules/performance-rewards/performance-rewards.module';
 import { WebhookModule } from './modules/webhook/webhook.module';
 import { FeaturePermissionsModule } from './modules/feature-permissions/feature-permissions.module';
+import { DocumentsModule } from './modules/documents/documents.module';
+import { EmailModule } from './modules/email/email.module';
 import { AuthContextMiddleware } from './common/middleware/auth-context.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 
@@ -201,6 +203,8 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
     PerformanceRewardsModule,
     WebhookModule,
     FeaturePermissionsModule,
+    DocumentsModule,
+    EmailModule,
   ],
 })
 export class AppModule implements NestModule {

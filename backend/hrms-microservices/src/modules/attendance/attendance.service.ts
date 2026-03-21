@@ -58,6 +58,7 @@ export class AttendanceService {
   async findAll(filters: any) {
     const where: any = {};
     if (filters.employeeId) where.employeeId = filters.employeeId;
+    if (filters.tenantId) where.tenantId = filters.tenantId;
     if (filters.startDate && filters.endDate) {
       where.date = Between(new Date(filters.startDate), new Date(filters.endDate));
     }

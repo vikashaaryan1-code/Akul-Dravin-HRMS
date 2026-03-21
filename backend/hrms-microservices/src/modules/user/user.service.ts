@@ -1,6 +1,7 @@
-﻿import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { UserEntity } from '../../database/entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -29,10 +30,11 @@ export class UserService {
   async create(dto: CreateUserDto): Promise<UserEntity> {
     this.logger.log(`Creating user for email=${dto.email}`);
 
+    const hashed = await bcrypt.hash(dto.password, 10);
     const entity = this.userRepository.create({
       tenantId: dto.tenantId ?? null,
       email: dto.email,
-      passwordHash: dto.password,
+      passwordHash: hashed,
       fullName: dto.fullName,
       role: dto.role,
       isActive: true,

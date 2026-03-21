@@ -17,7 +17,6 @@ export class FeaturePermissionsController {
   }
 
   @Get('role/:role')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
   findByRole(@Param('role') role: string) {
     return this.featurePermissionsService.findByRole(role);
   }

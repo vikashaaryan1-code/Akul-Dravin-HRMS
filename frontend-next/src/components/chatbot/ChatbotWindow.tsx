@@ -12,7 +12,7 @@ export function ChatbotWindow({ onClose }: ChatbotWindowProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { messages, addMessage } = useChatbotStore();
+  const { messages, addMessage, isAuthenticated, awaitingPassword, tempEmail, setAuthenticated, setAwaitingPassword, clearAwaitingPassword } = useChatbotStore();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,8 +22,8 @@ export function ChatbotWindow({ onClose }: ChatbotWindowProps) {
     // Send welcome message on first load
     if (messages.length === 0) {
       addMessage({
-        id: '1',
-        text: "Hello! 👋 I'm your AKUL DRAVIN HRMS assistant. I can help you with questions about our platform features, navigation, and more. What would you like to know?",
+        id: `welcome-${Date.now()}`,
+        text: "Hello! 👋 Welcome to AKUL DRAVIN HRMS. Please enter your email address to continue.",
         sender: 'bot',
         timestamp: new Date(),
       });
@@ -33,7 +33,6 @@ export function ChatbotWindow({ onClose }: ChatbotWindowProps) {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    // Add user message
     const userMessage = {
       id: Date.now().toString(),
       text: input,
@@ -42,12 +41,37 @@ export function ChatbotWindow({ onClose }: ChatbotWindowProps) {
     };
 
     addMessage(userMessage);
+    const userInput = input;
     setInput('');
     setIsLoading(true);
 
-    // Simulate bot response delay
     setTimeout(() => {
-      const response = getBotResponse(input);
+      let response = '';
+
+      if (!isAuthenticated) {
+        if (!awaitingPassword) {
+          // Check if input is email
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (emailRegex.test(userInput)) {
+            setAwaitingPassword(userInput);
+            response = "Great! Now please enter your password.";
+          } else {
+            response = "Please enter a valid email address first to continue.";
+          }
+        } else {
+          // User entered password
+          if (userInput.length >= 6) {
+            setAuthenticated(tempEmail!);
+            response = `Welcome ${tempEmail}! 🎉 You're now authenticated. I can help you with questions about our platform features, navigation, and more. What would you like to know?`;
+          } else {
+            clearAwaitingPassword();
+            response = "Password must be at least 6 characters. Please enter your email again to restart.";
+          }
+        }
+      } else {
+        response = getBotResponse(userInput);
+      }
+
       addMessage({
         id: (Date.now() + 1).toString(),
         text: response,
@@ -106,23 +130,72 @@ export function ChatbotWindow({ onClose }: ChatbotWindowProps) {
 
       {/* Input */}
       <div className="border-t border-slate-200 p-3 dark:border-slate-700">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask me anything..."
-            className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-          />
-          <button
-            onClick={handleSend}
-            disabled={isLoading || !input.trim()}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-ember to-amber text-white disabled:opacity-50"
-          >
-            <Send size={16} />
-          </button>
-        </div>
+        {!isAuthenticated ? (
+          !awaitingPassword ? (
+            // Email input box
+            <div className="space-y-2">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Enter your email to continue</p>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder="your@email.com"
+                  className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={isLoading || !input.trim()}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-ember to-amber text-white disabled:opacity-50"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            // Password input box
+            <div className="space-y-2">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Enter your password</p>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder="••••••••"
+                  className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={isLoading || !input.trim()}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-ember to-amber text-white disabled:opacity-50"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </div>
+          )
+        ) : (
+          // Authenticated — normal chat input
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Ask me anything..."
+              className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            />
+            <button
+              onClick={handleSend}
+              disabled={isLoading || !input.trim()}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-ember to-amber text-white disabled:opacity-50"
+            >
+              <Send size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

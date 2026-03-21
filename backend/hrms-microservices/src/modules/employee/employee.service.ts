@@ -10,8 +10,10 @@ export class EmployeeService {
     private employeeRepository: Repository<Employee>,
   ) {}
 
-  async findAll(): Promise<Employee[]> {
-    return this.employeeRepository.find({ order: { createdAt: 'DESC' } });
+  async findAll(tenantId?: string): Promise<Employee[]> {
+    const where: any = {};
+    if (tenantId) where.tenantId = tenantId;
+    return this.employeeRepository.find({ where, order: { createdAt: 'DESC' } });
   }
 
   async findOne(id: string): Promise<Employee> {
@@ -32,11 +34,12 @@ export class EmployeeService {
     await this.employeeRepository.delete(id);
   }
 
-  async getStats(): Promise<any> {
-    const total = await this.employeeRepository.count();
-    const active = await this.employeeRepository.count({ where: { status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { status: 'on_leave' } });
+  async getStats(tenantId?: string): Promise<any> {
+    const base: any = tenantId ? { tenantId } : {};
+    const total = await this.employeeRepository.count({ where: base });
+    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
+    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
+    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
     return { total, active, inactive, onLeave };
   }
 }

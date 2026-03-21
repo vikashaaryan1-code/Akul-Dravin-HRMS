@@ -59,27 +59,27 @@ export function HeroSection() {
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-7 animate-rise">
           <p className="inline-flex rounded-full border border-ember/20 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-ember">
-            Enterprise Office Portal + HRMS
+            Enterprise HRMS Platform
           </p>
 
           <h1 className="text-balance text-4xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">
-            AKUL DRAVIN OFFICE PORTAL & HRMS PLATFORM
+            AKUL DRAVIN HRMS PLATFORM
           </h1>
 
           <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
             Monitor attendance, work activity, role permissions, location, performance, payroll, recruitment, and workflow automation in one intelligent enterprise system.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 relative z-10">
             <Link
-              href="/signup"
-              className="rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-semibold text-white shadow-panel transition hover:opacity-95"
+              href="/subscription"
+              className="rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-semibold text-white shadow-panel transition hover:opacity-95 cursor-pointer"
             >
               Start Free Trial
             </Link>
             <Link
               href="#contact"
-              className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-ink"
+              className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-ink cursor-pointer"
             >
               Book Demo
             </Link>

@@ -11,6 +11,7 @@ export default function JobApplicationPage() {
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
     const jobId = localStorage.getItem('applyJobId');
@@ -206,11 +207,12 @@ export default function JobApplicationPage() {
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
                   <Upload size={20} />
-                  <span>Upload File</span>
+                  <span>{resumeFile ? resumeFile.name : 'Upload File'}</span>
                   <input
                     name="resume"
                     type="file"
                     accept=".pdf,.doc,.docx"
+                    onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
                     className="hidden"
                   />
                 </label>

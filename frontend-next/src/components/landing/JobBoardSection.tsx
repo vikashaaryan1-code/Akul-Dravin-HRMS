@@ -17,33 +17,22 @@ export function JobBoardSection() {
 
   const fetchJobs = async () => {
     try {
-      console.log('Fetching jobs from:', `${API_BASE}/jobs`);
       const res = await fetch(`${API_BASE}/jobs`, { cache: 'no-store' });
-      console.log('Response status:', res.status);
       if (res.ok) {
         const data = await res.json();
-        console.log('Jobs received:', data);
         const openJobs = data.filter((job: any) => job.status === 'open');
         setJobs(openJobs.slice(0, 6));
-      } else {
-        console.error('Response not OK:', res.status, res.statusText);
       }
     } catch (error) {
-      console.error('Failed to fetch jobs:', error);
+      // Silently fail if backend is not running
     } finally {
       setLoading(false);
     }
   };
 
   const handleApply = (jobId: string) => {
-    const token = localStorage.getItem('auth-token');
-    if (!token) {
-      localStorage.setItem('applyJobId', jobId);
-      router.push('/login?redirect=job-application');
-    } else {
-      localStorage.setItem('applyJobId', jobId);
-      router.push('/job-application');
-    }
+    localStorage.setItem('applyJobId', jobId);
+    router.push('/job-application');
   };
 
   return (

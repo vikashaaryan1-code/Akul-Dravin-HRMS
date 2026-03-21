@@ -2,7 +2,7 @@ import { Controller, Post, Body, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { DocumentGeneratorService } from './document-generator.service';
 
-@Controller('api/v1/documents')
+@Controller('documents')
 export class DocumentGeneratorController {
   constructor(private readonly documentService: DocumentGeneratorService) {}
 

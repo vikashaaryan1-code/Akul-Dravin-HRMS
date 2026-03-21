@@ -7,8 +7,16 @@ import { Job } from '../../database/entities/job.entity';
 export class JobService {
   constructor(@InjectRepository(Job) private jobRepository: Repository<Job>) {}
 
+  private sanitize(data: any) {
+    return {
+      ...data,
+      salaryMin: data.salaryMin !== '' && data.salaryMin != null ? Number(data.salaryMin) : null,
+      salaryMax: data.salaryMax !== '' && data.salaryMax != null ? Number(data.salaryMax) : null,
+    };
+  }
+
   async create(data: any) {
-    const job = this.jobRepository.create({ ...data, postedDate: new Date() });
+    const job = this.jobRepository.create({ ...this.sanitize(data), postedDate: new Date() });
     return this.jobRepository.save(job);
   }
 
@@ -24,7 +32,7 @@ export class JobService {
   }
 
   async update(id: string, data: any) {
-    await this.jobRepository.update(id, data);
+    await this.jobRepository.update(id, this.sanitize(data));
     return this.findOne(id);
   }
 

@@ -18,14 +18,29 @@ export default function DocumentsPage() {
         body: JSON.stringify(formData),
       });
       
+      if (!res.ok) {
+        throw new Error('Failed to generate document');
+      }
+
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+        throw new Error('Invalid response format. Expected PDF.');
+      }
+      
       const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
       const a = document.createElement('a');
       a.href = url;
       a.download = `${docType}_${Date.now()}.pdf`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      alert('Document generated successfully!');
     } catch (err) {
-      alert('Error generating document');
+      console.error('Error generating document:', err);
+      alert('Error generating document: ' + err.message);
     } finally {
       setLoading(false);
       setDocType('');

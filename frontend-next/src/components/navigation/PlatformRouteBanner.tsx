@@ -14,7 +14,7 @@ type RouteBanner = {
 };
 
 const defaultBanner: RouteBanner = {
-  title: 'Office Portal Workspace',
+  title: 'HRMS Workspace',
   description: 'Unified workforce, attendance, performance, security, and workflow operations panel.',
   badge: 'Enterprise Control',
   imageSrc: '/images/office-portal/dashboard-overview.svg',

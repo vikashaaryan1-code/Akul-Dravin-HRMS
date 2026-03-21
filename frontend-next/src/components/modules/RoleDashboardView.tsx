@@ -30,6 +30,30 @@ export function RoleDashboardView() {
   const clearSession = useAuthStore((state) => state.clearSession);
   const router = useRouter();
 
+  const handleBookDemo = () => {
+    router.push('/#contact');
+  };
+
+  const handleExportDashboard = () => {
+    const dashboardData = {
+      role: safeRole,
+      roleLabel: toRoleLabel(safeRole),
+      kpis: model.kpis,
+      attendanceTrend: model.attendanceTrend,
+      performanceTrend: model.performanceTrend,
+      pipeline: model.pipeline,
+      aiInsights: liveInsights,
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(dashboardData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dashboard-${safeRole}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const { data, isLive, loading, error } = useApiResource({
     loader: async () => {
       const [analytics, notifications, salesSummary] = await Promise.all([
@@ -96,16 +120,18 @@ export function RoleDashboardView() {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
+                onClick={handleBookDemo}
                 disabled={!canBookDemo}
-                className="rounded-full bg-gradient-to-r from-ember to-amber px-4 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
+                className="relative z-10 cursor-pointer rounded-full bg-gradient-to-r from-ember to-amber px-4 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
                 title={canBookDemo ? 'Book Executive Demo' : 'Your role cannot trigger demo bookings.'}
               >
                 Book Executive Demo
               </button>
               <button
                 type="button"
+                onClick={handleExportDashboard}
                 disabled={!canExportDashboard}
-                className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-45 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                className="relative z-10 cursor-pointer rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-45 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 title={canExportDashboard ? 'Export Dashboard' : 'Your role cannot export dashboard data.'}
               >
                 Export Dashboard

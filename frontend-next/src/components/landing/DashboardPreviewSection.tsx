@@ -15,7 +15,7 @@ export function DashboardPreviewSection() {
       <div className="mx-auto max-w-7xl space-y-10">
         <SectionHeading
           eyebrow="Dashboard Preview"
-          title="Role-based office management dashboards"
+          title="Role-based management dashboards"
           description="Every role gets a focused command surface for attendance, performance, location, task delivery, and access governance."
         />
 

@@ -20,9 +20,9 @@ const bodyFont = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'AKUL DRAVIN OFFICE PORTAL & HRMS PLATFORM',
+  title: 'AKUL DRAVIN HRMS PLATFORM',
   description:
-    'Enterprise office portal and HRMS platform with role-based permissions, employee monitoring, attendance automation, location tracking, performance intelligence, and workflow orchestration.',
+    'Enterprise HRMS platform with role-based permissions, employee monitoring, attendance automation, location tracking, performance intelligence, and workflow orchestration.',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes',
   themeColor: '#1a73e8',
 };

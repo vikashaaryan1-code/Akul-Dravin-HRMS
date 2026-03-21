@@ -3,12 +3,11 @@ import type { Metadata } from 'next';
 import { LandingPageContent } from '@/components/landing/LandingPageContent';
 
 export const metadata: Metadata = {
-  title: 'AKUL DRAVIN OFFICE PORTAL & HRMS PLATFORM | Enterprise Workforce Automation',
+  title: 'AKUL DRAVIN HRMS PLATFORM | Enterprise Workforce Automation',
   description:
-    'Enterprise office management platform for attendance, employee monitoring, permission control, location tracking, payroll, performance analytics, and workflow automation.',
+    'Enterprise HRMS platform for attendance, employee monitoring, permission control, location tracking, payroll, performance analytics, and workflow automation.',
   keywords: [
     'AKUL DRAVIN',
-    'Office Portal',
     'HRMS',
     'employee monitoring',
     'RBAC',
