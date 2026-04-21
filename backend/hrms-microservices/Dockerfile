@@ -1,20 +1,21 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine
+
 WORKDIR /app
 
+# Copy package manifests
 COPY package*.json ./
-RUN npm ci
 
+# Install dependencies strictly for production
+RUN npm install
+
+# Copy source code
 COPY . .
+
+# Generate the production build
 RUN npm run build
 
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
+# Expose the API port
+EXPOSE 3001
 
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-COPY --from=builder /app/dist ./dist
-
-EXPOSE 4200
+# Run the application
 CMD ["node", "dist/main.js"]

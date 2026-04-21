@@ -10,6 +10,7 @@ import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useRoleFromQuery } from '@/hooks/useRoleFromQuery';
 import { useThemeSync } from '@/hooks/useThemeSync';
 import { useUIStore } from '@/store/ui-store';
+import { useAuthStore } from '@/store/auth-store';
 import { canAccessRoute, toSafePlatformRole } from '@/utils/platform-config';
 
 export function PlatformShell({ children }: PropsWithChildren) {
@@ -24,6 +25,10 @@ export function PlatformShell({ children }: PropsWithChildren) {
   useThemeSync();
   useRealtimeNotifications();
   useRoleFromQuery();
+
+  useEffect(() => {
+    useAuthStore.getState().loadAuth();
+  }, []);
 
   useEffect(() => {
     if (safeRole !== activeRole) {

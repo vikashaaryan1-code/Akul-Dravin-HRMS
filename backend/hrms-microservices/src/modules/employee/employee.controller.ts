@@ -1,37 +1,43 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { EmployeeEntity } from '../../database/entities/employee.entity';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '../../common/enums/role.enum';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('employees')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Get()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER)
   findAll() {
     return this.employeeService.findAll();
   }
 
   @Get(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.BRANCH_ADMIN, Role.HR_MANAGER, Role.EMPLOYEE)
   findOne(@Param('id') id: string) {
     return this.employeeService.findOne(id);
   }
 
   @Post()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  create(@Body() payload: Partial<EmployeeEntity>) {
-    return this.employeeService.create(payload);
+  create(@Body() createEmployeeDto: CreateEmployeeDto) {
+    return this.employeeService.create(createEmployeeDto);
   }
 
   @Patch(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  update(@Param('id') id: string, @Body() payload: Partial<EmployeeEntity>) {
-    return this.employeeService.update(id, payload);
+  update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
+    return this.employeeService.update(id, updateEmployeeDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.employeeService.remove(id);
   }
 }

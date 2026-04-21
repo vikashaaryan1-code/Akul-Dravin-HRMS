@@ -22,6 +22,9 @@ export class CompanyEntity extends TenantScopedEntity {
   @Column({ type: 'varchar', length: 80, default: 'Asia/Kolkata' })
   timezone!: string;
 
+  @Column({ type: 'jsonb', default: {} })
+  settings!: Record<string, any>;
+
   @Column({ type: 'varchar', length: 30, default: 'active' })
   status!: string;
 }

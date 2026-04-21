@@ -2,20 +2,48 @@ import type { ReactNode } from 'react';
 import clsx from 'clsx';
 
 type SectionHeadingProps = {
-  eyebrow: string;
+  badge?: string;
+  eyebrow?: string;
   title: ReactNode;
   description: string;
   centered?: boolean;
+  light?: boolean;
 };
 
-export function SectionHeading({ eyebrow, title, description, centered = true }: SectionHeadingProps) {
+export function SectionHeading({
+  badge,
+  eyebrow,
+  title,
+  description,
+  centered = true,
+  light = true
+}: SectionHeadingProps) {
+  const label = badge ?? eyebrow ?? '';
+
   return (
-    <div className={clsx('space-y-4', centered && 'mx-auto max-w-3xl text-center')}>
-      <p className="inline-flex rounded-full border border-ember/20 bg-white px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-ember">
-        {eyebrow}
+    <div className={clsx('space-y-6', centered && 'mx-auto max-w-3xl text-center')}>
+      <p className={clsx(
+        "inline-flex rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em]",
+        light 
+          ? "border border-ember/20 bg-white text-ember" 
+          : "border border-white/10 glass-panel text-indigo-400"
+      )}>
+        {label}
       </p>
-      <h2 className="text-balance text-3xl font-bold leading-tight text-ink sm:text-4xl">{title}</h2>
-      <p className="text-sm leading-7 text-slate-600 sm:text-base">{description}</p>
+      
+      <h2 className={clsx(
+        "text-balance text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl",
+        light ? "text-ink" : "text-white"
+      )}>
+        {title}
+      </h2>
+      
+      <p className={clsx(
+        "text-lg leading-relaxed font-light",
+        light ? "text-slate-600" : "text-slate-400"
+      )}>
+        {description}
+      </p>
     </div>
   );
 }

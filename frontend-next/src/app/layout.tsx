@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
@@ -24,8 +23,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${headingFont.variable} ${bodyFont.variable}`}>{children}</body>
+    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable} dark`}>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

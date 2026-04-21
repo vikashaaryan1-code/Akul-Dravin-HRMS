@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { apiRequest } from './http-client';
 
@@ -57,9 +57,13 @@ export type DocumentApiRecord = {
   id: string;
   documentType: string;
   documentName: string;
+  templateVersion: string;
   status: string;
+  fileUrl: string;
+  documentPayload: Record<string, unknown>;
   generatedAt: string | null;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type ServiceTicketApiRecord = {
@@ -76,15 +80,33 @@ export type WorkflowApiRecord = {
   workflowCode: string;
   name: string;
   module: string;
+  triggerType: string;
   status: string;
   successRate: string;
   runCount: number;
+  workflowConfig: Record<string, unknown>;
+  lastRunAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type AlertApiRecord = {
   code: string;
   severity: string;
   message: string;
+};
+
+export type WorkflowTriggerApiRecord = {
+  workflowId: string;
+  workflowCode: string;
+  triggered: boolean;
+  triggerReason: string;
+  runCount: number;
+  successRate: string;
+  payload: Record<string, unknown>;
+  triggeredAt: string;
+  documents: DocumentApiRecord[];
+  workflowSummary: Record<string, unknown>;
 };
 
 export type AnalyticsDashboardApiRecord = {
@@ -340,6 +362,34 @@ export type FinanceSummaryApiRecord = {
   gstPayable: number;
   operatingMarginPercent: number;
 };
+
+export type BillingSubscriptionApiRecord = {
+  id: string;
+  tenantId: string | null;
+  companyId: string;
+  planName: string;
+  billingCycle: string;
+  price: string;
+  features: Record<string, unknown>;
+  startDate: string;
+  endDate: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type BillingInvoiceApiRecord = {
+  id: string;
+  tenantId: string | null;
+  subscriptionId: string;
+  invoiceNumber: string;
+  amount: string;
+  currency: string;
+  dueDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+};
 export type HelpdeskTicketApiRecord = {
   id: string;
   ticketNumber: string;
@@ -382,8 +432,31 @@ export type ProcurementSummaryApiRecord = {
   savingsRealized: number;
 };
 
+export type SmartPlatformModuleApiRecord = {
+  id: string;
+  name: string;
+  scope: 'full' | 'lite' | 'basic' | 'core';
+  status: 'ready' | 'operational' | 'guarded';
+  completionPercent: number;
+  summary: string;
+  functionalWorkflows: string[];
+  intentionallyDeferred: string[];
+};
+
+export type SmartPlatformReadinessApiRecord = {
+  product: string;
+  releaseTrack: string;
+  readinessLabel: string;
+  paidUserReady: boolean;
+  stabilityFocus: string[];
+  modules: SmartPlatformModuleApiRecord[];
+  launchChecklist: Array<{ item: string; done: boolean }>;
+};
+
 export const platformApi = {
-  login: (payload: { email: string; password: string }) =>
+  getSmartPlatformReadiness: () => apiRequest<SmartPlatformReadinessApiRecord>('/platform/readiness', { auth: false }),
+
+  login: (payload: { email: string; password: string; requestedRole?: string }) =>
     apiRequest<{ accessToken: string; user: { id: string; email: string; fullName: string; tenantId: string | null; role: string } }>(
       '/auth/login',
       { method: 'POST', auth: false, body: payload },
@@ -397,6 +470,10 @@ export const platformApi = {
   getRecruitmentApplications: () => apiRequest<RecruitmentApplicationApiRecord[]>('/recruitment/applications'),
 
   getCrmLeads: () => apiRequest<CrmLeadApiRecord[]>('/crm/leads'),
+  createCrmLead: (payload: { leadName: string; organization?: string; stage?: string; ownerName?: string; score?: number }) =>
+    apiRequest<CrmLeadApiRecord>('/crm/leads', { method: 'POST', body: payload }),
+  updateCrmLeadStage: (id: string, stage: string) =>
+    apiRequest<CrmLeadApiRecord>(`/crm/leads/${id}/stage`, { method: 'PATCH', body: { stage } }),
   getCrmCustomers: () => apiRequest<CrmCustomerApiRecord[]>('/crm/customers'),
   getCrmInteractions: () => apiRequest<CrmInteractionApiRecord[]>('/crm/interactions'),
 
@@ -411,8 +488,40 @@ export const platformApi = {
   getMarketingPerformance: () => apiRequest<MarketingPerformanceApiRecord[]>('/marketing/performance'),
 
   getFinanceInvoices: () => apiRequest<FinanceInvoiceApiRecord[]>('/finance/invoices'),
+  createFinanceInvoice: (payload: { invoiceNumber?: string; customerName: string; amount: number; status?: string; dueDate?: string }) =>
+    apiRequest<FinanceInvoiceApiRecord>('/finance/invoices', { method: 'POST', body: payload }),
+  updateFinanceInvoiceStatus: (id: string, status: string) =>
+    apiRequest<FinanceInvoiceApiRecord>(`/finance/invoices/${id}/status`, { method: 'PATCH', body: { status } }),
   getFinanceExpenses: () => apiRequest<FinanceExpenseApiRecord[]>('/finance/expenses'),
+  createFinanceExpense: (payload: { category: string; amount: number; ownerName?: string; status?: string; expenseDate?: string }) =>
+    apiRequest<FinanceExpenseApiRecord>('/finance/expenses', { method: 'POST', body: payload }),
   getFinanceSummary: () => apiRequest<FinanceSummaryApiRecord>('/finance/summary'),
+
+  getBillingSubscriptions: () => apiRequest<BillingSubscriptionApiRecord[]>('/billing/subscriptions'),
+  createBillingSubscription: (payload: {
+    companyId?: string;
+    planName?: string;
+    billingCycle?: string;
+    price?: number | string;
+    features?: Record<string, unknown>;
+    startDate?: string;
+    endDate?: string | null;
+    status?: string;
+  }) => apiRequest<BillingSubscriptionApiRecord>('/billing/subscriptions', { method: 'POST', body: payload }),
+  updateBillingSubscription: (id: string, payload: Partial<Omit<BillingSubscriptionApiRecord, 'id' | 'createdAt' | 'updatedAt'>>) =>
+    apiRequest<BillingSubscriptionApiRecord>(`/billing/subscriptions/${id}`, { method: 'PATCH', body: payload }),
+  getBillingInvoices: () => apiRequest<BillingInvoiceApiRecord[]>('/billing/invoices'),
+  createBillingInvoice: (payload: {
+    subscriptionId?: string;
+    invoiceNumber?: string;
+    amount?: number | string;
+    currency?: string;
+    dueDate?: string;
+    status?: string;
+  }) => apiRequest<BillingInvoiceApiRecord>('/billing/invoices', { method: 'POST', body: payload }),
+  updateBillingInvoice: (id: string, payload: Partial<Omit<BillingInvoiceApiRecord, 'id' | 'createdAt' | 'updatedAt'>>) =>
+    apiRequest<BillingInvoiceApiRecord>(`/billing/invoices/${id}`, { method: 'PATCH', body: payload }),
+
   getHelpdeskTickets: () => apiRequest<HelpdeskTicketApiRecord[]>('/helpdesk/tickets'),
   getHelpdeskSlaStatus: () => apiRequest<HelpdeskSlaApiRecord[]>('/helpdesk/sla-status'),
 
@@ -421,9 +530,25 @@ export const platformApi = {
   getProcurementSummary: () => apiRequest<ProcurementSummaryApiRecord>('/procurement/summary'),
 
   getDocuments: () => apiRequest<DocumentApiRecord[]>('/documents'),
+  generateCertificate: (payload: {
+    documentName: string;
+    templateVersion?: string;
+    payload?: Record<string, unknown>;
+  }) =>
+    apiRequest<DocumentApiRecord>('/documents/certificates/generate', {
+      method: 'POST',
+      body: {
+        documentType: 'certificate',
+        documentName: payload.documentName,
+        templateVersion: payload.templateVersion,
+        payload: payload.payload,
+      },
+    }),
   getServiceTickets: () => apiRequest<ServiceTicketApiRecord[]>('/employee-services/tickets'),
 
   getWorkflows: () => apiRequest<WorkflowApiRecord[]>('/automation/workflows'),
+  triggerWorkflow: (id: string, payload: { triggerReason?: string; payload?: Record<string, unknown> }) =>
+    apiRequest<WorkflowTriggerApiRecord>(`/automation/workflows/${id}/trigger`, { method: 'POST', body: payload }),
   getAutomationAlerts: () => apiRequest<AlertApiRecord[]>('/automation/alerts'),
 
   getAnalyticsDashboard: () => apiRequest<AnalyticsDashboardApiRecord>('/analytics/dashboard'),
@@ -448,4 +573,6 @@ export const platformApi = {
 
   getMarketplaceJobs: () => apiRequest<MarketplaceJobApiRecord[]>('/job-marketplace/jobs', { auth: false }),
 };
+
+
 

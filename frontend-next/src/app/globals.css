@@ -24,20 +24,15 @@ body {
   margin: 0;
   font-family: var(--font-body), 'Segoe UI', sans-serif;
   color: var(--brand-ink);
-  background:
-    radial-gradient(circle at 10% 10%, rgba(242, 170, 59, 0.16), transparent 38%),
-    radial-gradient(circle at 90% 80%, rgba(15, 139, 141, 0.12), transparent 40%),
-    linear-gradient(140deg, #f4f7fa 0%, #fffdf8 45%, #eef7f4 100%);
+  background: white;
   transition: background 0.25s ease, color 0.25s ease;
 }
 
 :root.dark body {
   color: #e2e8f0;
-  background:
-    radial-gradient(circle at 12% 12%, rgba(242, 170, 59, 0.18), transparent 35%),
-    radial-gradient(circle at 88% 78%, rgba(15, 139, 141, 0.2), transparent 45%),
-    linear-gradient(140deg, #0f172a 0%, #111827 45%, #0b1220 100%);
+  background: #020617; /* slate-950 */
 }
+
 
 h1,
 h2,
@@ -62,4 +57,65 @@ textarea {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* 🏛️ CyberGlass: Deterministic Rendering Priority Stack
+     1. Layout (.glass-panel) -> Base position
+     2. Depth (.depth-*) -> Spatial transform
+     3. Interaction (hover:scale/glow) -> Interaction state
+     4. Glow (.shadow-holo-*) -> Paint effects
+     5. Blur (.blur-glass-*) -> Backdrop-filter (Heavy)
+     6. Animation (.animate-*) -> Temporal override
+  */
+
+  .glass-panel {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+    isolation: isolate; /* Ensures rendering isolation */
+  }
+
+  .glass-card {
+    @apply backdrop-blur-lg bg-white/10 border border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:bg-white/15;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+
+  /* CyberGlass: Deterministic Noise Texture */
+  .deterministic-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
+    @apply opacity-[0.03] pointer-events-none mix-blend-overlay;
+  }
+
+  /* 🔧 Performance-Safe Rule: 1 Heavy Layer per Viewport
+     Do not stack .blur-glass-xl on multiple large components.
+  */
+  
+  /* ❗ CyberGlass: Animation Cancellation Rule (Safety First) */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .blur-glass-xl, .blur-glass-lg {
+      @apply blur-glass-sm; /* Downgrade to safe blur */
+    }
+
+    .depth-1, .depth-2, .depth-3, .depth-4, .depth-5 {
+      transform: none !important; /* Flatten 3D space */
+    }
+
+    .animate-hologram, .animate-pulse-slow {
+      animation: none !important;
+    }
+  }
+
+  .glass-button {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-300 active:scale-95;
+  }
+
+  .animate-pulse-slow {
+    animation: mesh-pulse 8s ease-in-out infinite;
+  }
 }
+

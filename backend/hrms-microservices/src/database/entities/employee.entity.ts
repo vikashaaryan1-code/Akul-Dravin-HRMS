@@ -1,36 +1,63 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
+import { AttendanceEntity } from './attendance.entity';
 
 @Entity({ name: 'employees' })
 export class EmployeeEntity extends TenantScopedEntity {
   @Column({ name: 'company_id', type: 'uuid' })
   companyId!: string;
 
+  @Column({ name: 'branch_id', type: 'uuid', nullable: true })
+  branchId?: string;
+
+  @Column({ name: 'department_id', type: 'uuid', nullable: true })
+  departmentId?: string;
+
+  @Column({ name: 'manager_id', type: 'uuid', nullable: true })
+  managerId?: string;
+
   @Index({ unique: true })
-  @Column({ name: 'employee_code', type: 'varchar', length: 64 })
+  @Column({ name: 'employee_code', type: 'varchar', length: 50 })
   employeeCode!: string;
 
-  @Column({ name: 'first_name', type: 'varchar', length: 100 })
+  @Column({ name: 'first_name', type: 'varchar', length: 80 })
   firstName!: string;
 
-  @Column({ name: 'last_name', type: 'varchar', length: 100 })
-  lastName!: string;
+  @Column({ name: 'last_name', type: 'varchar', length: 80, nullable: true })
+  lastName?: string;
 
-  @Column({ type: 'varchar', length: 190 })
-  email!: string;
+  @Column({ name: 'work_email', type: 'varchar', length: 255 })
+  workEmail!: string;
 
-  @Column({ type: 'varchar', length: 120 })
-  department!: string;
+  @Column({ name: 'personal_email', type: 'varchar', length: 255, nullable: true })
+  personalEmail?: string;
+
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  phone?: string;
+
+  @Column({ 
+    name: 'employment_type', 
+    type: 'varchar', 
+    length: 20, 
+    default: 'full_time' 
+  })
+  employmentType!: string;
 
   @Column({ type: 'varchar', length: 120 })
   designation!: string;
 
-  @Column({ name: 'ctc_monthly', type: 'numeric', precision: 12, scale: 2 })
-  ctcMonthly!: string;
-
   @Column({ type: 'date', name: 'join_date' })
   joinDate!: string;
 
-  @Column({ type: 'varchar', length: 30, default: 'active' })
+  @Column({ type: 'date', name: 'exit_date', nullable: true })
+  exitDate?: string;
+
+  @Column({ name: 'monthly_ctc', type: 'numeric', precision: 14, scale: 2, nullable: true })
+  monthlyCtc!: string;
+
+  @Column({ type: 'varchar', length: 20, default: 'active' })
   status!: string;
+
+  @OneToMany(() => AttendanceEntity, (a) => a.employee)
+  attendance!: AttendanceEntity[];
 }

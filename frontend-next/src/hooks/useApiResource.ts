@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type UseApiResourceOptions<T> = {
   loader: () => Promise<T>;
@@ -23,23 +23,33 @@ export function useApiResource<T>({ loader, fallback, deps = [] }: UseApiResourc
   const [isLive, setIsLive] = useState(false);
 
   const depsKey = useMemo(() => JSON.stringify(deps), [deps]);
+  const loaderRef = useRef(loader);
+  const fallbackRef = useRef(fallback);
+
+  useEffect(() => {
+    loaderRef.current = loader;
+  }, [loader]);
+
+  useEffect(() => {
+    fallbackRef.current = fallback;
+  }, [fallback]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await loader();
+      const response = await loaderRef.current();
       setData(response);
       setIsLive(true);
     } catch (caught) {
-      setData(fallback);
+      setData(fallbackRef.current);
       setIsLive(false);
       setError(caught instanceof Error ? caught.message : 'Unable to load live data.');
     } finally {
       setLoading(false);
     }
-  }, [fallback, loader]);
+  }, []);
 
   useEffect(() => {
     void refresh();
@@ -53,3 +63,5 @@ export function useApiResource<T>({ loader, fallback, deps = [] }: UseApiResourc
     refresh,
   };
 }
+
+

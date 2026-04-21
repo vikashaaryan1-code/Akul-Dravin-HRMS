@@ -1,4 +1,5 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+import { Role } from '../../common/enums/role.enum';
 
 export class LoginDto {
   @IsEmail()
@@ -7,4 +8,8 @@ export class LoginDto {
   @IsString()
   @MinLength(6)
   password!: string;
+
+  @IsOptional()
+  @IsIn(Object.values(Role))
+  requestedRole?: Role;
 }

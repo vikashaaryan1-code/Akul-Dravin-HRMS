@@ -12,7 +12,7 @@ type RequestOptions = {
   headers?: Record<string, string>;
 };
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4200/api/v1').replace(/\/$/, '');
+const BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4001/api/v1').replace(/\/$/, '');
 
 const createUrl = (path: string, query?: Record<string, Primitive | undefined>) => {
   const safePath = path.startsWith('/') ? path : `/${path}`;

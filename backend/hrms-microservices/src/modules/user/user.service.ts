@@ -1,9 +1,12 @@
-﻿import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { UserEntity } from '../../database/entities/user.entity';
+import { UserInvitationEntity, InvitationStatus } from '../../database/entities/user-invitation.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InviteUserDto } from './dto/invite-user.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -12,6 +15,8 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserInvitationEntity)
+    private readonly invitationRepository: Repository<UserInvitationEntity>,
   ) {}
 
   findAll(): Promise<UserEntity[]> {
@@ -34,9 +39,8 @@ export class UserService {
       email: dto.email,
       passwordHash: dto.password,
       fullName: dto.fullName,
-      role: dto.role,
       isActive: true,
-    });
+    } as any);
 
     try {
       return await this.userRepository.save(entity);
@@ -55,7 +59,6 @@ export class UserService {
       tenantId: dto.tenantId ?? existing.tenantId,
       email: dto.email ?? existing.email,
       fullName: dto.fullName ?? existing.fullName,
-      role: dto.role ?? existing.role,
       isActive: dto.isActive ?? existing.isActive,
       passwordHash: dto.password ?? existing.passwordHash,
     };
@@ -68,5 +71,49 @@ export class UserService {
     }
 
     return this.findOne(id);
+  }
+
+  async inviteUser(dto: InviteUserDto, tenantId: string, invitedBy?: string): Promise<UserInvitationEntity> {
+    this.logger.log(`Inviting user email=${dto.email} to tenantId=${tenantId}`);
+
+    // Check if user already exists
+    const existingUser = await this.userRepository.findOne({ where: { email: dto.email } });
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists in the system');
+    }
+
+    // Check for existing pending invitation
+    const existingInvite = await this.invitationRepository.findOne({
+      where: { email: dto.email, status: InvitationStatus.PENDING },
+    });
+    if (existingInvite) {
+      throw new BadRequestException('A pending invitation already exists for this email');
+    }
+
+    const invitation = this.invitationRepository.create({
+      tenantId,
+      email: dto.email,
+      roleId: dto.roleId,
+      token: uuidv4(),
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      status: InvitationStatus.PENDING,
+      invitedById: invitedBy,
+    });
+
+    return await this.invitationRepository.save(invitation);
+  }
+
+  async deactivateUser(id: string): Promise<UserEntity> {
+    const user = await this.findOne(id);
+    user.isActive = false;
+    user.deactivatedAt = new Date();
+    return await this.userRepository.save(user);
+  }
+
+  async reactivateUser(id: string): Promise<UserEntity> {
+    const user = await this.findOne(id);
+    user.isActive = true;
+    user.deactivatedAt = null as any;
+    return await this.userRepository.save(user);
   }
 }

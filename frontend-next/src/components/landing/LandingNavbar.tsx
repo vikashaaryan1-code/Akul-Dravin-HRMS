@@ -3,63 +3,50 @@ import { NAV_ITEMS } from './landing-data';
 
 export function LandingNavbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8">
+    <header className="fixed top-6 left-0 right-0 z-[60] px-4 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 glass-panel rounded-full border-white/10 shadow-holo-sm animate-rise transition-all hover:border-hologram-blue/20">
         <Link href="#home" className="group inline-flex items-center gap-3">
-          <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-ember to-amber shadow-panel" />
-          <span className="text-sm font-semibold tracking-[0.22em] text-ink sm:text-base">AKUL DRAVIN</span>
+          <div className="relative h-9 w-9 overflow-hidden rounded-xl bg-ink-950 border border-white/10 group-hover:border-hologram-blue/50 transition-colors">
+            <span className="absolute inset-0 bg-gradient-to-br from-hologram-blue via-hologram-violet to-hologram-cyan animate-pulse-slow" />
+            <span className="absolute inset-x-0 bottom-0 h-[2px] bg-white opacity-50" />
+          </div>
+          <span className="text-sm font-black tracking-[0.3em] text-white sm:text-lg">OMNIX <span className="text-hologram-blue italic">∞</span></span>
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center gap-9 lg:flex">
           {NAV_ITEMS.map((item) => (
-            <Link key={item.label} href={item.href} className="text-sm font-medium text-slate-700 transition hover:text-ink">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="hidden items-center gap-3 sm:flex">
-          <Link
-            href="/login"
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-ink"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-gradient-to-r from-ember to-amber px-5 py-2 text-sm font-semibold text-white shadow-panel transition hover:opacity-90"
-          >
-            Start Free Trial
-          </Link>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl space-y-3 px-4 pb-4 lg:hidden">
-        <nav className="flex gap-2 overflow-x-auto pb-1">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700"
+            <Link 
+              key={item.label} 
+              href={item.href} 
+              className="relative text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-all hover:text-white group"
             >
               {item.label}
+              <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-hologram-blue transition-all group-hover:w-full" />
             </Link>
           ))}
         </nav>
 
-        <div className="grid grid-cols-2 gap-2 sm:hidden">
+        <div className="hidden items-center gap-6 sm:flex">
           <Link
             href="/login"
-            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-center text-xs font-semibold text-slate-700"
+            className="text-[10px] font-bold uppercase tracking-widest text-slate-400 transition hover:text-white"
           >
             Login
           </Link>
           <Link
             href="/signup"
-            className="rounded-full bg-gradient-to-r from-ember to-amber px-3 py-2 text-center text-xs font-semibold text-white"
+            className="rounded-full bg-white px-8 py-3 text-[10px] font-bold uppercase tracking-widest text-ink-950 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition hover:scale-105 active:scale-95"
           >
-            Start Free Trial
+            Launch System
           </Link>
+        </div>
+
+        <div className="lg:hidden">
+            <button className="p-2 glass-button rounded-lg">
+                <span className="block h-0.5 w-4 bg-white mb-1" />
+                <span className="block h-0.5 w-4 bg-white mb-1" />
+                <span className="block h-0.5 w-4 bg-white" />
+            </button>
         </div>
       </div>
     </header>

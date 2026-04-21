@@ -1,4 +1,4 @@
-export type ApiRouteDefinition = {
+﻿export type ApiRouteDefinition = {
   method: 'GET' | 'POST' | 'PATCH';
   path: string;
   module: string;
@@ -6,7 +6,14 @@ export type ApiRouteDefinition = {
 };
 
 export const apiRoutes: ApiRouteDefinition[] = [
-  { method: 'POST', path: '/api/v1/auth/login', module: 'Authentication Service', auth: 'public' },
+  { method: 'GET', path: '/api/v1/platform/readiness', module: 'Smart Platform Readiness', auth: 'public' },
+  { method: 'GET', path: '/api/v1/public-site/landing', module: 'Public Website', auth: 'public' },
+  { method: 'GET', path: '/api/v1/public-site/a2z', module: 'Public Website', auth: 'public' },
+  { method: 'POST', path: '/api/v1/public-site/inquiries', module: 'Public Website', auth: 'public' },
+  { method: 'POST', path: '/api/v1/public-site/a2z/requests', module: 'Public Website', auth: 'public' },
+  { method: 'POST', path: '/api/v1/public-site/newsletter', module: 'Public Website', auth: 'public' },
+
+{ method: 'POST', path: '/api/v1/auth/login', module: 'Authentication Service', auth: 'public' },
 
   { method: 'GET', path: '/api/v1/companies', module: 'Company Management', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/companies/:id', module: 'Company Management', auth: 'jwt+rbac' },
@@ -74,6 +81,9 @@ export const apiRoutes: ApiRouteDefinition[] = [
   { method: 'POST', path: '/api/v1/ai-engine/insights', module: 'AI Engine Service', auth: 'jwt+rbac' },
   { method: 'PATCH', path: '/api/v1/ai-engine/insights/:id', module: 'AI Engine Service', auth: 'jwt+rbac' },
   { method: 'POST', path: '/api/v1/ai-engine/recommendations', module: 'AI Engine Service', auth: 'jwt+rbac' },
+  { method: 'POST', path: '/api/v1/ai-engine/candidate-match', module: 'AI Engine Service', auth: 'jwt+rbac' },
+  { method: 'POST', path: '/api/v1/ai-engine/attrition-risk', module: 'AI Engine Service', auth: 'jwt+rbac' },
+  { method: 'POST', path: '/api/v1/ai-engine/salary-forecast', module: 'AI Engine Service', auth: 'jwt+rbac' },
 
 
   { method: 'GET', path: '/api/v1/documents', module: 'Document Center Service', auth: 'jwt+rbac' },
@@ -119,6 +129,8 @@ export const apiRoutes: ApiRouteDefinition[] = [
   { method: 'GET', path: '/api/v1/sales-automation/analytics/summary', module: 'Sales Automation Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/sales-automation/analytics/team-performance', module: 'Sales Automation Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/crm/leads', module: 'CRM Service', auth: 'jwt+rbac' },
+  { method: 'POST', path: '/api/v1/crm/leads', module: 'CRM Service', auth: 'jwt+rbac' },
+  { method: 'PATCH', path: '/api/v1/crm/leads/:id/stage', module: 'CRM Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/crm/customers', module: 'CRM Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/crm/interactions', module: 'CRM Service', auth: 'jwt+rbac' },
 
@@ -126,7 +138,10 @@ export const apiRoutes: ApiRouteDefinition[] = [
   { method: 'GET', path: '/api/v1/marketing/performance', module: 'Marketing Automation Service', auth: 'jwt+rbac' },
 
   { method: 'GET', path: '/api/v1/finance/invoices', module: 'Finance Service', auth: 'jwt+rbac' },
+  { method: 'POST', path: '/api/v1/finance/invoices', module: 'Finance Service', auth: 'jwt+rbac' },
+  { method: 'PATCH', path: '/api/v1/finance/invoices/:id/status', module: 'Finance Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/finance/expenses', module: 'Finance Service', auth: 'jwt+rbac' },
+  { method: 'POST', path: '/api/v1/finance/expenses', module: 'Finance Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/finance/summary', module: 'Finance Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/helpdesk/tickets', module: 'Helpdesk Service', auth: 'jwt+rbac' },
   { method: 'GET', path: '/api/v1/helpdesk/sla-status', module: 'Helpdesk Service', auth: 'jwt+rbac' },
@@ -166,6 +181,8 @@ export const apiRoutes: ApiRouteDefinition[] = [
   { method: 'POST', path: '/api/v1/marketplace/listings', module: 'Marketplace Service', auth: 'jwt+rbac' },
   { method: 'PATCH', path: '/api/v1/marketplace/listings/:id', module: 'Marketplace Service', auth: 'jwt+rbac' },
 ];
+
+
 
 
 

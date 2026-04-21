@@ -1,38 +1,66 @@
-﻿import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { Role } from '../../common/enums/role.enum';
+import { PolicyGuard } from '../../common/guards/policy.guard';
+import { Permissions } from '../../common/decorators/permissions.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InviteUserDto } from './dto/invite-user.dto';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, PolicyGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
+  @Permissions('user.view', 'user.manage')
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
+  @Permissions('user.view', 'user.manage')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
   @Post()
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN)
+  @Permissions('user.create', 'user.manage')
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
 
   @Patch(':id')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN)
+  @Permissions('user.edit', 'user.manage')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.userService.update(id, dto);
+  }
+
+  @Post('invite')
+  @Permissions('user.invite', 'user.manage')
+  invite(@Body() dto: InviteUserDto, @Request() req: any) {
+    const tenantId = req.user.tenantId;
+    const invitedBy = req.user.sub;
+    return this.userService.inviteUser(dto, tenantId, invitedBy);
+  }
+
+  @Patch(':id/deactivate')
+  @Permissions('user.deactivate', 'user.manage')
+  deactivate(@Param('id') id: string) {
+    return this.userService.deactivateUser(id);
+  }
+
+  @Patch(':id/reactivate')
+  @Permissions('user.reactivate', 'user.manage')
+  reactivate(@Param('id') id: string) {
+    return this.userService.reactivateUser(id);
+  }
+
+  @Get('debug/settings')
+  @Permissions('user.manage')
+  debugSettings() {
+    const settings = (this as any).constructor.name === 'UserController' ? 
+      require('../../common/context/tenant-context').TenantContext.getSettings() : null;
+    return settings;
   }
 }

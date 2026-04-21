@@ -1,14 +1,26 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { DocumentRecordEntity } from '../../database/entities/document-record.entity';
 import { DocumentCenterController } from './document-center.controller';
 import { DocumentCenterService } from './document-center.service';
+import { DocumentEngineService } from './document-engine.service';
+import { TemplateEngineService } from './template-engine.service';
 
+/**
+ * DocumentCenterModule
+ *
+ * Provides:
+ *  - DocumentCenterService   (record management + audit log)
+ *  - TemplateEngineService   (HTML template rendering for 18 document types)
+ *  - DocumentEngineService   (PDF pipeline + QR + hash orchestration)
+ */
 @Module({
-  imports: [TypeOrmModule.forFeature([DocumentRecordEntity])],
   controllers: [DocumentCenterController],
-  providers: [DocumentCenterService, RolesGuard],
-  exports: [DocumentCenterService],
+  providers: [
+    RolesGuard,
+    DocumentCenterService,
+    TemplateEngineService,
+    DocumentEngineService,
+  ],
+  exports: [DocumentCenterService, DocumentEngineService],
 })
 export class DocumentCenterModule {}

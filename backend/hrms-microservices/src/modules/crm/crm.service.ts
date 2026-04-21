@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 
 type CrmLeadRecord = {
   id: string;
@@ -116,6 +116,32 @@ export class CrmService {
 
   getLeads(): CrmLeadRecord[] {
     return this.leads;
+  }
+
+  createLead(payload: Partial<CrmLeadRecord>): CrmLeadRecord {
+    const created: CrmLeadRecord = {
+      id: `CRM-LEAD-${Date.now()}`,
+      leadName: payload.leadName?.trim() || 'New Lead',
+      organization: payload.organization?.trim() || 'Unassigned Organization',
+      stage: payload.stage?.trim() || 'New',
+      ownerName: payload.ownerName?.trim() || 'Sales Queue',
+      score: Number.isFinite(payload.score) ? Number(payload.score) : 70,
+      lastTouch: new Date().toISOString(),
+    };
+
+    this.leads.unshift(created);
+    return created;
+  }
+
+  updateLeadStage(id: string, stage: string): CrmLeadRecord | null {
+    const lead = this.leads.find((item) => item.id === id);
+    if (!lead) {
+      return null;
+    }
+
+    lead.stage = stage.trim() || lead.stage;
+    lead.lastTouch = new Date().toISOString();
+    return lead;
   }
 
   getCustomers(): CrmCustomerRecord[] {

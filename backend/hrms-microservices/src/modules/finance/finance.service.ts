@@ -26,79 +26,80 @@ type FinanceSummaryRecord = {
   operatingMarginPercent: number;
 };
 
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InvoiceEntity } from '../../database/entities/invoice.entity';
+import { TransactionEntity } from '../../database/entities/transaction.entity';
+
 @Injectable()
 export class FinanceService {
-  private readonly invoices: FinanceInvoiceRecord[] = [
-    {
-      id: 'FIN-INV-1',
-      invoiceNumber: 'INV-2026-1102',
-      customerName: 'CloudWorks Asia',
-      amount: 184000,
-      status: 'Paid',
-      dueDate: '2026-03-10',
-    },
-    {
-      id: 'FIN-INV-2',
-      invoiceNumber: 'INV-2026-1107',
-      customerName: 'NorthGrid Energy',
-      amount: 246000,
-      status: 'Pending',
-      dueDate: '2026-03-14',
-    },
-    {
-      id: 'FIN-INV-3',
-      invoiceNumber: 'INV-2026-1111',
-      customerName: 'Aster Logistics',
-      amount: 162000,
-      status: 'Overdue',
-      dueDate: '2026-03-02',
-    },
-  ];
+  constructor(
+    @InjectRepository(InvoiceEntity)
+    private readonly invoiceRepository: Repository<InvoiceEntity>,
+    @InjectRepository(TransactionEntity)
+    private readonly transactionRepository: Repository<TransactionEntity>,
+  ) {}
 
-  private readonly expenses: FinanceExpenseRecord[] = [
-    {
-      id: 'FIN-EXP-1',
-      category: 'Cloud Infrastructure',
-      amount: 96000,
-      ownerName: 'Finance Ops',
-      status: 'Approved',
-      expenseDate: '2026-03-03',
-    },
-    {
-      id: 'FIN-EXP-2',
-      category: 'Performance Marketing',
-      amount: 42000,
-      ownerName: 'Marketing Team',
-      status: 'Approved',
-      expenseDate: '2026-03-04',
-    },
-    {
-      id: 'FIN-EXP-3',
-      category: 'Recruitment Events',
-      amount: 18000,
-      ownerName: 'Talent Team',
-      status: 'Submitted',
-      expenseDate: '2026-03-05',
-    },
-  ];
-
-  private readonly summary: FinanceSummaryRecord = {
-    totalRevenue: 1294000,
-    totalExpenses: 546000,
-    receivables: 408000,
-    gstPayable: 116000,
-    operatingMarginPercent: 57.8,
-  };
-
-  getInvoices(): FinanceInvoiceRecord[] {
-    return this.invoices;
+  async getInvoices(): Promise<InvoiceEntity[]> {
+    return this.invoiceRepository.find({ order: { createdAt: 'DESC' } });
   }
 
-  getExpenses(): FinanceExpenseRecord[] {
-    return this.expenses;
+  async createInvoice(payload: Partial<InvoiceEntity>): Promise<InvoiceEntity> {
+    const invoice = this.invoiceRepository.create(payload);
+    return this.invoiceRepository.save(invoice);
   }
 
-  getSummary(): FinanceSummaryRecord {
-    return this.summary;
+  async updateInvoiceStatus(id: string, status: string): Promise<InvoiceEntity | null> {
+    await this.invoiceRepository.update(id, { status });
+    return this.invoiceRepository.findOne({ where: { id } });
+  }
+
+  async getSummary(): Promise<FinanceSummaryRecord> {
+    const invoices = await this.invoiceRepository.find();
+    
+    // Revenue from Invoices
+    const totalRevenue = invoices
+      .filter((invoice) => invoice.status.toLowerCase().includes('paid'))
+      .reduce((sum, invoice) => sum + Number(invoice.amount), 0);
+    
+    const receivables = invoices
+      .filter((invoice) => !invoice.status.toLowerCase().includes('paid'))
+      .reduce((sum, invoice) => sum + Number(invoice.amount), 0);
+    
+    // Expenses from Transactions
+    const expenseRecords = await this.transactionRepository.find({
+      where: { type: 'DEBIT' }
+    });
+    const totalExpenses = expenseRecords.reduce((sum, tx) => sum + Number(tx.amount), 0);
+    
+    const gstPayable = Math.round(totalRevenue * 0.18);
+    
+    const operatingMarginPercent = totalRevenue > 0
+      ? Number((((totalRevenue - totalExpenses) / totalRevenue) * 100).toFixed(1))
+      : 0;
+
+    return {
+      totalRevenue,
+      totalExpenses,
+      receivables,
+      gstPayable,
+      operatingMarginPercent,
+    };
+  }
+
+  async getExpenses(): Promise<TransactionEntity[]> {
+    return this.transactionRepository.find({
+      where: { type: 'DEBIT' },
+      order: { createdAt: 'DESC' }
+    });
+  }
+
+  async createExpense(payload: Partial<TransactionEntity>) {
+    const tx = this.transactionRepository.create({
+      ...payload,
+      type: 'DEBIT'
+    });
+    return this.transactionRepository.save(tx);
   }
 }
+

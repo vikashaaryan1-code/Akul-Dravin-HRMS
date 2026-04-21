@@ -1,46 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { RecruitmentJobEntity } from '../../database/entities/recruitment-job.entity';
 import { RecruitmentApplicationEntity } from '../../database/entities/recruitment-application.entity';
+import { TenantContext } from '../../common/context/tenant-context';
 
 @Injectable()
 export class RecruitmentAtsService {
-  constructor(
-    @InjectRepository(RecruitmentJobEntity)
-    private readonly jobRepository: Repository<RecruitmentJobEntity>,
-    @InjectRepository(RecruitmentApplicationEntity)
-    private readonly applicationRepository: Repository<RecruitmentApplicationEntity>,
-  ) {}
+  private get jobRepo() {
+    return TenantContext.getRepository(RecruitmentJobEntity);
+  }
+
+  private get applicationRepo() {
+    return TenantContext.getRepository(RecruitmentApplicationEntity);
+  }
 
   findAllJobs(): Promise<RecruitmentJobEntity[]> {
-    return this.jobRepository.find({ order: { createdAt: 'DESC' } });
+    return this.jobRepo.find({ order: { createdAt: 'DESC' } });
   }
 
   createJob(payload: Partial<RecruitmentJobEntity>): Promise<RecruitmentJobEntity> {
-    const entity = this.jobRepository.create(payload);
-    return this.jobRepository.save(entity);
+    const tenantId = payload.tenantId || TenantContext.getRequiredTenantId();
+    const entity = this.jobRepo.create({ ...payload, tenantId });
+    return this.jobRepo.save(entity);
   }
 
   async updateJob(id: string, payload: Partial<RecruitmentJobEntity>): Promise<RecruitmentJobEntity | null> {
-    await this.jobRepository.update(id, payload);
-    return this.jobRepository.findOne({ where: { id } });
+    await this.jobRepo.update(id, payload);
+    return this.jobRepo.findOne({ where: { id } });
   }
 
   findAllApplications(): Promise<RecruitmentApplicationEntity[]> {
-    return this.applicationRepository.find({ order: { createdAt: 'DESC' } });
+    return this.applicationRepo.find({ order: { createdAt: 'DESC' } });
   }
 
   createApplication(payload: Partial<RecruitmentApplicationEntity>): Promise<RecruitmentApplicationEntity> {
-    const entity = this.applicationRepository.create(payload);
-    return this.applicationRepository.save(entity);
+    const tenantId = payload.tenantId || TenantContext.getRequiredTenantId();
+    const entity = this.applicationRepo.create({ ...payload, tenantId });
+    return this.applicationRepo.save(entity);
   }
 
   async updateApplication(
     id: string,
     payload: Partial<RecruitmentApplicationEntity>,
   ): Promise<RecruitmentApplicationEntity | null> {
-    await this.applicationRepository.update(id, payload);
-    return this.applicationRepository.findOne({ where: { id } });
+    await this.applicationRepo.update(id, payload);
+    return this.applicationRepo.findOne({ where: { id } });
   }
 }
+

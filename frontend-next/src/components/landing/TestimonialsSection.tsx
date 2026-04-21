@@ -18,7 +18,7 @@ export function TestimonialsSection() {
               className="animate-rise rounded-3xl border border-white/80 bg-white p-6 shadow-panel"
               style={{ animationDelay: `${index * 90}ms` }}
             >
-              <p className="text-sm leading-7 text-slate-700">"{item.quote}"</p>
+              <p className="text-sm leading-7 text-slate-700">&ldquo;{item.quote}&rdquo;</p>
               <div className="mt-5 border-t border-slate-100 pt-4">
                 <p className="text-base font-semibold text-ink">{item.name}</p>
                 <p className="text-sm text-slate-500">{item.company}</p>

@@ -1,30 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { TenantContext } from '../../common/context/tenant-context';
 
 @Injectable()
 export class EmployeeService {
-  constructor(
-    @InjectRepository(EmployeeEntity)
-    private readonly employeeRepository: Repository<EmployeeEntity>,
-  ) {}
-
-  findAll(): Promise<EmployeeEntity[]> {
-    return this.employeeRepository.find({ order: { createdAt: 'DESC' } });
+  private get repo() {
+    return TenantContext.getRepository(EmployeeEntity);
   }
 
-  findOne(id: string): Promise<EmployeeEntity | null> {
-    return this.employeeRepository.findOne({ where: { id } });
+  async findAll(): Promise<EmployeeEntity[]> {
+    return this.repo.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
-  create(payload: Partial<EmployeeEntity>): Promise<EmployeeEntity> {
-    const entity = this.employeeRepository.create(payload);
-    return this.employeeRepository.save(entity);
+  async findOne(id: string): Promise<EmployeeEntity> {
+    const employee = await this.repo.findOne({
+      where: { id },
+    });
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${id} not found`);
+    }
+    return employee;
   }
 
-  async update(id: string, payload: Partial<EmployeeEntity>): Promise<EmployeeEntity | null> {
-    await this.employeeRepository.update(id, payload);
-    return this.findOne(id);
+  async create(dto: CreateEmployeeDto): Promise<EmployeeEntity> {
+    const tenantId = TenantContext.getTenantId();
+    const entity = this.repo.create({
+      ...dto,
+      tenantId,
+    });
+    return this.repo.save(entity);
+  }
+
+  async update(id: string, dto: UpdateEmployeeDto): Promise<EmployeeEntity> {
+    const employee = await this.findOne(id);
+    const updated = this.repo.merge(employee, dto);
+    return this.repo.save(updated);
+  }
+
+  async remove(id: string): Promise<void> {
+    const employee = await this.findOne(id);
+    await this.repo.remove(employee);
   }
 }

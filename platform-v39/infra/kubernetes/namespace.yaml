@@ -1,6 +1,0 @@
-﻿apiVersion: v1
-kind: Namespace
-metadata:
-  name: akul-v39
-  labels:
-    app.kubernetes.io/name: akul-dravin-v39

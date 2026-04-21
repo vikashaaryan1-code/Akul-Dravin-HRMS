@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+﻿import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AiEngineService } from './ai-engine.service';
 import { AiInsightEntity } from '../../database/entities/ai-insight.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -39,5 +39,23 @@ export class AiEngineController {
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER, Role.RECRUITER)
   generateRecommendation(@Body() payload: Record<string, unknown>) {
     return this.aiEngineService.generateRecommendation(payload);
+  }
+
+  @Post('candidate-match')
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER, Role.RECRUITER)
+  scoreCandidateMatch(@Body() payload: Record<string, unknown>) {
+    return this.aiEngineService.scoreCandidateMatch(payload);
+  }
+
+  @Post('attrition-risk')
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
+  predictAttritionRisk(@Body() payload: Record<string, unknown>) {
+    return this.aiEngineService.predictAttritionRisk(payload);
+  }
+
+  @Post('salary-forecast')
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER, Role.EMPLOYEE)
+  forecastSalary(@Body() payload: Record<string, unknown>) {
+    return this.aiEngineService.forecastSalary(payload);
   }
 }

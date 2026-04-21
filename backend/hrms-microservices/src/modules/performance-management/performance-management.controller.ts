@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { PerformanceManagementService } from './performance-management.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -38,7 +38,34 @@ export class PerformanceManagementController {
     Role.EMPLOYEE,
     Role.GUEST,
   )
-  leaderboard() {
-    return this.performanceManagementService.getLeaderboard();
+  leaderboard(@Query('days') days: number = 7) {
+    return this.performanceManagementService.getLeaderboard(days);
+  }
+
+  @Get('top-employees')
+  @Roles(
+    Role.ROOT_OWNER,
+    Role.PLATFORM_ADMIN,
+    Role.SUPER_ADMIN,
+    Role.COMPANY_ADMIN,
+    Role.HR_MANAGER,
+    Role.EMPLOYEE,
+  )
+  topEmployees(@Query('limit') limit: number = 5) {
+    return this.performanceManagementService.getTopEmployees(limit);
+  }
+
+  @Get('top-employee')
+  @Roles(
+    Role.ROOT_OWNER,
+    Role.PLATFORM_ADMIN,
+    Role.SUPER_ADMIN,
+    Role.COMPANY_ADMIN,
+    Role.HR_MANAGER,
+    Role.EMPLOYEE,
+  )
+  topEmployee() {
+    return this.performanceManagementService.getTopEmployee();
   }
 }
+

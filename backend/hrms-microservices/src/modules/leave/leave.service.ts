@@ -1,48 +1,53 @@
-﻿import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { LeaveTypeEntity } from '../../database/entities/leave-type.entity';
 import { LeaveRequestEntity } from '../../database/entities/leave-request.entity';
 import { CreateLeaveTypeDto } from './dto/create-leave-type.dto';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
 import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
+import { AttendanceService } from '../attendance/attendance.service';
+import { TenantContext } from '../../common/context/tenant-context';
 
 @Injectable()
 export class LeaveService {
   private readonly logger = new Logger(LeaveService.name);
 
+  private get leaveTypeRepo() {
+    return TenantContext.getRepository(LeaveTypeEntity);
+  }
+
+  private get leaveRequestRepo() {
+    return TenantContext.getRepository(LeaveRequestEntity);
+  }
+
   constructor(
-    @InjectRepository(LeaveTypeEntity)
-    private readonly leaveTypeRepository: Repository<LeaveTypeEntity>,
-    @InjectRepository(LeaveRequestEntity)
-    private readonly leaveRequestRepository: Repository<LeaveRequestEntity>,
+    private readonly attendanceService: AttendanceService,
   ) {}
 
-  findAllLeaveTypes(): Promise<LeaveTypeEntity[]> {
-    return this.leaveTypeRepository.find({ order: { createdAt: 'DESC' } });
+  async findAllLeaveTypes(): Promise<LeaveTypeEntity[]> {
+    return this.leaveTypeRepo.find({ 
+      order: { leaveName: 'ASC' } 
+    });
   }
 
-  createLeaveType(dto: CreateLeaveTypeDto): Promise<LeaveTypeEntity> {
-    const entity = this.leaveTypeRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId,
-      leaveCode: dto.leaveCode,
-      leaveName: dto.leaveName,
-      daysPerYear: dto.daysPerYear,
-      carryForwardLimit: dto.carryForwardLimit ?? '0',
-      encashable: dto.encashable ?? false,
+  async createLeaveType(dto: CreateLeaveTypeDto): Promise<LeaveTypeEntity> {
+    const tenantId = TenantContext.getRequiredTenantId();
+    const entity = this.leaveTypeRepo.create({
+      ...dto,
+      tenantId,
       isActive: true,
     });
-    this.logger.log(`Creating leave type ${dto.leaveCode}`);
-    return this.leaveTypeRepository.save(entity);
+    return this.leaveTypeRepo.save(entity);
   }
 
-  findAllLeaveRequests(): Promise<LeaveRequestEntity[]> {
-    return this.leaveRequestRepository.find({ order: { createdAt: 'DESC' } });
+  async findAllLeaveRequests(): Promise<LeaveRequestEntity[]> {
+    return this.leaveRequestRepo.find({ 
+      order: { createdAt: 'DESC' } 
+    });
   }
 
   async findLeaveRequest(id: string): Promise<LeaveRequestEntity> {
-    const request = await this.leaveRequestRepository.findOne({ where: { id } });
+    const request = await this.leaveRequestRepo.findOne({ where: { id } });
     if (!request) {
       throw new NotFoundException(`Leave request not found: ${id}`);
     }
@@ -50,25 +55,18 @@ export class LeaveService {
   }
 
   async createLeaveRequest(dto: CreateLeaveRequestDto): Promise<LeaveRequestEntity> {
+    const tenantId = TenantContext.getRequiredTenantId();
     if (new Date(dto.endDate) < new Date(dto.startDate)) {
       throw new BadRequestException('endDate must be greater than or equal to startDate');
     }
 
-    const entity = this.leaveRequestRepository.create({
-      tenantId: dto.tenantId ?? null,
-      employeeId: dto.employeeId,
-      leaveTypeId: dto.leaveTypeId,
-      startDate: dto.startDate,
-      endDate: dto.endDate,
-      totalDays: dto.totalDays,
-      reason: dto.reason ?? null,
+    const entity = this.leaveRequestRepo.create({
+      ...dto,
+      tenantId,
       status: 'pending',
-      approvedBy: null,
-      approvedAt: null,
     });
 
-    this.logger.log(`Creating leave request for employee=${dto.employeeId}`);
-    return this.leaveRequestRepository.save(entity);
+    return this.leaveRequestRepo.save(entity);
   }
 
   async updateLeaveRequestStatus(id: string, dto: UpdateLeaveRequestDto): Promise<LeaveRequestEntity> {
@@ -78,8 +76,34 @@ export class LeaveService {
     request.approvedBy = dto.approvedBy ?? null;
     request.approvedAt = dto.status === 'approved' ? new Date() : null;
 
-    this.logger.log(`Updating leave request id=${id} status=${dto.status}`);
-    await this.leaveRequestRepository.save(request);
-    return this.findLeaveRequest(id);
+    await this.leaveRequestRepo.save(request);
+
+    if (dto.status === 'approved') {
+      await this.syncWithAttendance(request);
+    }
+
+    return request;
+  }
+
+  private async syncWithAttendance(request: LeaveRequestEntity) {
+    const start = new Date(request.startDate);
+    const end = new Date(request.endDate);
+    const date = new Date(start);
+
+    while (date <= end) {
+      const dateString = date.toISOString().split('T')[0];
+      try {
+        await this.attendanceService.create({
+          employeeId: request.employeeId,
+          attendanceDate: dateString,
+          status: 'leave',
+          companyId: 'UNKNOWN_COMPANY_ID', // Should be fetched from request or employee
+        });
+      } catch (error: any) {
+        this.logger.warn(`Attendance sync failed for ${dateString}: ${error.message}`);
+      }
+      date.setDate(date.getDate() + 1);
+    }
   }
 }
+

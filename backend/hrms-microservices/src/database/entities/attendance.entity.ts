@@ -1,5 +1,6 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
+import { EmployeeEntity } from './employee.entity';
 
 @Entity({ name: 'attendance_records' })
 export class AttendanceEntity extends TenantScopedEntity {
@@ -19,6 +20,13 @@ export class AttendanceEntity extends TenantScopedEntity {
   @Column({ type: 'varchar', length: 40, default: 'present' })
   status!: string;
 
+  @Column({ name: 'company_id', type: 'uuid', nullable: true })
+  companyId!: string | null;
+
   @Column({ name: 'geo_location', type: 'varchar', length: 255, nullable: true })
   geoLocation!: string | null;
+
+  @ManyToOne(() => EmployeeEntity, (e) => e.attendance)
+  @JoinColumn({ name: 'employee_id' })
+  employee!: EmployeeEntity;
 }

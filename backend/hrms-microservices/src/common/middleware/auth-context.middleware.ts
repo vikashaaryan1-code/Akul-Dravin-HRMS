@@ -15,9 +15,9 @@ export class AuthContextMiddleware implements NestMiddleware {
         const payload = this.jwtService.verify(token, {
           secret: process.env.JWT_SECRET ?? 'change_this_for_production',
         });
-        (req as Request & { auth?: unknown }).auth = payload;
+        (req as any).user = payload;
       } catch {
-        (req as Request & { auth?: unknown }).auth = undefined;
+        (req as any).user = undefined;
       }
     }
 

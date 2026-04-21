@@ -452,12 +452,12 @@ export class SalesAutomationService {
 
     const baseCommission = this.computeBaseCommission(dto.baseAmount, dto.commissionRate, dto.commissionModel ?? 'percentage');
 
-    const bonusSla = this.payrollService.calculateSixTierBonusSla({
+    const bonusSla = await this.payrollService.calculateSixTierBonusSla({
       baseVariableBonus: baseCommission,
-      achievementPercent: dto.achievementPercent,
-      qualityScore: dto.qualityScore,
-      attendanceScore: dto.attendanceScore,
-      breachCount: dto.breachCount,
+      achievementPercent: dto.achievementPercent ?? 0,
+      qualityScore: dto.qualityScore ?? 0,
+      attendanceScore: dto.attendanceScore ?? 0,
+      breachCount: dto.breachCount ?? 0,
       currency: 'INR',
     });
 

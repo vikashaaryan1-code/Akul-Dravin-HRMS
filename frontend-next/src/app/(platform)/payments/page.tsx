@@ -1,6 +1,6 @@
-import { LegacyModuleView } from '@/components/modules/LegacyModuleView';
+import { BillingModuleView } from '@/components/modules/BillingModuleView';
 
 export default function PaymentsPage() {
-  return <LegacyModuleView moduleKey="payments" />;
+  return <BillingModuleView focus="payments" />;
 }
 

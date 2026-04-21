@@ -1,6 +1,6 @@
-import { LegacyModuleView } from '@/components/modules/LegacyModuleView';
+import { BillingModuleView } from '@/components/modules/BillingModuleView';
 
 export default function SubscriptionsPage() {
-  return <LegacyModuleView moduleKey="subscriptions" />;
+  return <BillingModuleView focus="subscriptions" />;
 }
 

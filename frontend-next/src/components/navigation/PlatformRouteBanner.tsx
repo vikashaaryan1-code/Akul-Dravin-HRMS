@@ -11,6 +11,7 @@ type RouteBanner = {
   description: string;
   badge: string;
   imageSrc: string;
+  highlights?: string[];
 };
 
 const defaultBanner: RouteBanner = {
@@ -18,20 +19,30 @@ const defaultBanner: RouteBanner = {
   description: 'Unified workforce, attendance, performance, security, and workflow operations panel.',
   badge: 'Enterprise Control',
   imageSrc: '/images/office-portal/dashboard-overview.svg',
+  highlights: ['Role-aware workspace', 'Protected operations', 'Connected modules'],
 };
 
 const routeBannerMap: Record<string, RouteBanner> = {
   '/dashboard': {
-    title: 'Manager Command Dashboard',
-    description: 'Track attendance, productivity, location, tasks, and approvals from one role-based command center.',
-    badge: 'Live Operations',
+    title: 'Executive Operations Command Mesh',
+    description: 'Premium realtime control plane for attendance, productivity, location, tasks, approvals, payroll, and AI-guided governance.',
+    badge: 'Realtime Command Grid',
     imageSrc: '/images/office-portal/dashboard-overview.svg',
+    highlights: ['Live command telemetry', 'AI guidance', 'Governance posture'],
+  },
+  '/a2z-atlas': {
+    title: 'Omnix A2Z Atlas Workspace',
+    description: 'Platform-side atlas route for module mapping, rollout grouping, and role-aware command planning inside AKUL DRAVIN HRMS.',
+    badge: 'Atlas Sync',
+    imageSrc: '/images/office-portal/dashboard-overview.svg',
+    highlights: ['Omnix module map', 'Platform rollout view', 'Command lane visibility'],
   },
   '/employees': {
-    title: 'Employee Management Control',
-    description: 'Manage employee profiles, permissions, documents, and lifecycle actions with enterprise audit readiness.',
-    badge: 'HR Core',
+    title: 'Employee Atlas Command Deck',
+    description: 'Premium workforce surface for spotlight profiles, roster intelligence, document readiness, and role-aware employee actions.',
+    badge: 'Workforce Atlas',
     imageSrc: '/images/office-portal/dashboard-overview.svg',
+    highlights: ['A2Z-inspired roster', 'Spotlight profiles', 'Live workforce visibility'],
   },
   '/attendance': {
     title: 'Attendance & Workday Engine',
@@ -161,19 +172,32 @@ export function PlatformRouteBanner() {
 
   const safePath = pathname ?? '';
   const banner = useMemo(() => (safePath && routeBannerMap[safePath] ? routeBannerMap[safePath] : defaultBanner), [safePath]);
+  const highlights = banner.highlights ?? defaultBanner.highlights ?? [];
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-white/70 bg-white/85 p-4 shadow-panel backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/70 sm:p-5">
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+    <section className="overflow-hidden rounded-[30px] border border-white/70 bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.12),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.14),_transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.95),rgba(255,255,255,0.84))] p-4 shadow-panel backdrop-blur dark:border-slate-700/60 dark:bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.22),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.18),_transparent_32%),linear-gradient(135deg,rgba(15,23,42,0.94),rgba(15,23,42,0.84))] sm:p-5">
+      <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
         <div>
-          <p className="inline-flex rounded-full bg-aqua/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aqua">
-            {banner.badge}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="inline-flex rounded-full bg-aqua/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aqua">
+              {banner.badge}
+            </p>
+            <p className="inline-flex rounded-full border border-slate-300/80 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-300">
+              Active Role: {toRoleLabel(activeRole)}
+            </p>
+          </div>
           <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-100">{banner.title}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">{banner.description}</p>
-          <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Active Role: {toRoleLabel(activeRole)}
-          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {highlights.map((highlight) => (
+              <span
+                key={highlight}
+                className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-semibold text-slate-600 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-300"
+              >
+                {highlight}
+              </span>
+            ))}
+          </div>
         </div>
         <div className="relative h-40 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-950/90 dark:border-slate-700/70 sm:h-44">
           <Image
@@ -184,6 +208,10 @@ export function PlatformRouteBanner() {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 35vw"
           />
+          <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-slate-950/60 p-3 text-white backdrop-blur">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300">Route Focus</p>
+            <p className="mt-1 text-sm font-semibold">{safePath || '/dashboard'}</p>
+          </div>
         </div>
       </div>
     </section>

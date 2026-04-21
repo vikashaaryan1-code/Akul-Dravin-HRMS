@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
-import { UserEntity } from '../database/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET ?? 'change_this_for_production',
@@ -17,6 +14,7 @@ import { UserEntity } from '../database/entities/user.entity';
         expiresIn: Number(process.env.JWT_EXPIRES_IN_SECONDS ?? 43200),
       },
     }),
+    TypeOrmModule.forFeature([UserEntity, CompanyEntity, RoleEntity, PermissionEntity, UserInvitationEntity]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

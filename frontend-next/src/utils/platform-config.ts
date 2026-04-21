@@ -1,4 +1,4 @@
-import type { PlatformNavItem, PlatformRole } from '@/types/platform';
+﻿import type { PlatformNavItem, PlatformRole } from '@/types/platform';
 
 export const PLATFORM_BRAND = 'AKUL DRAVIN';
 
@@ -33,6 +33,7 @@ export const PLATFORM_ROLE_OPTIONS: { role: PlatformRole; label: string }[] = [
 
 export const TOP_NAV_ITEMS: PlatformNavItem[] = [
   { label: 'Dashboard', href: '/dashboard' },
+  { label: 'A2Z Atlas', href: '/a2z-atlas' },
   { label: 'Employees', href: '/employees' },
   { label: 'Attendance', href: '/attendance' },
   { label: 'Tracking', href: '/tracking' },
@@ -86,6 +87,7 @@ export const SIDE_NAV_ITEMS: PlatformNavItem[] = [
 
 export const ROUTE_ACCESS: Record<string, PlatformRole[]> = {
   '/dashboard': ALL_ROLES,
+  '/a2z-atlas': ALL_ROLES,
   '/employees': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'recruiter'],
   '/attendance': WORKFORCE_ROLES,
   '/tracking': WORKFORCE_ROLES,
@@ -170,4 +172,5 @@ export const canAccessRoute = (role: PlatformRole | string, href: string) => {
 
 export const filterNavItemsByRole = (items: PlatformNavItem[], role: PlatformRole | string) =>
   items.filter((item) => canAccessRoute(role, item.href));
+
 

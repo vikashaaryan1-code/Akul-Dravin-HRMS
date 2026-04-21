@@ -73,6 +73,18 @@ export type MarketplaceItem = {
   icon: LucideIcon;
 };
 
+export type ServiceItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  features: string[];
+  image: string;
+  videoUrl?: string;
+  badge: string;
+};
+
+
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Home', href: '#home' },
   { label: 'Features', href: '#features' },
@@ -293,4 +305,36 @@ export const SOCIAL_LINKS: SocialLink[] = [
   { label: 'YouTube', short: 'yt', href: '#' },
   { label: 'Instagram', short: 'ig', href: '#' },
 ];
+
+export const SERVICES_DATA: ServiceItem[] = [
+  {
+    id: 'hrms',
+    badge: 'Autonomous Intelligence',
+    title: 'AI-Orchestrated Workforce HRMS',
+    subtitle: 'Efficiency Redefined through Neural Orchestration',
+    description: 'Transform your human capital management with an autonomous engine that predicts performance, automates compliance, and orchestrates workflows across global teams.',
+    features: [
+      'Self-Learning Performance Scoring',
+      'Automated Compliance & Regulatory Guardrails',
+      'Hyper-Personalized Employee Growth Paths',
+      'Real-time Cognitive Workforce Analytics'
+    ],
+    image: '/images/landing/hrms-ai.png',
+  },
+  {
+    id: 'business-os',
+    badge: 'Strategic Ecosystem',
+    title: 'Sovereign Business Operating System',
+    subtitle: 'A Unified Command Center for Global Enterprise',
+    description: 'A comprehensive, multi-tenant ecosystem integrating CRM, ERP, and Strategic Intelligence. Scale your operations with sovereign data control and unified business logic.',
+    features: [
+      'Multi-Tenant Infrastructure Isolation',
+      'Unified CRM & Revenue Intelligence',
+      'Automated Financial Reconciliation',
+      'Marketplace Integration & Partner Orchestration'
+    ],
+    image: '/images/landing/business-os.png',
+  }
+];
+
 

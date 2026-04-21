@@ -9,6 +9,8 @@ export enum Role {
   TEAM_MANAGER = 'team-manager',
   TEAM_LEADER = 'team-leader',
   SALES_MANAGER = 'sales-manager',
+  HR_ADMIN = 'hr_admin',
+  FINANCE_MANAGER = 'finance_manager',
   RECRUITER = 'recruiter',
   EMPLOYEE = 'employee',
   GUEST = 'guest',
