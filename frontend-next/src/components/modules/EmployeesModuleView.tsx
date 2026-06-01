@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -29,6 +29,9 @@ const normalizeEmployeeStatus = (status: string): EmployeeRecord['status'] => {
 export function EmployeesModuleView() {
   const activeRole = useUIStore((state) => state.activeRole);
   const [query, setQuery] = useState('');
+  // ⚡ BOLT: Defer query updates to keep the search input responsive
+  // during intensive list filtering.
+  const deferredQuery = useDeferredValue(query);
   const [departmentFilter, setDepartmentFilter] = useState('All');
 
   const { data: employeeRows, isLive, loading, error } = useApiResource({
@@ -53,19 +56,17 @@ export function EmployeesModuleView() {
     [employeeRows],
   );
 
-  const filteredRows = useMemo(
-    () =>
-      employeeRows.filter((employee) => {
-        const search = query.toLowerCase();
-        const matchesSearch =
-          employee.name.toLowerCase().includes(search) ||
-          employee.id.toLowerCase().includes(search) ||
-          employee.designation.toLowerCase().includes(search);
-        const matchesDepartment = departmentFilter === 'All' || employee.department === departmentFilter;
-        return matchesSearch && matchesDepartment;
-      }),
-    [departmentFilter, query, employeeRows],
-  );
+  const filteredRows = useMemo(() => {
+    const search = deferredQuery.toLowerCase();
+    return employeeRows.filter((employee) => {
+      const matchesSearch =
+        employee.name.toLowerCase().includes(search) ||
+        employee.id.toLowerCase().includes(search) ||
+        employee.designation.toLowerCase().includes(search);
+      const matchesDepartment = departmentFilter === 'All' || employee.department === departmentFilter;
+      return matchesSearch && matchesDepartment;
+    });
+  }, [departmentFilter, deferredQuery, employeeRows]);
 
   return (
     <div className="space-y-5">
