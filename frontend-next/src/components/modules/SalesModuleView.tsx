@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type DragEvent } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState, type DragEvent } from 'react';
 import { BarChart3, BriefcaseBusiness, Building2, Handshake, Rocket, Target, UsersRound, Wallet } from 'lucide-react';
 import { DonutChartCard } from '@/components/charts/DonutChartCard';
 import { StackedBarChart } from '@/components/charts/StackedBarChart';
@@ -100,6 +100,7 @@ export function SalesModuleView() {
 
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [stageFilter, setStageFilter] = useState<'all' | SalesPipelineStageCode>('all');
 
   const canImportLeads = canPerformAction(activeRole, 'sales.import-leads');
@@ -238,7 +239,7 @@ export function SalesModuleView() {
   );
 
   const filteredLeads = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = deferredSearchQuery.trim().toLowerCase();
 
     return leads.filter((lead) => {
       const queryMatch =
@@ -251,7 +252,7 @@ export function SalesModuleView() {
       const stageMatch = stageFilter === 'all' || lead.pipelineStage === stageFilter;
       return queryMatch && stageMatch;
     });
-  }, [leads, searchQuery, stageFilter]);
+  }, [leads, deferredSearchQuery, stageFilter]);
 
   const openPipelineValue = useMemo(
     () => deals.filter((deal) => deal.status === 'open').reduce((sum, deal) => sum + deal.value, 0),

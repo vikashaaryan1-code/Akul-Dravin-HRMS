@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -65,6 +65,7 @@ const toStatusTone = (status: string): 'default' | 'success' | 'warning' => {
 export function MarketplaceModuleView() {
   const activeRole = useUIStore((state) => state.activeRole);
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
 
   const { data: jobs, isLive, loading, error } = useApiResource({
     loader: async () => {
@@ -84,13 +85,13 @@ export function MarketplaceModuleView() {
   });
 
   const filteredJobs = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
+    const normalized = deferredQuery.trim().toLowerCase();
     if (!normalized) {
       return jobs;
     }
 
     return jobs.filter((job) => [job.title, job.location, job.description, job.employmentType].join(' ').toLowerCase().includes(normalized));
-  }, [jobs, query]);
+  }, [jobs, deferredQuery]);
 
   return (
     <div className="space-y-5">
