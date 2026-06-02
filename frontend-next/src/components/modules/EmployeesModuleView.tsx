@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { PageTitle } from '@/components/ui/PageTitle';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -29,6 +29,7 @@ const normalizeEmployeeStatus = (status: string): EmployeeRecord['status'] => {
 export function EmployeesModuleView() {
   const activeRole = useUIStore((state) => state.activeRole);
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
   const [departmentFilter, setDepartmentFilter] = useState('All');
 
   const { data: employeeRows, isLive, loading, error } = useApiResource({
@@ -56,7 +57,7 @@ export function EmployeesModuleView() {
   const filteredRows = useMemo(
     () =>
       employeeRows.filter((employee) => {
-        const search = query.toLowerCase();
+        const search = deferredQuery.toLowerCase();
         const matchesSearch =
           employee.name.toLowerCase().includes(search) ||
           employee.id.toLowerCase().includes(search) ||
@@ -64,7 +65,7 @@ export function EmployeesModuleView() {
         const matchesDepartment = departmentFilter === 'All' || employee.department === departmentFilter;
         return matchesSearch && matchesDepartment;
       }),
-    [departmentFilter, query, employeeRows],
+    [departmentFilter, deferredQuery, employeeRows],
   );
 
   return (
