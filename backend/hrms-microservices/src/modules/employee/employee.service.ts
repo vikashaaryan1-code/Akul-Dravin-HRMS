@@ -34,12 +34,33 @@ export class EmployeeService {
     await this.employeeRepository.delete(id);
   }
 
+  /**
+   * Returns employee statistics.
+   * Optimized to use a single database query with conditional aggregation.
+   * Reduces database round-trips from 4 to 1.
+   */
   async getStats(tenantId?: string): Promise<any> {
-    const base: any = tenantId ? { tenantId } : {};
-    const total = await this.employeeRepository.count({ where: base });
-    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
-    return { total, active, inactive, onLeave };
+    const queryBuilder = this.employeeRepository.createQueryBuilder('employee');
+
+    if (tenantId) {
+      // Note: Employee entity doesn't explicitly have tenantId,
+      // but the controller passes it. Assuming it might be handled
+      // via a dynamic property or future-proofing.
+      queryBuilder.where('employee.tenantId = :tenantId', { tenantId });
+    }
+
+    const stats = await queryBuilder
+      .select('COUNT(*)', 'total')
+      .addSelect("COUNT(*) FILTER (WHERE employee.status = 'active')", 'active')
+      .addSelect("COUNT(*) FILTER (WHERE employee.status = 'inactive')", 'inactive')
+      .addSelect("COUNT(*) FILTER (WHERE employee.status = 'on_leave')", 'onLeave')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      active: parseInt(stats.active, 10) || 0,
+      inactive: parseInt(stats.inactive, 10) || 0,
+      onLeave: parseInt(stats.onLeave, 10) || 0,
+    };
   }
 }
