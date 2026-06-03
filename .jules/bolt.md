@@ -1,0 +1,3 @@
+## 2025-05-15 - [Efficient Stats with Conditional Aggregation]
+**Learning:** Using PostgreSQL's `FILTER` clause (or `CASE WHEN` for other DBs) within TypeORM's `createQueryBuilder` allows for efficient conditional aggregation in a single query. This is significantly more efficient than multiple `count()` calls as it reduces database round-trips and leverages the database's native aggregation capabilities.
+**Action:** When implementing statistics or summary endpoints requiring counts of different subsets of the same table, prefer a single query with conditional aggregation to minimize latency and server load.
