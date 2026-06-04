@@ -12,7 +12,7 @@ export class EmployeeService {
 
   async findAll(tenantId?: string): Promise<Employee[]> {
     const where: any = {};
-    if (tenantId) where.tenantId = tenantId;
+    if (tenantId) where.companyId = tenantId;
     return this.employeeRepository.find({ where, order: { createdAt: 'DESC' } });
   }
 
@@ -35,11 +35,27 @@ export class EmployeeService {
   }
 
   async getStats(tenantId?: string): Promise<any> {
-    const base: any = tenantId ? { tenantId } : {};
-    const total = await this.employeeRepository.count({ where: base });
-    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
-    return { total, active, inactive, onLeave };
+    const queryBuilder = this.employeeRepository.createQueryBuilder('employee');
+
+    if (tenantId) {
+      // Using companyId as the entity property name for filtering.
+      queryBuilder.where('employee.companyId = :tenantId', { tenantId });
+    }
+
+    // Optimization: Using PostgreSQL FILTER clause to perform all counts in a single database round-trip.
+    // This reduces the number of queries from 4 to 1 and avoids multiple full/index scans on the same table.
+    const result = await queryBuilder
+      .select('COUNT(*)', 'total')
+      .addSelect("COUNT(*) FILTER (WHERE status = 'active')", 'active')
+      .addSelect("COUNT(*) FILTER (WHERE status = 'inactive')", 'inactive')
+      .addSelect("COUNT(*) FILTER (WHERE status = 'on_leave')", 'onLeave')
+      .getRawOne();
+
+    return {
+      total: parseInt(result.total, 10) || 0,
+      active: parseInt(result.active, 10) || 0,
+      inactive: parseInt(result.inactive, 10) || 0,
+      onLeave: parseInt(result.onLeave, 10) || 0,
+    };
   }
 }
