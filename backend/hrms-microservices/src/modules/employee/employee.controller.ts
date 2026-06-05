@@ -7,13 +7,13 @@ export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Get()
-  findAll(@Query('tenantId') tenantId?: string): Promise<Employee[]> {
-    return this.employeeService.findAll(tenantId);
+  findAll(@Query('companyId') companyId?: string, @Query('tenantId') tenantId?: string): Promise<Employee[]> {
+    return this.employeeService.findAll(companyId || tenantId);
   }
 
   @Get('stats')
-  getStats(@Query('tenantId') tenantId?: string): Promise<any> {
-    return this.employeeService.getStats(tenantId);
+  getStats(@Query('companyId') companyId?: string, @Query('tenantId') tenantId?: string): Promise<any> {
+    return this.employeeService.getStats(companyId || tenantId);
   }
 
   @Get(':id')
