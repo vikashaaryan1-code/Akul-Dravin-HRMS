@@ -35,11 +35,26 @@ export class EmployeeService {
   }
 
   async getStats(tenantId?: string): Promise<any> {
-    const base: any = tenantId ? { tenantId } : {};
-    const total = await this.employeeRepository.count({ where: base });
-    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
-    return { total, active, inactive, onLeave };
+    const query = this.employeeRepository.createQueryBuilder('employee');
+
+    if (tenantId) {
+      query.where('employee.tenantId = :tenantId', { tenantId });
+    }
+
+    // Optimization: Consolidate multiple count queries into a single database roundtrip using conditional aggregation.
+    // This reduces database load and network latency.
+    const stats = await query
+      .select('COUNT(*)', 'total')
+      .addSelect("COUNT(*) FILTER (WHERE employee.status = 'active')", 'active')
+      .addSelect("COUNT(*) FILTER (WHERE employee.status = 'inactive')", 'inactive')
+      .addSelect("COUNT(*) FILTER (WHERE employee.status = 'on_leave')", 'onLeave')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total || '0', 10),
+      active: parseInt(stats.active || '0', 10),
+      inactive: parseInt(stats.inactive || '0', 10),
+      onLeave: parseInt(stats.onLeave || '0', 10),
+    };
   }
 }
