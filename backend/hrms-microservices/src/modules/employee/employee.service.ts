@@ -34,12 +34,29 @@ export class EmployeeService {
     await this.employeeRepository.delete(id);
   }
 
+  /**
+   * Consolidates multiple count queries into a single database round-trip using conditional aggregation.
+   * Expected performance impact: Reduces database round-trips from 4 to 1.
+   */
   async getStats(tenantId?: string): Promise<any> {
-    const base: any = tenantId ? { tenantId } : {};
-    const total = await this.employeeRepository.count({ where: base });
-    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
-    return { total, active, inactive, onLeave };
+    const query = this.employeeRepository.createQueryBuilder('employee')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END)", 'inactive')
+      .addSelect("SUM(CASE WHEN status = 'on_leave' THEN 1 ELSE 0 END)", 'onLeave');
+
+    if (tenantId) {
+      // Using tenantId property to match original logic, even if it differs from entity definition
+      query.where('employee.tenantId = :tenantId', { tenantId });
+    }
+
+    const stats = await query.getRawOne();
+
+    return {
+      total: parseInt(stats.total || '0', 10),
+      active: parseInt(stats.active || '0', 10),
+      inactive: parseInt(stats.inactive || '0', 10),
+      onLeave: parseInt(stats.onLeave || '0', 10),
+    };
   }
 }
