@@ -33,9 +33,18 @@ export class ProjectService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.projectRepository.count();
-    const active = await this.projectRepository.count({ where: { status: 'active' } });
-    const completed = await this.projectRepository.count({ where: { status: 'completed' } });
-    return { total, active, completed };
+    // Optimization: Consolidate multiple count queries into a single query using conditional aggregation.
+    // This reduces database roundtrips from 3 to 1.
+    const stats = await this.projectRepository.createQueryBuilder('project')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN project.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN project.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total || '0', 10),
+      active: parseInt(stats.active || '0', 10),
+      completed: parseInt(stats.completed || '0', 10),
+    };
   }
 }
