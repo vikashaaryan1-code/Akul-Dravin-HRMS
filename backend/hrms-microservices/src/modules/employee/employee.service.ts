@@ -35,11 +35,26 @@ export class EmployeeService {
   }
 
   async getStats(tenantId?: string): Promise<any> {
-    const base: any = tenantId ? { tenantId } : {};
-    const total = await this.employeeRepository.count({ where: base });
-    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
-    return { total, active, inactive, onLeave };
+    const query = this.employeeRepository.createQueryBuilder('employee')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN employee.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN employee.status = 'inactive' THEN 1 ELSE 0 END)", 'inactive')
+      .addSelect("SUM(CASE WHEN employee.status = 'on_leave' THEN 1 ELSE 0 END)", 'onLeave');
+
+    if (tenantId) {
+      // Note: Although the entity uses companyId, the service uses tenantId in queries.
+      // We'll stick to 'tenantId' for consistency with existing service logic.
+      // Using dynamic property access to avoid TS errors if tenantId is missing from entity type
+      // but present in database (as hinted by existing code).
+      query.where('employee.tenantId = :tenantId', { tenantId });
+    }
+
+    const result = await query.getRawOne();
+    return {
+      total: parseInt(result.total, 10) || 0,
+      active: parseInt(result.active, 10) || 0,
+      inactive: parseInt(result.inactive, 10) || 0,
+      onLeave: parseInt(result.onLeave, 10) || 0,
+    };
   }
 }

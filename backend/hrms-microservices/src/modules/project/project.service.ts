@@ -33,9 +33,16 @@ export class ProjectService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.projectRepository.count();
-    const active = await this.projectRepository.count({ where: { status: 'active' } });
-    const completed = await this.projectRepository.count({ where: { status: 'completed' } });
-    return { total, active, completed };
+    const result = await this.projectRepository.createQueryBuilder('project')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN project.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN project.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: parseInt(result.total, 10) || 0,
+      active: parseInt(result.active, 10) || 0,
+      completed: parseInt(result.completed, 10) || 0,
+    };
   }
 }
