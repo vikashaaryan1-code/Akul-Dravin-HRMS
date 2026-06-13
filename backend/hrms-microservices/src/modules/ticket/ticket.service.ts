@@ -29,9 +29,18 @@ export class TicketService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.ticketRepository.count();
-    const open = await this.ticketRepository.count({ where: { status: 'open' } });
-    const closed = await this.ticketRepository.count({ where: { status: 'closed' } });
-    return { total, open, closed };
+    // Optimized: Use conditional aggregation to get all stats in a single database query
+    const stats = await this.ticketRepository
+      .createQueryBuilder('ticket')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN ticket.status = 'open' THEN 1 ELSE 0 END)", 'open')
+      .addSelect("SUM(CASE WHEN ticket.status = 'closed' THEN 1 ELSE 0 END)", 'closed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      open: parseInt(stats.open, 10) || 0,
+      closed: parseInt(stats.closed, 10) || 0,
+    };
   }
 }

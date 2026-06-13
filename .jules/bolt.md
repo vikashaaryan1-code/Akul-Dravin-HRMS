@@ -1,0 +1,3 @@
+## 2025-05-22 - [Optimizing Aggregation Queries]
+**Learning:** Sequential `repository.count()` calls for dashboard statistics cause multiple unnecessary database roundtrips. Consolidating these into a single query using `createQueryBuilder` and conditional aggregation (`SUM(CASE WHEN ... THEN 1 ELSE 0 END)`) significantly reduces latency. Additionally, processing records in-memory for basic stats (like in `AttendanceService`) is O(N) in network/memory and should always be replaced by database-side aggregation.
+**Action:** Always check `getStats` methods for sequential count calls and replace them with single-query aggregation. Ensure `parseInt` or `parseFloat` is used on raw results as they often return as strings.
