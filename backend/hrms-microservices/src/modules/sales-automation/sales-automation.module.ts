@@ -14,10 +14,12 @@ import { SalesTargetEntity } from '../../database/entities/sales-target.entity';
 import { PayrollModule } from '../payroll/payroll.module';
 import { SalesAutomationController } from './sales-automation.controller';
 import { SalesAutomationService } from './sales-automation.service';
+import { AiEngineModule } from '../ai-engine/ai-engine.module';
 
 @Module({
   imports: [
     PayrollModule,
+    AiEngineModule,
     TypeOrmModule.forFeature([
       SalesLeadEntity,
       SalesCustomerAccountEntity,

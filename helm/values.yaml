@@ -1,0 +1,222 @@
+# ============================================================
+# Akul Dravin HRMS — Helm values (production defaults)
+# Override these values with: --values values.production.yaml
+# ============================================================
+
+# ── Replica counts ───────────────────────────────────────────
+replicaCount:
+  api: 2          # NestJS API pods (stateless, scale freely)
+  worker: 1       # BullMQ worker pods (scale per queue load)
+  frontend: 2     # Next.js frontend pods
+
+# ── Container images ─────────────────────────────────────────
+image:
+  registry: ghcr.io
+  repository: akul-dravin/hrms
+  pullPolicy: IfNotPresent
+
+  api:
+    tag: "latest"
+  worker:
+    tag: "latest"
+  frontend:
+    tag: "latest"
+
+imagePullSecrets: []
+
+# ── Service accounts ─────────────────────────────────────────
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# ── Networking ───────────────────────────────────────────────
+service:
+  api:
+    type: ClusterIP
+    port: 4001
+  frontend:
+    type: ClusterIP
+    port: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+  hosts:
+    - host: hrms.akuldravin.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: api
+        - path: /
+          pathType: Prefix
+          service: frontend
+  tls:
+    - secretName: hrms-tls
+      hosts:
+        - hrms.akuldravin.com
+
+# ── Resource limits ──────────────────────────────────────────
+resources:
+  api:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
+  worker:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  frontend:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+# ── Autoscaling ──────────────────────────────────────────────
+autoscaling:
+  api:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  worker:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+  frontend:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+
+# ── PostgreSQL (Bitnami chart) ───────────────────────────────
+postgresql:
+  enabled: true  # Set false to use external managed DB (Railway, RDS, etc.)
+  auth:
+    database: akul_dravin_hrms
+    username: hrms_app
+    existingSecret: hrms-db-secret  # Must contain postgresql-password key
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: "standard"
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+
+# External DB (when postgresql.enabled = false)
+externalDatabase:
+  host: ""
+  port: 5432
+  database: akul_dravin_hrms
+  existingSecret: hrms-db-secret
+
+# ── Redis (Bitnami chart) ────────────────────────────────────
+redis:
+  enabled: true  # Set false to use external Redis (ElastiCache, Upstash, etc.)
+  architecture: standalone   # Use 'replication' for HA
+  auth:
+    enabled: true
+    existingSecret: hrms-redis-secret
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+# External Redis (when redis.enabled = false)
+externalRedis:
+  host: ""
+  port: 6379
+  existingSecret: hrms-redis-secret
+
+# ── Environment variables ────────────────────────────────────
+# Secrets must be stored in Kubernetes secrets, not here.
+# Reference: kubectl create secret generic hrms-app-secret ...
+env:
+  NODE_ENV: production
+  PORT: "4001"
+  SKIP_MICROSERVICES: "true"  # Disable TCP microservice binding in k8s mode
+  OTEL_ENABLED: "true"
+  OTEL_SERVICE_NAME: akul-dravin-hrms
+
+# Secret references (values come from k8s secrets)
+existingSecret: hrms-app-secret
+secretKeys:
+  JWT_SECRET: jwt-secret
+  STRIPE_SECRET: stripe-secret
+  AWS_SES_ACCESS_KEY: ses-access-key
+  AWS_SES_SECRET: ses-secret
+  OPENAI_API_KEY: openai-api-key
+  SENTRY_DSN: sentry-dsn
+  TOTP_ENCRYPTION_KEY: totp-key
+
+# ── Health probes ────────────────────────────────────────────
+probes:
+  api:
+    liveness:
+      path: /api/v1/health/ready
+      initialDelaySeconds: 20
+      periodSeconds: 15
+      failureThreshold: 3
+    readiness:
+      path: /api/v1/health/ready
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      failureThreshold: 3
+
+# ── Pod disruption budget ────────────────────────────────────
+podDisruptionBudget:
+  api:
+    enabled: true
+    minAvailable: 1
+  frontend:
+    enabled: true
+    minAvailable: 1
+
+# ── Node affinity ────────────────────────────────────────────
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# ── Pod security ────────────────────────────────────────────
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL

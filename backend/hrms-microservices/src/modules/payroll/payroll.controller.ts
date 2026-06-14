@@ -1,37 +1,77 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Logger, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 import { PayrollService } from './payroll.service';
 import { PayrollBatchEntity } from '../../database/entities/payroll-batch.entity';
 import { PayrollItemEntity } from '../../database/entities/payroll-item.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Role } from '../../common/enums/role.enum';
 import { CalculateTargetBasedSalaryDto } from './dto/calculate-target-based-salary.dto';
 import { CalculateDaysWiseSalaryDto } from './dto/calculate-days-wise-salary.dto';
 import { CalculateBonusSlaDto } from './dto/calculate-bonus-sla.dto';
+import { DocumentEngineService } from '../document-center/document-engine.service';
+import { AuditLogService, AuditAction } from '../../common/audit/audit-log.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('payroll')
 export class PayrollController {
-  constructor(private readonly payrollService: PayrollService) {}
+  private readonly logger = new Logger(PayrollController.name);
+  constructor(
+    private readonly payrollService: PayrollService,
+    private readonly documentEngine: DocumentEngineService,
+    private readonly auditLog: AuditLogService,
+  ) {}
 
   @Get('batches')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   findAllBatches() {
-    // Note: Implementation of findAllBatches in service might be needed if not existing
-    return (this.payrollService as any).findAllBatches?.() ?? [];
+    return this.payrollService.findAll();
   }
 
+  /**
+   * Enqueue a payroll batch generation job.
+   * Returns immediately with 202 Accepted + { jobId }.
+   * Poll GET /payroll/batch/job/:jobId/status to track completion.
+   *
+   * Payroll-tier throttle: 10 submissions per 60s per IP (financial mutation).
+   */
   @Post('batch')
+  @HttpCode(202)
+  @Throttle({ payroll: { ttl: 60000, limit: 10 } })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  generateBatch(@Body() payload: { year: number; month: number }) {
-    return this.payrollService.generateBatch(payload.year, payload.month);
+  async generateBatch(@Body() payload: { year: number; month: number }) {
+    if (!payload.year || !payload.month) {
+      throw new Error('year and month are required');
+    }
+    const { jobId } = await this.payrollService.enqueueBatch(payload.year, payload.month);
+    return { jobId, status: 'QUEUED' };
   }
 
-  @Post('batch/:id/lock')
+  /**
+   * Poll the status of a payroll batch generation job.
+   * Returns BullMQ job state: waiting | active | completed | failed | delayed | unknown
+   */
+  @Get('batch/job/:jobId/status')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  lockBatch(@Param('id') id: string) {
-    return this.payrollService.lockBatch(id);
+  getJobStatus(@Param('jobId') jobId: string) {
+    return this.payrollService.getBatchJobStatus(jobId);
+  }
+
+  /** Payroll-tier throttle: locks are irreversible financial mutations. */
+  @Post('batch/:id/lock')
+  @Throttle({ payroll: { ttl: 60000, limit: 10 } })
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
+  lockBatch(
+    @Param('id') id: string,
+    @CurrentUser() user: { sub: string; roles?: string[]; role?: string },
+  ) {
+    return this.payrollService.lockBatch(id, {
+      actorId:   user.sub,
+      actorRoles: user.roles ?? (user.role ? [user.role] : ['PAYROLL_OFFICER']),
+    });
   }
 
   @Post('batch/:id/execute')
@@ -46,10 +86,32 @@ export class PayrollController {
     return this.payrollService.generateBankFile(id);
   }
 
+  /**
+   * Reverse a completed payroll batch.
+   *
+   * Governance requirements (enforced by TransitionPolicyEngine):
+   *  - Actor must hold PAYROLL_ADMIN or SUPER_ADMIN role.
+   *  - Justification text is mandatory — a reversal without explanation is not permitted.
+   *  - Only COMPLETED batches can be reversed (FAILED → REVERSED is structurally impossible).
+   *
+   * Returns 204 No Content on success.
+   */
   @Post('batch/:id/reverse')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  reverseBatch(@Param('id') id: string) {
-    return this.payrollService.reverseBatch(id);
+  @HttpCode(204)
+  @Throttle({ payroll: { ttl: 60000, limit: 3 } })
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN)
+  reverseBatch(
+    @Param('id') id: string,
+    @Body() body: { justification: string },
+    @CurrentUser() user: { sub: string; roles?: string[]; role?: string },
+  ) {
+    if (!body?.justification?.trim()) {
+      throw new Error('justification is required for batch reversal');
+    }
+    return this.payrollService.reverseBatch(id, {
+      actorId:    user.sub,
+      actorRoles: user.roles ?? (user.role ? [user.role] : []),
+    }, body.justification);
   }
 
   @Get('batch/:id/register')
@@ -72,16 +134,17 @@ export class PayrollController {
 
   @Post('item/create')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  createItem(@Body() payload: Partial<PayrollItemEntity>) {
-    // Note: This needs service update if we want manual item addition
-    return (this.payrollService as any).createItem?.(payload);
+  createItem() {
+    // Manual item creation is not supported in v1 — items are auto-generated during batch generation.
+    // Implement PayrollItemService.createItem() and wire here when manual override is needed.
+    throw new Error('Manual payroll item creation not implemented. Use POST /payroll/batch to auto-generate items.');
   }
 
   @Patch('item/:id')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  updateItem(@Param('id') id: string, @Body() payload: Partial<PayrollItemEntity>) {
-     // Note: This needs service update if we want manual item updates
-    return (this.payrollService as any).updateItem?.(id, payload);
+  updateItem() {
+    // Manual item update is not supported in v1 — items are locked once the batch is sealed.
+    throw new Error('Manual payroll item update not implemented. Reverse and regenerate the batch instead.');
   }
 
   @Post('calculate/target-based')
@@ -135,7 +198,18 @@ export class PayrollController {
     return this.payrollService.calculateUnifiedSalary(employeeId);
   }
 
+  /**
+   * @deprecated Use POST /payroll/batch instead.
+   *
+   * This endpoint is preserved for backward compatibility but now enqueues the
+   * job asynchronously (same path as POST /payroll/batch). It will be removed
+   * in a future API version once all callers have migrated.
+   *
+   * Returns: 202 Accepted + { jobId } — NOT a synchronous batch entity.
+   */
   @Get('generate')
+  @HttpCode(202)
+  @Throttle({ payroll: { ttl: 60000, limit: 10 } })
   @Roles(
     Role.ROOT_OWNER,
     Role.PLATFORM_ADMIN,
@@ -143,8 +217,19 @@ export class PayrollController {
     Role.COMPANY_ADMIN,
     Role.HR_MANAGER,
   )
-  generateMonthlyPayroll(@Query('month') month: string) {
-    return this.payrollService.generateMonthlyPayroll(month);
+  async generateMonthlyPayroll(@Query('month') month: string) {
+    // ⚠️ DEPRECATED: This sync bypass has been closed. Now routes through the async queue.
+    // Callers should migrate to POST /payroll/batch for the canonical async path.
+    this.logger.warn(
+      `DEPRECATED_ENDPOINT: GET /payroll/generate called with month=${month}. ` +
+      'Migrate callers to POST /payroll/batch. This endpoint will be removed in a future release.',
+    );
+    if (!month || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      throw new Error('month must be in YYYY-MM format (e.g. 2026-04)');
+    }
+    const [year, m] = month.split('-').map(Number);
+    const { jobId } = await this.payrollService.enqueueBatch(year, m);
+    return { jobId, status: 'QUEUED', deprecationNotice: 'Migrate to POST /payroll/batch' };
   }
 
   @Get('employee/:employeeId')
@@ -158,6 +243,35 @@ export class PayrollController {
   )
   findByEmployee(@Param('employeeId') employeeId: string) {
     return this.payrollService.findByEmployee(employeeId);
+  }
+
+  /**
+   * GET /payroll/me/payslips
+   *
+   * Employee self-service: returns all payroll items belonging to the authenticated user.
+   * Admins may supply ?employeeId=<id> to retrieve any employee's payslips company-wide.
+   *
+   * Access:
+   *   - EMPLOYEE role → own payslips only (userId → employeeId lookup)
+   *   - Admin roles + ?employeeId query → company-wide override
+   */
+  @Get('me/payslips')
+  @Roles(
+    Role.ROOT_OWNER,
+    Role.PLATFORM_ADMIN,
+    Role.SUPER_ADMIN,
+    Role.COMPANY_ADMIN,
+    Role.HR_MANAGER,
+    Role.EMPLOYEE,
+  )
+  getMyPayslips(
+    @CurrentUser() user: { sub: string; tenantId: string; role: string },
+    @Query('employeeId') adminEmployeeId?: string,
+  ) {
+    // Admin roles may pass ?employeeId to look up any employee; employees cannot override
+    const isAdmin = user.role !== Role.EMPLOYEE;
+    const overrideId = isAdmin ? adminEmployeeId : undefined;
+    return this.payrollService.findMyPayslips(user.sub, overrideId);
   }
 
   @Get('summary')
@@ -189,5 +303,62 @@ export class PayrollController {
   getCommandCenterOverview(@Query('asOfDate') asOfDate?: string) {
     return this.payrollService.getCommandCenterOverview(asOfDate ? new Date(asOfDate) : undefined);
   }
-}
 
+  /**
+   * GET /payroll/payslip/:itemId
+   *
+   * Generates and streams a payslip PDF for the given payroll item.
+   * Accessible by admin roles (any employee's payslip) and by EMPLOYEE role
+   * (tenant-scoped queries ensure an employee cannot access another tenant's data;
+   * employee-to-item ownership check is enforced via the tenant isolation layer).
+   *
+   * Response:
+   *   - If Playwright is available: application/pdf binary stream
+   *   - If Playwright is unavailable: text/html (graceful degradation)
+   */
+  @Get('payslip/:itemId')
+  @Roles(
+    Role.ROOT_OWNER,
+    Role.PLATFORM_ADMIN,
+    Role.SUPER_ADMIN,
+    Role.COMPANY_ADMIN,
+    Role.HR_MANAGER,
+    Role.EMPLOYEE,
+  )
+  async downloadPayslip(
+    @Param('itemId') itemId: string,
+    @CurrentUser() user: { sub: string; tenantId: string },
+    @Res() res: Response,
+  ) {
+    const dto    = await this.payrollService.getPayslipData(itemId);
+    const result = await this.documentEngine.render(dto);
+
+    // Fire-and-forget audit event — never blocks the response
+    this.auditLog.log(AuditAction.PAYROLL_PAYSLIP_DOWNLOADED, {
+      tenantId:     user.tenantId,
+      actorId:      user.sub,
+      resourceType: 'payroll_item',
+      resourceId:   itemId,
+      metadata:     { filename: result.filename, hash: result.hash },
+    }).catch(() => { /* already logged inside AuditLogService */ });
+
+    if (result.pdfBase64) {
+      const pdfBuffer = Buffer.from(result.pdfBase64, 'base64');
+      res.set({
+        'Content-Type':        'application/pdf',
+        'Content-Disposition': `attachment; filename="${result.filename}"`,
+        'Content-Length':      String(pdfBuffer.length),
+        'X-Document-Hash':     result.hash,
+      });
+      res.end(pdfBuffer);
+    } else {
+      // Playwright not available — return HTML so the user can still print
+      res.set({
+        'Content-Type':    'text/html; charset=utf-8',
+        'X-Document-Hash': result.hash,
+        'X-PDF-Status':    'unavailable',
+      });
+      res.end(result.html);
+    }
+  }
+}

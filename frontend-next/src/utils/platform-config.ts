@@ -1,4 +1,4 @@
-﻿import type { PlatformNavItem, PlatformRole } from '@/types/platform';
+import type { PlatformNavItem, PlatformRole } from '@/types/platform';
 
 export const PLATFORM_BRAND = 'AKUL DRAVIN';
 
@@ -32,6 +32,7 @@ export const PLATFORM_ROLE_OPTIONS: { role: PlatformRole; label: string }[] = [
 ];
 
 export const TOP_NAV_ITEMS: PlatformNavItem[] = [
+  { label: 'Master Dashboard', href: '/master-dashboard' },
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'A2Z Atlas', href: '/a2z-atlas' },
   { label: 'Employees', href: '/employees' },
@@ -52,6 +53,7 @@ export const TOP_NAV_ITEMS: PlatformNavItem[] = [
   { label: 'Procurement', href: '/procurement' },
   { label: 'Analytics', href: '/analytics' },
   { label: 'Permissions', href: '/permissions' },
+  { label: 'Revenue Intelligence', href: '/revenue-intelligence' },
   { label: 'Settings', href: '/settings' },
 ];
 
@@ -86,6 +88,7 @@ export const SIDE_NAV_ITEMS: PlatformNavItem[] = [
 ];
 
 export const ROUTE_ACCESS: Record<string, PlatformRole[]> = {
+  '/master-dashboard': ['platform-admin', 'company-admin'],
   '/dashboard': ALL_ROLES,
   '/a2z-atlas': ALL_ROLES,
   '/employees': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'recruiter'],
@@ -106,6 +109,7 @@ export const ROUTE_ACCESS: Record<string, PlatformRole[]> = {
   '/procurement': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'sales-manager'],
   '/analytics': ALL_ROLES,
   '/permissions': ADMIN_ROLES,
+  '/revenue-intelligence': BILLING_ROLES,
   '/settings': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'team-leader', 'sales-manager', 'recruiter', 'employee'],
   '/automation': ['platform-admin', 'company-admin', 'hr-manager', 'team-manager', 'sales-manager'],
   '/marketplace': ['platform-admin', 'company-admin', 'hr-manager', 'recruiter', 'guest'],

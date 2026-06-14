@@ -24,8 +24,8 @@ export class EmployeeServicesService {
 
   async createTicket(dto: CreateEmployeeServiceTicketDto): Promise<EmployeeServiceTicketEntity> {
     const entity = this.ticketRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId ?? null,
+      tenantId: dto.tenantId!,
+      companyId: dto.companyId!,
       employeeId: dto.employeeId,
       serviceType: dto.serviceType,
       subject: dto.subject,
@@ -35,7 +35,7 @@ export class EmployeeServicesService {
       assignedTo: null,
       resolutionNotes: null,
       resolvedAt: null,
-    });
+    } as any) as unknown as EmployeeServiceTicketEntity;
 
     const saved = await this.ticketRepository.save(entity);
     this.logger.log(`Created employee service ticket id=${saved.id} employeeId=${saved.employeeId}`);

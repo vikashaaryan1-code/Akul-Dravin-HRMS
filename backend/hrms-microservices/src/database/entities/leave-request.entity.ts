@@ -31,4 +31,7 @@ export class LeaveRequestEntity extends TenantScopedEntity {
 
   @Column({ name: 'approved_at', type: 'timestamp with time zone', nullable: true })
   approvedAt!: Date | null;
+
+  employee?: import('./employee.entity').EmployeeEntity;
+  leaveType?: any;
 }

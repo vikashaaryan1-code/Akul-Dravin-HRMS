@@ -146,7 +146,11 @@ export class DocumentEngineService {
     // Write HTML to temp file and convert via Playwright
     // This will throw if Playwright is not installed — caller handles gracefully
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { chromium } = require('playwright') as typeof import('playwright');
+    // Playwright is an optional runtime dependency — installed separately in production.
+    // Using a plain require so TS does not try to resolve its type declarations at compile time.
+    const playwrightModule = require('playwright') as { chromium: { launch: (opts: any) => Promise<any> } };
+    const { chromium } = playwrightModule;
+
 
     const isCard = type === DocumentType.ID_CARD || type === DocumentType.VISITING_CARD;
     const tmpPath = path.join(os.tmpdir(), `omnix-doc-${Date.now()}.html`);

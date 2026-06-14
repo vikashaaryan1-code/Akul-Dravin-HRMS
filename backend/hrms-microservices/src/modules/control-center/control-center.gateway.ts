@@ -20,7 +20,7 @@ import { WORKFORCE_EVENTS, PolicyDecisionEvent, PromotionEvent, TelephonyEvent }
 export class ControlCenterGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(ControlCenterGateway.name);
 
-  @WebSocketServer() server: Server;
+  @WebSocketServer() server!: Server;
 
   constructor(
     @Inject('REDIS_CLIENT') private readonly redis: Redis,

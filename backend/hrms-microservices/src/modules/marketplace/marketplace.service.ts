@@ -1,4 +1,4 @@
-﻿import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MarketplaceListingEntity } from '../../database/entities/marketplace-listing.entity';
@@ -28,7 +28,7 @@ export class MarketplaceService {
 
   create(dto: CreateMarketplaceListingDto): Promise<MarketplaceListingEntity> {
     const entity = this.listingRepository.create({
-      tenantId: dto.tenantId ?? null,
+      tenantId: dto.tenantId!,
       jobId: dto.jobId,
       listingType: dto.listingType ?? 'job',
       visibility: dto.visibility ?? 'public',

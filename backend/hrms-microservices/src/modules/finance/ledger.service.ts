@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In, Not } from 'typeorm';
 import { LedgerAccountEntity, LedgerAccountType } from '../../database/entities/ledger-account.entity';
 import { LedgerTransactionEntity, LedgerTransactionStatus, ForensicAuditStatus } from '../../database/entities/ledger-transaction.entity';
 import { LedgerEntryEntity } from '../../database/entities/ledger-entry.entity';
 import { TenantContext } from '../../common/context/tenant-context';
 import { FinancialCommand } from './interfaces/financial-command.interface';
+import { BlockedFlowException } from '../../common/exceptions/blocked-flow.exception';
 import BigNumber from 'bignumber.js';
 import { createHash } from 'node:crypto';
 
@@ -234,7 +235,6 @@ export class LedgerService {
     }
 
     if (tx.status !== LedgerTransactionStatus.RECONCILED) {
-      const { BlockedFlowException } = require('../../common/exceptions/blocked-flow.exception');
       throw new BlockedFlowException(tx.id, tx.status);
     }
 
@@ -250,14 +250,13 @@ export class LedgerService {
     const tenantId = TenantContext.getRequiredTenantId();
     const unreconciled = await this.dataSource.getRepository(LedgerTransactionEntity).count({
         where: { 
-            id: (require('typeorm').In(transactionIds)), 
+            id: In(transactionIds), 
             tenantId, 
-            status: (require('typeorm').Not(LedgerTransactionStatus.RECONCILED)) 
+            status: Not(LedgerTransactionStatus.RECONCILED) 
         }
     });
 
     if (unreconciled > 0) {
-        const { BlockedFlowException } = require('../../common/exceptions/blocked-flow.exception');
         throw new BlockedFlowException('BATCH_EXECUTION', `${unreconciled} transactions are not yet reconciled.`);
     }
   }
@@ -305,13 +304,39 @@ export class LedgerService {
 
     const originalTx = await repo.findOne({ 
         where: { id: transactionId, tenantId },
-        relations: ['entries']
     });
 
     if (!originalTx) throw new BadRequestException(`Transaction ${transactionId} not found.`);
     if (originalTx.status === LedgerTransactionStatus.REVERSED) {
         throw new BadRequestException('Transaction is already reversed.');
     }
+
+    // Load entries separately (no OneToMany relation on entity)
+    const originalEntries = await entryRepo.find({ where: { transactionId } });
+
+    // MAP ENTRIES: Swap Credit and Debit accounts
+    const reversedEntries = originalEntries.map(entry => ({
+        debitAccountCode: String(entry.creditAccountId),  // Swap — resolved to code below
+        creditAccountCode: String(entry.debitAccountId),  // Swap
+        amount: entry.amount,
+        description: `Reversal: ${entry.description ?? ''}`
+    }));
+
+    // Resolve account IDs → codes via a quick lookup
+    const allAccountIds = [
+        ...originalEntries.map(e => e.debitAccountId),
+        ...originalEntries.map(e => e.creditAccountId)
+    ].filter(Boolean) as string[];
+
+    const accountList = await this.dataSource.getRepository(LedgerAccountEntity).findByIds(allAccountIds);
+    const accountMap = new Map(accountList.map(a => [a.id, a.code]));
+
+    const resolvedEntries = reversedEntries.map((e, i) => ({
+        debitAccountCode: accountMap.get(originalEntries[i].creditAccountId!) ?? e.debitAccountCode,
+        creditAccountCode: accountMap.get(originalEntries[i].debitAccountId!) ?? e.creditAccountCode,
+        amount: e.amount,
+        description: e.description,
+    }));
 
     const command: FinancialCommand = {
         idempotencyKey: `REVERSAL|${originalTx.id}`,
@@ -323,21 +348,11 @@ export class LedgerService {
             reason: 'Correction',
             originalPolicy: originalTx.policySnapshot?.forensicTrace
         },
-        entries: originalTx.entries as unknown as any // We will map them below
+        entries: resolvedEntries,
     };
 
-    // MAP ENTRIES: Swap Credit and Debit
-    const reversedEntries = originalTx.entries.map(entry => ({
-        debitAccountCode: entry.creditAccountCode, // SWAP
-        creditAccountCode: entry.debitAccountCode, // SWAP
-        amount: entry.amount,
-        description: `Reversal: ${entry.description}`
-    }));
-
-    const reversalCommand = { ...command, entries: reversedEntries };
-    
     return await this.dataSource.transaction(async (manager) => {
-        const reversalTx = await this.executeTransaction(reversalCommand);
+        const reversalTx = await this.executeTransaction(command);
         
         // Link parent
         reversalTx.reversalOfTransactionId = originalTx.id;

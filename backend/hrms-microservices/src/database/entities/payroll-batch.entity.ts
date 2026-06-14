@@ -1,14 +1,14 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
 import { PayrollItemEntity } from './payroll-item.entity';
 
-export enum PayrollBatchStatus {
-  DRAFT = 'DRAFT',
-  LOCKED = 'LOCKED',
-  PROCESSING = 'PROCESSING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-}
+/**
+ * Re-export the canonical PayrollBatchStatus from the governance module.
+ * The governance module is the SINGLE SOURCE OF TRUTH for this enum.
+ * Existing imports of PayrollBatchStatus from this file continue to work.
+ */
+import { PayrollBatchStatus } from '../../common/governance/transitions/payroll-batch-status';
+export { PayrollBatchStatus };
 
 @Entity({ name: 'payroll_batches' })
 export class PayrollBatchEntity extends TenantScopedEntity {

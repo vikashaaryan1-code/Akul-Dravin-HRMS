@@ -31,4 +31,10 @@ export class DocumentRecordEntity extends TenantScopedEntity {
 
   @Column({ name: 'generated_at', type: 'timestamp with time zone', nullable: true })
   generatedAt!: Date | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  signedAt?: Date;
+
+  @Column({ type: 'uuid', nullable: true })
+  signedBy?: string;
 }

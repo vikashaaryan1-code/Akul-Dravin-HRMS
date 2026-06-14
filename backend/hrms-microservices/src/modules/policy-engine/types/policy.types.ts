@@ -64,4 +64,5 @@ export interface EvaluationResult {
   riskScore: number;
   reason: string;
   appliedRules: string[];
+  metadata?: Record<string, any>;
 }

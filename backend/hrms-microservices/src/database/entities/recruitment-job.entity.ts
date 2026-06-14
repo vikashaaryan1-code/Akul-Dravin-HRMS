@@ -31,6 +31,18 @@ export class RecruitmentJobEntity extends TenantScopedEntity {
   @Column({ name: 'posted_by', type: 'uuid' })
   postedBy!: string;
 
+  @Column({ name: 'hiring_manager_id', type: 'uuid', nullable: true })
+  hiringManagerId!: string | null;
+
+  @Column({ name: 'required_skills', type: 'jsonb', default: [] })
+  requiredSkills!: string[];
+
+  @Column({ name: 'experience_level', type: 'varchar', length: 60, nullable: true })
+  experienceLevel!: string | null;
+
+  @Column({ name: 'is_marketplace_visible', type: 'boolean', default: false })
+  isMarketplaceVisible!: boolean;
+
   @Column({ type: 'varchar', length: 40, default: 'open' })
   status!: string;
 }

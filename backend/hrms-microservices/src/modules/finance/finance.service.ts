@@ -1,44 +1,27 @@
 import { Injectable } from '@nestjs/common';
+import { InvoiceEntity } from '../../database/entities/invoice.entity';
+import { TransactionEntity } from '../../database/entities/transaction.entity';
+import { TenantContext } from '../../common/context/tenant-context';
 
-type FinanceInvoiceRecord = {
-  id: string;
-  invoiceNumber: string;
-  customerName: string;
-  amount: number;
-  status: string;
-  dueDate: string;
-};
-
-type FinanceExpenseRecord = {
-  id: string;
-  category: string;
-  amount: number;
-  ownerName: string;
-  status: string;
-  expenseDate: string;
-};
-
-type FinanceSummaryRecord = {
+export interface FinanceSummaryRecord {
   totalRevenue: number;
   totalExpenses: number;
   receivables: number;
   gstPayable: number;
   operatingMarginPercent: number;
-};
-
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { InvoiceEntity } from '../../database/entities/invoice.entity';
-import { TransactionEntity } from '../../database/entities/transaction.entity';
+}
 
 @Injectable()
 export class FinanceService {
-  constructor(
-    @InjectRepository(InvoiceEntity)
-    private readonly invoiceRepository: Repository<InvoiceEntity>,
-    @InjectRepository(TransactionEntity)
-    private readonly transactionRepository: Repository<TransactionEntity>,
-  ) {}
+  constructor() {}
+
+  private get invoiceRepository() {
+    return TenantContext.getRepository(InvoiceEntity);
+  }
+
+  private get transactionRepository() {
+    return TenantContext.getRepository(TransactionEntity);
+  }
 
   async getInvoices(): Promise<InvoiceEntity[]> {
     return this.invoiceRepository.find({ order: { createdAt: 'DESC' } });

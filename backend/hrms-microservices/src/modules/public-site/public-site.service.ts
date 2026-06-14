@@ -318,9 +318,9 @@ export class PublicSiteService {
     private readonly smartPlatformService: SmartPlatformService,
   ) {}
 
-  getLandingPage(): PublicLandingPayload {
+  async getLandingPage(): Promise<PublicLandingPayload> {
     const readiness = this.smartPlatformService.getReadiness();
-    const leads = this.crmService.getLeads();
+    const leads = await this.crmService.getLeads();
     const readinessPercent = Math.round(
       readiness.modules.reduce((sum, moduleItem) => sum + moduleItem.completionPercent, 0) /
         Math.max(readiness.modules.length, 1),

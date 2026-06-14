@@ -20,11 +20,34 @@ export class TenantSubscriber implements EntitySubscriberInterface {
     }
 
     entity.tenantId = tenantId;
+    
+    // Phase 🏁-Final: Automatic Governance Provenance Binding
+    const provenance = TenantContext.getProvenance();
+    if ('governanceProvenanceHash' in entity) {
+      entity.governanceProvenanceHash = provenance.epochHash;
+    }
+    if ('epistemicConfidence' in entity) {
+      entity.epistemicConfidence = provenance.confidence;
+    }
+
     await this.setTenantSession(event.queryRunner, tenantId);
   }
 
   async beforeUpdate(event: UpdateEvent<any>) {
     const tenantId = this.getRequiredTenantId();
+    const entity = event.entity;
+    
+    // Phase 🏁-Final: Automatic Governance Provenance Binding
+    if (entity) {
+      const provenance = TenantContext.getProvenance();
+      if ('governanceProvenanceHash' in entity) {
+        entity.governanceProvenanceHash = provenance.epochHash;
+      }
+      if ('epistemicConfidence' in entity) {
+        entity.epistemicConfidence = provenance.confidence;
+      }
+    }
+
     await this.setTenantSession(event.queryRunner, tenantId);
   }
 

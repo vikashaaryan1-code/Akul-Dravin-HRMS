@@ -25,4 +25,7 @@ export class RecruitmentApplicationEntity extends TenantScopedEntity {
 
   @Column({ name: 'assigned_recruiter_id', type: 'uuid', nullable: true })
   assignedRecruiterId!: string | null;
+
+  job?: any;
+  candidate?: any;
 }

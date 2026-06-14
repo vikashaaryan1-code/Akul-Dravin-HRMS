@@ -1,7 +1,13 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { TenantContext } from '../../../common/context/tenant-context';
+import { TenantContext } from '../../common/context/tenant-context';
 import { CareerGrowthEntity } from '../../database/entities/career-growth.entity';
+
+// No-op decorators – swap for @nestjs/swagger when Swagger UI is wired up
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ApiTags(..._args: string[]): ClassDecorator { return () => {}; }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ApiOperation(_opts?: Record<string, unknown>): MethodDecorator { return () => {}; }
+
 
 @ApiTags('Career & Growth Performance')
 @Controller('career-growth/v1')

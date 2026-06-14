@@ -11,5 +11,17 @@ export class PunchInDto {
 
   @IsOptional()
   @IsString()
+  ipAddress?: string;
+
+  @IsOptional()
+  @IsNumber()
+  lat?: number;
+
+  @IsOptional()
+  @IsNumber()
+  lng?: number;
+
+  @IsOptional()
+  @IsString()
   source?: string;
 }

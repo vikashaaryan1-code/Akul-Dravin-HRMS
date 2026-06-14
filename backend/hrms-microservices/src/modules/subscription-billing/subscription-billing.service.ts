@@ -17,7 +17,7 @@ export class SubscriptionBillingService {
   private readonly subscriptions: SubscriptionRecord[] = [
     {
       id: 'SUB-1001',
-      tenantId: null,
+      tenantId: '00000000-0000-0000-0000-000000000000',
       companyId: 'COMPANY-001',
       planName: 'Enterprise Growth',
       billingCycle: 'monthly',
@@ -31,7 +31,7 @@ export class SubscriptionBillingService {
     },
     {
       id: 'SUB-1002',
-      tenantId: null,
+      tenantId: '00000000-0000-0000-0000-000000000000',
       companyId: 'COMPANY-002',
       planName: 'Recruitment Pro',
       billingCycle: 'annual',
@@ -48,7 +48,7 @@ export class SubscriptionBillingService {
   private readonly invoices: InvoiceRecord[] = [
     {
       id: 'INV-1001',
-      tenantId: null,
+      tenantId: '00000000-0000-0000-0000-000000000000',
       subscriptionId: 'SUB-1001',
       invoiceNumber: 'AD-2026-0412',
       amount: '2999.00',
@@ -60,7 +60,7 @@ export class SubscriptionBillingService {
     },
     {
       id: 'INV-1002',
-      tenantId: null,
+      tenantId: '00000000-0000-0000-0000-000000000000',
       subscriptionId: 'SUB-1002',
       invoiceNumber: 'AD-2026-0301',
       amount: '18000.00',
@@ -84,7 +84,7 @@ export class SubscriptionBillingService {
     const now = new Date();
     const entity: SubscriptionRecord = {
       id: `SUB-${Date.now()}`,
-      tenantId: payload.tenantId ?? null,
+      tenantId: payload.tenantId ?? '00000000-0000-0000-0000-000000000000',
       companyId: payload.companyId?.trim() || `COMPANY-${this.subscriptions.length + 1}`,
       planName: payload.planName?.trim() || 'Platform Essentials',
       billingCycle: payload.billingCycle?.trim() || 'monthly',
@@ -133,7 +133,7 @@ export class SubscriptionBillingService {
     const targetSubscriptionId = payload.subscriptionId?.trim() || this.subscriptions[0]?.id || `SUB-${Date.now()}`;
     const entity: InvoiceRecord = {
       id: `INV-${Date.now()}`,
-      tenantId: payload.tenantId ?? null,
+      tenantId: payload.tenantId ?? '00000000-0000-0000-0000-000000000000',
       subscriptionId: targetSubscriptionId,
       invoiceNumber: payload.invoiceNumber?.trim() || `AD-${now.getFullYear()}-${String(this.invoices.length + 1100).padStart(4, '0')}`,
       amount: this.toAmountString(payload.amount, this.subscriptions.find((item) => item.id === targetSubscriptionId)?.price ?? '2499.00'),

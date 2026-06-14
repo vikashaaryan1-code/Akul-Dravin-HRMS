@@ -11,10 +11,10 @@ export class AttendanceEntity extends TenantScopedEntity {
   @Column({ name: 'attendance_date', type: 'date' })
   attendanceDate!: string;
 
-  @Column({ name: 'check_in_at', type: 'timestamp with time zone', nullable: true })
+  @Column({ name: 'check_in_at', type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamp with time zone', nullable: true })
   checkInAt!: Date | null;
 
-  @Column({ name: 'check_out_at', type: 'timestamp with time zone', nullable: true })
+  @Column({ name: 'check_out_at', type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamp with time zone', nullable: true })
   checkOutAt!: Date | null;
 
   @Column({ type: 'varchar', length: 40, default: 'present' })
@@ -29,4 +29,11 @@ export class AttendanceEntity extends TenantScopedEntity {
   @ManyToOne(() => EmployeeEntity, (e) => e.attendance)
   @JoinColumn({ name: 'employee_id' })
   employee!: EmployeeEntity;
+
+  // ── Forensic Provenance ──
+  @Column({ name: 'governance_provenance_hash', type: 'varchar', length: 128, nullable: true })
+  governanceProvenanceHash?: string;
+
+  @Column({ name: 'epistemic_confidence', type: 'float', nullable: true })
+  epistemicConfidence?: number;
 }

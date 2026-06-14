@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { AttendanceEntity } from '../../database/entities/attendance.entity';
@@ -9,9 +9,13 @@ import { CreatePerformanceReviewDto } from './dto/create-performance-review.dto'
 import { ExecutionGatekeeperService } from '../policy-engine/gatekeeper/execution-gatekeeper.service';
 import { CareerGrowthService } from '../career-growth/career-growth.service';
 import { CareerEventStatus } from '../../database/entities/career-growth.entity';
+import { ExecutionMode } from '../policy-engine/types/policy.types';
+
 
 @Injectable()
 export class PerformanceManagementService {
+  private readonly logger = new Logger(PerformanceManagementService.name);
+
   constructor(
     private readonly gatekeeper: ExecutionGatekeeperService,
     private readonly careerGrowthService: CareerGrowthService,
@@ -56,7 +60,7 @@ export class PerformanceManagementService {
 
       // --- PDE Integration: Trigger Promotion Check ---
       if (finalScore >= 85) {
-        await this.triggerPromotionCheck(emp, finalScore, context.metadata?.traceId);
+        await this.triggerPromotionCheck(emp, finalScore, undefined);
       }
 
       scores.push({
@@ -101,11 +105,11 @@ export class PerformanceManagementService {
     });
 
     // 3. Update Recommendation Status based on PDE Decision
-    if (!pdeResult.allowed || pdeResult.mode === 'BLOCK') {
+    if (!pdeResult.allowed || pdeResult.mode === ExecutionMode.REQUIRES_APPROVAL) {
       await this.careerGrowthService.updateStatus(recommendation.id, CareerEventStatus.REJECTED);
-    } else if (pdeResult.mode === 'REVIEW') {
+    } else if (pdeResult.mode === ExecutionMode.ALLOW_WITH_LIMIT) {
       await this.careerGrowthService.updateStatus(recommendation.id, CareerEventStatus.GATED);
-    } else if (pdeResult.mode === 'ALLOW') {
+    } else if (pdeResult.mode === ExecutionMode.ALLOW_AUTO) {
       await this.careerGrowthService.updateStatus(recommendation.id, CareerEventStatus.APPROVED);
       
       // 🚀 EXECUTION LAYER: Apply the promotion to the live employee record

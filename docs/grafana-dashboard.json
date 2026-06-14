@@ -1,0 +1,231 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "description": "Akul Dravin HRMS — Platform Health & Business Metrics",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "🌐 API Health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 500 },
+              { "color": "red", "value": 1000 }
+            ]
+          },
+          "unit": "ms"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
+      "id": 2,
+      "options": { "reduceOptions": { "calcs": ["p95"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(hrms_http_request_duration_seconds_bucket[5m])) by (le)) * 1000",
+          "legendFormat": "p95 latency (ms)"
+        }
+      ],
+      "title": "API p95 Latency",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "reqps" }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(rate(hrms_http_requests_total[5m])) by (status)",
+          "legendFormat": "HTTP {{status}}"
+        }
+      ],
+      "title": "Request Rate by Status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "background" },
+      "targets": [
+        {
+          "expr": "sum(rate(hrms_http_requests_total{status=~\"5..\"}[5m]))",
+          "legendFormat": "5xx Errors/s"
+        }
+      ],
+      "title": "Error Rate (5xx)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "id": 10,
+      "title": "💼 Business Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 10 },
+      "id": 11,
+      "options": { "colorMode": "background", "graphMode": "area" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "blue", "mode": "fixed" },
+          "unit": "short"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(hrms_active_employees_total)",
+          "legendFormat": "Active Employees"
+        }
+      ],
+      "title": "Active Employees (All Tenants)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 10 },
+      "id": 12,
+      "options": { "colorMode": "background" },
+      "fieldConfig": {
+        "defaults": { "color": { "fixedColor": "green", "mode": "fixed" }, "unit": "short" }
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(hrms_payroll_batches_total{status=\"completed\"}[30d]))",
+          "legendFormat": "Payroll Batches (30d)"
+        }
+      ],
+      "title": "Payroll Batches (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 10 },
+      "id": 13,
+      "options": { "colorMode": "background" },
+      "fieldConfig": {
+        "defaults": { "color": { "fixedColor": "orange", "mode": "fixed" }, "unit": "short" }
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(hrms_leave_requests_total{status=\"pending\"}[24h]))",
+          "legendFormat": "Leave Requests (pending 24h)"
+        }
+      ],
+      "title": "Pending Leave Requests (24h)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 10 },
+      "id": 14,
+      "options": { "colorMode": "background" },
+      "fieldConfig": {
+        "defaults": { "color": { "fixedColor": "purple", "mode": "fixed" }, "unit": "short" }
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(hrms_ai_requests_total[24h]))",
+          "legendFormat": "AI Requests (24h)"
+        }
+      ],
+      "title": "AI Engine Calls (24h)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "id": 20,
+      "title": "⚙️ Queue Health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 19 },
+      "id": 21,
+      "targets": [
+        {
+          "expr": "sum(rate(hrms_queue_jobs_total[5m])) by (queue, status)",
+          "legendFormat": "{{queue}} / {{status}}"
+        }
+      ],
+      "title": "BullMQ Job Rate by Queue",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
+      "id": 22,
+      "targets": [
+        {
+          "expr": "sum(rate(hrms_queue_jobs_total{status=\"failed\"}[5m])) by (queue)",
+          "legendFormat": "Failed: {{queue}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "red", "mode": "fixed" }
+        }
+      },
+      "title": "BullMQ Failed Jobs Rate",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["hrms", "akuldravin", "production"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "definition": "label_values(hrms_active_employees_total, tenant_id)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Tenant",
+        "name": "tenant_id",
+        "query": { "query": "label_values(hrms_active_employees_total, tenant_id)", "refId": "A" },
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Akul Dravin HRMS — Platform Dashboard",
+  "uid": "hrms-platform-001",
+  "version": 1
+}

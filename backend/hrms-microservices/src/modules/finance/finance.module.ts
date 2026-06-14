@@ -4,6 +4,8 @@ import { FinanceController } from './finance.controller';
 import { FinanceService } from './finance.service';
 import { WalletsController } from './wallets.controller';
 import { WalletService } from './wallet.service';
+import { ReportingController } from './reporting.controller';
+import { ReportingService } from './reporting.service';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { InvoiceEntity } from '../../database/entities/invoice.entity';
 import { WalletEntity } from '../../database/entities/wallet.entity';
@@ -20,7 +22,9 @@ import { LoansController } from './loans.controller';
 import { LedgerService } from './ledger.service';
 import { ReconciliationService } from './reconciliation.service';
 import { FinancialOutboxService } from './financial-outbox.service';
-
+import { GlobalComplianceService } from './global-compliance.service';
+import { PaymentOrchestrationService } from './payment-orchestration.service';
+import { CommunicationModule } from '../communication/communication.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -34,7 +38,8 @@ import { FinancialOutboxService } from './financial-outbox.service';
       ExternalTransactionEntity,
       ForensicAuditEntity,
       FinancialOutboxEntity
-    ])
+    ]),
+    CommunicationModule,
   ],
   controllers: [FinanceController, WalletsController, LoansController, ReportingController],
   providers: [
@@ -45,6 +50,8 @@ import { FinancialOutboxService } from './financial-outbox.service';
     ReconciliationService, 
     FinancialOutboxService, 
     ReportingService,
+    GlobalComplianceService,
+    PaymentOrchestrationService,
     RolesGuard
   ],
   exports: [
@@ -53,7 +60,9 @@ import { FinancialOutboxService } from './financial-outbox.service';
     LedgerService, 
     ReconciliationService, 
     FinancialOutboxService, 
-    ReportingService
+    ReportingService,
+    GlobalComplianceService,
+    PaymentOrchestrationService
   ],
 })
 export class FinanceModule {}

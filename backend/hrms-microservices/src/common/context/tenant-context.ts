@@ -11,12 +11,19 @@ import { OrganizationSettingsSchema } from '../settings/schemas/organization-set
  * 1. Uses .run() for strict block-scoping.
  * 2. Throws explicit IsolationViolation errors if accessed unscoped.
  * 3. No global singleton fallbacks for tenant-sensitive data.
+ * 4. Governance Anchoring: Every request is tagged with its Epistemic Provenance.
  */
+export interface EpistemicProvenance {
+  epochHash: string;
+  confidence: number;
+  residualRisk: string;
+}
 @Injectable()
 export class TenantContext {
   private static readonly tenantIdStorage = new AsyncLocalStorage<string>();
   private static readonly managerStorage = new AsyncLocalStorage<EntityManager>();
   private static readonly settingsStorage = new AsyncLocalStorage<OrganizationSettingsSchema>();
+  private static readonly governanceStorage = new AsyncLocalStorage<EpistemicProvenance>();
   private static rootDataSource: DataSource;
 
   static setDataSource(ds: DataSource): void {
@@ -25,11 +32,13 @@ export class TenantContext {
 
   /**
    * Scoped Context Runner
-   * Wraps the execution chain in a strictly isolated environment.
+   * Wraps the execution chain in a strictly isolated environment with governance anchoring.
    */
-  static runScoped<T>(tenantId: string, settings: OrganizationSettingsSchema, callback: () => T): T {
+  static runScoped<T>(tenantId: string, settings: OrganizationSettingsSchema, governance: EpistemicProvenance, callback: () => T): T {
     return this.tenantIdStorage.run(tenantId, () => {
-      return this.settingsStorage.run(settings, callback);
+      return this.settingsStorage.run(settings, () => {
+        return this.governanceStorage.run(governance, callback);
+      });
     });
   }
 
@@ -62,6 +71,18 @@ export class TenantContext {
       throw new Error('POLICY_ISOLATION_VIOLATION: Attempted to access organization settings outside of a resolved policy scope.');
     }
     return settings;
+  }
+
+  /**
+   * Returns the Governance Provenance (Epoch) for the current scoped request.
+   */
+  static getProvenance(): EpistemicProvenance {
+    const provenance = this.governanceStorage.getStore();
+    if (!provenance) {
+      // Default fallback for legacy or non-governed paths
+      return { epochHash: 'LEGACY_UNANCHORED', confidence: 0, residualRisk: 'UNGOVERNED_EXECUTION' };
+    }
+    return provenance;
   }
 
   /**

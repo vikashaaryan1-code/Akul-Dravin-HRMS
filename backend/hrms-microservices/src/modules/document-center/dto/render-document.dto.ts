@@ -28,7 +28,7 @@ export enum DesignMode {
 }
 
 export class EmployeeDocumentPayload {
-  @IsString() name: string;
+  @IsString() name!: string;
   @IsOptional() @IsString() employeeId?: string;
   @IsOptional() @IsString() designation?: string;
   @IsOptional() @IsString() department?: string;
@@ -44,7 +44,7 @@ export class EmployeeDocumentPayload {
 }
 
 export class CompanyDocumentPayload {
-  @IsString() name: string;
+  @IsString() name!: string;
   @IsOptional() @IsString() logoUrl?: string;
   @IsOptional() @IsString() address?: string;
   @IsOptional() @IsString() cin?: string;
@@ -59,10 +59,10 @@ export class CompanyDocumentPayload {
 }
 
 export class RenderDocumentDto {
-  @IsEnum(DocumentType) type: DocumentType;
+  @IsEnum(DocumentType) type!: DocumentType;
   @IsEnum(DesignMode) @IsOptional() design?: DesignMode;
-  @IsObject() employee: EmployeeDocumentPayload;
-  @IsObject() company: CompanyDocumentPayload;
+  @IsObject() employee!: EmployeeDocumentPayload;
+  @IsObject() company!: CompanyDocumentPayload;
   @IsObject() @IsOptional() custom?: Record<string, unknown>;
   @IsBoolean() @IsOptional() includeSignature?: boolean;
   @IsBoolean() @IsOptional() includeStamp?: boolean;

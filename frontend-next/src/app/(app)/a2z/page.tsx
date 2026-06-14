@@ -11,6 +11,5 @@ export const metadata: Metadata = {
 export const revalidate = 120;
 
 export default async function A2zPage() {
-  const data = await getPublicA2zData();
-  return <A2zPageExperience data={data} />;
+  return <A2zPageExperience />;
 }

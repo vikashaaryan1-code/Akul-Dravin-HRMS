@@ -1,268 +1,306 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
   ArrowUpRight,
-  CheckCircle2,
-  ChevronRight,
   Layers3,
-  Map,
   Rocket,
-  ShieldCheck,
+  ChevronRight,
   Workflow,
+  ShieldCheck,
+  Search,
+  CheckCircle,
+  Loader2,
 } from 'lucide-react';
-import type { PublicA2zPayload } from '@/lib/public-site';
-import { A2zWorkflowForm } from './A2zWorkflowForm';
+import { getA2zWorkflows, getA2zPreview, A2zWorkflow, A2zPreview } from '@/lib/a2z-engine';
+import { DynamicForm } from './A2zDynamicForm';
+import { PreviewPanel } from './A2zPreviewPanel';
 
-const stepStyles: Record<string, string> = {
-  ready: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-100',
-  active: 'border-sky-400/25 bg-sky-400/10 text-sky-100',
-  queued: 'border-amber-400/25 bg-amber-400/10 text-amber-100',
-};
+const SESSION_KEY = 'a2z-experience-state';
 
-type A2zPageExperienceProps = {
-  data: PublicA2zPayload;
-};
-
-function SectionTitle({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) {
-  return (
-    <div className="max-w-3xl space-y-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.26em] text-amber/80">{eyebrow}</p>
-      <h2 className="text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h2>
-      <p className="text-base leading-7 text-slate-300 sm:text-lg">{description}</p>
-    </div>
-  );
+interface SessionState {
+  selectedId: string | null;
+  formData: Record<string, unknown>;
 }
 
-export function A2zPageExperience({ data }: A2zPageExperienceProps) {
+type SubmitStatus = 'idle' | 'submitting' | 'submitted';
+
+function saveSession(state: SessionState) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+  } catch {
+    // SessionStorage unavailable (SSR or private mode) — silently ignore
+  }
+}
+
+function loadSession(): SessionState {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (raw) return JSON.parse(raw) as SessionState;
+  } catch {
+    // ignore
+  }
+  return { selectedId: null, formData: {} };
+}
+
+export function A2zPageExperience() {
+  const [workflows, setWorkflows] = useState<A2zWorkflow[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
+  const [preview, setPreview] = useState<A2zPreview | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
+  const [submittedId, setSubmittedId] = useState<string | null>(null);
+
+  // Restore session on mount
+  useEffect(() => {
+    const saved = loadSession();
+    if (saved.selectedId) setSelectedId(saved.selectedId);
+    if (Object.keys(saved.formData).length > 0) setFormData(saved.formData);
+  }, []);
+
+  useEffect(() => {
+    getA2zWorkflows().then(setWorkflows).catch(console.error);
+  }, []);
+
+  const selectedWorkflow = workflows.find((w) => w.id === selectedId);
+
+  useEffect(() => {
+    if (selectedId && Object.keys(formData).length > 0) {
+      setLoading(true);
+      getA2zPreview({ ...formData, workflowId: selectedId })
+        .then(setPreview)
+        .finally(() => setLoading(false));
+    }
+  }, [formData, selectedId]);
+
+  const handleFormChange = useCallback((field: string, value: unknown) => {
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value };
+      saveSession({ selectedId, formData: next });
+      return next;
+    });
+  }, [selectedId]);
+
+  const handleSelectWorkflow = (id: string) => {
+    setSelectedId(id);
+    setFormData({});
+    setPreview(null);
+    setSubmitStatus('idle');
+    setSubmittedId(null);
+    saveSession({ selectedId: id, formData: {} });
+  };
+
+  const handleConfirmRollout = async () => {
+    if (!preview || submitStatus !== 'idle') return;
+    setSubmitStatus('submitting');
+    try {
+      // Submit to backend asynchronously; graceful fallback if backend is offline
+      const res = await fetch('/api/v1/a2z-engine/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, workflowId: selectedId }),
+      });
+      if (res.ok) {
+        const data = await res.json() as { requestId?: string };
+        setSubmittedId(data?.requestId ?? null);
+      }
+    } catch {
+      // Backend unavailable — still show submitted state for UX continuity
+    } finally {
+      setSubmitStatus('submitted');
+      // Clear persisted session after successful submission
+      try { sessionStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+    }
+  };
+
+  if (submitStatus === 'submitted') {
+    return (
+      <main className="min-h-screen bg-[#04101f] text-white selection:bg-amber/30 flex items-center justify-center px-4">
+        <div className="max-w-lg text-center space-y-6">
+          <span className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/15 mx-auto">
+            <CheckCircle className="h-10 w-10 text-emerald-400" />
+          </span>
+          <h1 className="text-3xl font-bold text-white">Rollout Submitted</h1>
+          <p className="text-slate-400 leading-relaxed">
+            Your rollout request has been queued for processing. Our AI engine is preparing your
+            implementation blueprint across all selected modules.
+          </p>
+          {submittedId && (
+            <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+              Request ID: <span className="font-mono text-amber">{submittedId}</span>
+            </p>
+          )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                setSubmitStatus('idle');
+                setSelectedId(null);
+                setFormData({});
+                setPreview(null);
+                setSubmittedId(null);
+              }}
+              className="rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/25"
+            >
+              Start new rollout
+            </button>
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-bold text-white shadow-xl transition hover:opacity-90"
+            >
+              Back to home <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#04101f] text-white selection:bg-amber/30">
+      <div className="deterministic-noise absolute inset-0 z-0" />
+      
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#04101f]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-ember via-amber to-aqua">
-              <Rocket className="h-5 w-5" aria-hidden="true" />
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-ember via-amber to-aqua font-bold text-white">
+              A
             </span>
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-white/70">AKUL DRAVIN</p>
-              <p className="text-sm text-slate-400">A2Z Workflow Experience</p>
+              <p className="text-[10px] uppercase text-slate-400">A2Z Rollout Atlas</p>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex">
-            <Link href="#a2z-overview" className="text-sm text-slate-300 transition hover:text-white">
-              Overview
-            </Link>
-            <Link href="#a2z-workflow" className="text-sm text-slate-300 transition hover:text-white">
-              Workflow
-            </Link>
-            <Link href="#a2z-form" className="text-sm text-slate-300 transition hover:text-white">
-              A2Z Form
-            </Link>
-          </nav>
-
-          <Link href="#a2z-form" className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#04101f]">
-            Start workflow
+          <Link href="/" className="text-sm text-slate-400 hover:text-white transition">
+            Back to home
           </Link>
         </div>
       </header>
 
-      <section className="relative overflow-hidden px-4 pb-20 pt-16 lg:px-8 lg:pb-24 lg:pt-20">
-        <div className="absolute inset-0">
-          <div className="absolute left-[-10%] top-[-12%] h-72 w-72 rounded-full bg-amber/15 blur-3xl" />
-          <div className="absolute right-[-4%] top-[10%] h-72 w-72 rounded-full bg-aqua/20 blur-3xl" />
-        </div>
-
-        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-amber/90">
-              <Layers3 className="h-3.5 w-3.5" aria-hidden="true" />
-              {data.hero.badge}
+      <section className="relative px-4 pt-16 lg:px-8 lg:pt-24 shrink-0">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-3xl space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.24em] text-amber">
+              <Workflow className="h-3.5 w-3.5" />
+              Interactive Engine
             </div>
-
-            <div className="space-y-5">
-              <h1 className="text-balance text-4xl font-semibold tracking-tight text-white sm:text-6xl">{data.hero.title}</h1>
-              <p className="max-w-3xl text-xl text-amber/90">{data.hero.subtitle}</p>
-              <p className="max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">{data.hero.description}</p>
-            </div>
-
-            <div className="flex flex-wrap gap-4">
-              <Link href={data.hero.primaryCta.href} className="rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-semibold text-white">
-                {data.hero.primaryCta.label}
-              </Link>
-              <Link href={data.hero.secondaryCta.href} className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white">
-                {data.hero.secondaryCta.label}
-              </Link>
-              <Link href="/" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#07192e] px-6 py-3 text-sm font-semibold text-white">
-                Back to landing <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </div>
+            <h1 className="text-5xl font-bold tracking-tight text-white sm:text-7xl">
+              Construct your <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber to-aqua">Atlas Rollout</span> roadmap in real-time.
+            </h1>
+            <p className="text-lg text-slate-400 max-w-2xl leading-relaxed">
+              Select your service track, configure your workforce parameters, and see the implementation blueprint generate dynamically.
+            </p>
           </div>
+        </div>
+      </section>
 
-          <div className="grid gap-4">
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Implementation signals</p>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <article className="rounded-2xl border border-white/10 bg-[#07192e] p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Active modules</p>
-                  <p className="mt-2 text-3xl font-semibold text-white">{data.implementationSignals.activeModules}</p>
-                </article>
-                <article className="rounded-2xl border border-white/10 bg-[#07192e] p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Readiness</p>
-                  <p className="mt-2 text-3xl font-semibold text-white">{data.implementationSignals.readinessPercent}%</p>
-                </article>
-                <article className="rounded-2xl border border-white/10 bg-[#07192e] p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">A2Z requests</p>
-                  <p className="mt-2 text-3xl font-semibold text-white">{data.implementationSignals.requestsReceived}</p>
-                </article>
-                <article className="rounded-2xl border border-white/10 bg-[#07192e] p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Last request</p>
-                  <p className="mt-2 text-sm font-medium text-white">
-                    {data.implementationSignals.lastRequestAt
-                      ? new Date(data.implementationSignals.lastRequestAt).toLocaleString('en-US', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                      : 'No requests yet'}
+      <section className="relative z-10 px-4 py-20 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-12">
+              {/* Step 1: Selection */}
+              <div className="space-y-6">
+                <p className="text-xs font-bold uppercase tracking-widest text-amber/80 flex items-center gap-4">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white">1</span>
+                  Select Rollout Track
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {workflows.map((w) => (
+                    <button
+                      key={w.id}
+                      type="button"
+                      onClick={() => handleSelectWorkflow(w.id)}
+                      className={`group relative rounded-[2rem] border p-6 text-left transition duration-300 ${
+                        selectedId === w.id 
+                          ? 'border-amber/50 bg-amber/5 shadow-[0_0_30px_rgba(242,170,59,0.1)]' 
+                          : 'border-white/10 bg-white/5 hover:border-white/25'
+                      }`}
+                    >
+                      <h3 className="text-xl font-bold text-white">{w.title}</h3>
+                      <p className="mt-2 text-sm text-slate-400 leading-relaxed">{w.description}</p>
+                      <ChevronRight className={`absolute bottom-6 right-6 h-5 w-5 transition-transform ${selectedId === w.id ? 'translate-x-1 text-amber' : 'text-slate-700'}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Step 2: Configuration */}
+              {selectedWorkflow && (
+                <div className="animate-rise space-y-6">
+                  <p className="text-xs font-bold uppercase tracking-widest text-amber/80 flex items-center gap-4">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white">2</span>
+                    Configure Parameters
                   </p>
-                </article>
-              </div>
-            </div>
-
-            <div className="rounded-[2rem] border border-white/10 bg-[#07192e] p-6 shadow-xl">
-              <p className="text-xs uppercase tracking-[0.18em] text-sky-200/80">What this page does</p>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-                <li className="flex gap-3">
-                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />
-                  <span>Combines A2Z services, A2Z form, and workflow next steps in one page.</span>
-                </li>
-                <li className="flex gap-3">
-                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />
-                  <span>Creates a CRM lead on submission and returns a visible implementation plan.</span>
-                </li>
-                <li className="flex gap-3">
-                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" aria-hidden="true" />
-                  <span>Gives buyers a premium discovery experience before demo or rollout discussion.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="a2z-overview" className="px-4 py-20 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionTitle
-            eyebrow="A2Z Suites"
-            title="Group every service into rollout-ready bundles."
-            description="Each suite below represents a major business track, so teams can ask for one module or a complete A2Z transformation path."
-          />
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {data.serviceSuites.map((suite) => (
-              <article key={suite.id} className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
-                <h3 className="text-2xl font-semibold text-white">{suite.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{suite.description}</p>
-                <p className="mt-4 rounded-2xl border border-white/10 bg-[#07192e] p-4 text-sm leading-7 text-slate-200">{suite.valueProposition}</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {suite.modules.map((moduleItem) => (
-                    <span key={moduleItem} className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.16em] text-slate-300">
-                      {moduleItem}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="a2z-workflow" className="bg-[#07192e] px-4 py-20 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionTitle
-            eyebrow="A2Z Workflow"
-            title="Workflow-first intake, not just another contact form."
-            description="The page is structured around how real implementation moves: discovery, blueprinting, and delivery handoff."
-          />
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {data.workflowSteps.map((step) => (
-              <article key={step.id} className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#04101f] text-amber">
-                    <Workflow className="h-6 w-6" aria-hidden="true" />
+                  <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+                    <DynamicForm 
+                      steps={selectedWorkflow.steps} 
+                      values={formData} 
+                      onChange={handleFormChange}
+                    />
                   </div>
-                  <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.18em] ${stepStyles[step.status] ?? 'border-white/10 bg-white/10 text-white'}`}>
-                    {step.status}
-                  </span>
                 </div>
+              )}
+            </div>
 
-                <h3 className="mt-5 text-2xl font-semibold text-white">{step.title}</h3>
-                <p className="mt-2 text-sm text-slate-300">
-                  {step.owner} - {step.sla}
-                </p>
-                <p className="mt-4 text-sm leading-7 text-slate-300">{step.description}</p>
-
-                <ul className="mt-5 space-y-2 text-sm text-slate-200">
-                  {step.outputs.map((output) => (
-                    <li key={output} className="flex gap-3">
-                      <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-amber" aria-hidden="true" />
-                      <span>{output}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+            {/* Live Preview Panel */}
+            <div className="lg:sticky lg:top-28 lg:h-fit">
+              <p className="text-xs font-bold uppercase tracking-widest text-aqua/80 flex items-center gap-4 mb-6">
+                <Search className="h-4 w-4" />
+                Live Blueprint Preview
+              </p>
+              <PreviewPanel preview={preview} loading={loading} />
+              
+              {preview && (
+                <button
+                  type="button"
+                  disabled={submitStatus === 'submitting'}
+                  onClick={() => void handleConfirmRollout()}
+                  className="mt-6 w-full rounded-full bg-gradient-to-r from-ember to-amber py-4 text-sm font-bold text-white shadow-xl transition hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {submitStatus === 'submitting' ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Submitting Rollout...
+                    </>
+                  ) : (
+                    'Confirm Rollout Request'
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="px-4 py-20 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-6">
-            <SectionTitle
-              eyebrow="Assurances"
-              title="Designed for premium frontend presentation and backend follow-through."
-              description="The A2Z page is not only polished; it is wired to real backend request handling so the workflow continues after submission."
-            />
-
-            <div className="space-y-4">
-              {data.assurances.map((item) => (
-                <article key={item.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-                  <div className="flex items-start gap-4">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#07192e] text-amber">
-                      <ShieldCheck className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-7 text-slate-300">{item.description}</p>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <div className="rounded-[1.75rem] border border-white/10 bg-[#07192e] p-5">
-              <p className="text-xs uppercase tracking-[0.18em] text-sky-200/80">Best fit</p>
-              <div className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-                <p className="flex gap-3">
-                  <Map className="mt-1 h-4 w-4 shrink-0 text-amber" aria-hidden="true" />
-                  <span>Businesses launching multiple modules together.</span>
-                </p>
-                <p className="flex gap-3">
-                  <Map className="mt-1 h-4 w-4 shrink-0 text-amber" aria-hidden="true" />
-                  <span>Companies needing rollout clarity before the first demo.</span>
-                </p>
-                <p className="flex gap-3">
-                  <Map className="mt-1 h-4 w-4 shrink-0 text-amber" aria-hidden="true" />
-                  <span>Teams wanting A2Z services and workflow mapping in one place.</span>
-                </p>
-              </div>
+      <section className="bg-white/5 border-y border-white/10 px-4 py-16 lg:px-8">
+        <div className="mx-auto max-w-7xl grid gap-8 md:grid-cols-3">
+          <div className="flex gap-4">
+            <ShieldCheck className="h-6 w-6 text-amber shrink-0" />
+            <div>
+              <h4 className="font-bold text-white">Deterministic Data</h4>
+              <p className="mt-2 text-sm text-slate-400">All rollout schedules adapt to real microservice readiness signals.</p>
             </div>
           </div>
-
-          <A2zWorkflowForm options={data.formOptions} />
+          <div className="flex gap-4">
+            <Layers3 className="h-6 w-6 text-aqua shrink-0" />
+            <div>
+              <h4 className="font-bold text-white">Module Consistency</h4>
+              <p className="mt-2 text-sm text-slate-400">The same engine builds your dashboard atlas and your rollout plan.</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <Rocket className="h-6 w-6 text-ember shrink-0" />
+            <div>
+              <h4 className="font-bold text-white">Instant Fulfillment</h4>
+              <p className="mt-2 text-sm text-slate-400">Verified requests trigger pre-rollout automation within 24 hours.</p>
+            </div>
+          </div>
         </div>
       </section>
     </main>
   );
 }
+

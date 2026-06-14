@@ -1,4 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+// No-op decorator – swap for @nestjs/swagger when Swagger UI is wired up
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ApiProperty(_opts?: Record<string, unknown>): PropertyDecorator { return () => {}; }
+
 
 export class IntegrityChecksDto {
   @ApiProperty({ enum: ['PASS', 'FAIL'] })

@@ -3,18 +3,17 @@ import { PremiumLandingPage } from '@/components/landing/PremiumLandingPage';
 import { getPublicLandingData } from '@/lib/public-site';
 
 export const metadata: Metadata = {
-  title: 'AKUL DRAVIN | Premium HRMS, CRM, Finance & Operations Platform',
+  title: 'AKUL DRAVIN | Sovereign Institutional Coordination Substrate',
   description:
-    'Premium international landing page for AKUL DRAVIN: A2Z HRMS, CRM, finance, automation, marketplace, and business operations in one full-stack platform.',
+    'The Akul Dravin Sovereign Coordination Kernel: A deterministic, forensically-immutable institutional operating system for high-trust business execution and human-governed automation.',
   keywords: [
     'AKUL DRAVIN',
-    'HRMS',
-    'CRM',
-    'Finance Platform',
-    'Business OS',
+    'Institutional OS',
+    'Sovereign Coordination',
+    'Forensic Governance',
+    'Deterministic Execution',
+    'Human-Governed AI',
     'Enterprise SaaS',
-    'AI Automation',
-    'International Frontend',
   ],
 };
 

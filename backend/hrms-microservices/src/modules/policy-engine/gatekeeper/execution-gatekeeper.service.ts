@@ -3,9 +3,11 @@ import { TenantContext } from '../../../common/context/tenant-context';
 import { PolicyAuditEntity } from '../entities/policy-audit.entity';
 import { RuleEvaluatorService } from '../evaluator/rule-evaluator.service';
 import { PolicyAuditService } from '../audit/policy-audit.service';
+import { PolicyResolverService } from '../resolver/policy-resolver.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WORKFORCE_EVENTS, PolicyDecisionEvent } from '../../../common/events/events.registry';
 import { EvaluationContext, EvaluationResult, ExecutionMode } from '../types/policy.types';
+
 
 @Injectable()
 export class ExecutionGatekeeperService {

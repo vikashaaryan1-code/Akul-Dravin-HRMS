@@ -1,7 +1,6 @@
 import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
 import { PolicyAuditService } from '../policy-engine/audit/policy-audit.service';
 import { CareerGrowthService } from '../career-growth/career-growth.service';
-import { Typography } from '@/components/ui/Typography';
 
 @Controller('control-center')
 export class ControlCenterController {
@@ -21,8 +20,8 @@ export class ControlCenterController {
       integrity: '100%',
       metrics: {
         totalEvaluations: await this.auditService.getTotalCount(),
-        activePromotions: await this.careerService.getActivePipelineCount(),
-        systemRiskScore: 0.02, // Derived from audit distributions
+        activePromotions: await this.careerService.aggregateActivePipelineCount(),
+        systemRiskScore: 0.02,
       },
       health: {
         pde: 'HEALTHY',

@@ -60,7 +60,7 @@ export class FinancialOutboxService {
             .createQueryBuilder(FinancialOutboxEntity, 'outbox')
             .where('outbox.id = :id', { id })
             .setLock('pessimistic_write')
-            .setOnLocked('skip')
+            .setOnLocked('skip_locked')
             .getOne();
 
         if (!item || item.status !== FinancialOutboxStatus.PENDING) return;
@@ -78,9 +78,10 @@ export class FinancialOutboxService {
             await manager.save(item);
 
             this.logger.log(`Outbox Success: Command ${item.idempotencyKey} committed to Ledger as ${tx.id}`);
-        } catch (e) {
+        } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : String(e);
             item.status = FinancialOutboxStatus.FAILED;
-            item.errorLog = e.message;
+            item.errorLog = message;
             item.retryCount += 1;
             
             // If retry count is low, we might move back to PENDING for automatic retry.
@@ -89,7 +90,7 @@ export class FinancialOutboxService {
             }
 
             await manager.save(item);
-            this.logger.error(`Outbox Failure: Command ${item.idempotencyKey} failed. Reason: ${e.message}`);
+            this.logger.error(`Outbox Failure: Command ${item.idempotencyKey} failed. Reason: ${message}`);
         }
     });
   }

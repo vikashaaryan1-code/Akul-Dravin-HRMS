@@ -1,30 +1,99 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import { ToastContainer } from '../components/ui/ToastContainer';
 
-const headingFont = Space_Grotesk({
-  variable: '--font-heading',
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
-  weight: ['500', '700'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap',
 });
 
-const bodyFont = Plus_Jakarta_Sans({
-  variable: '--font-body',
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-mono',
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'AKUL DRAVIN OFFICE PORTAL & HRMS PLATFORM',
+  metadataBase: new URL('https://hrms.akuldravin.com'),
+
+  title: {
+    default: 'Akul Dravin — Enterprise HRMS, ERP & CRM Platform',
+    template: '%s | Akul Dravin',
+  },
   description:
-    'Enterprise office portal and HRMS platform with role-based permissions, employee monitoring, attendance automation, location tracking, performance intelligence, and workflow orchestration.',
+    'Akul Dravin is a unified enterprise orchestration platform combining HRMS, ERP, CRM, AI workflow automation, and recruitment. Multi-tenant, Kubernetes-ready, OpenTelemetry-instrumented.',
+
+  keywords: [
+    'enterprise HRMS', 'ERP platform', 'CRM software', 'HR management system',
+    'payroll automation', 'workflow engine', 'AI workforce platform',
+    'multi-tenant SaaS', 'attendance management', 'employee management',
+    'BullMQ', 'NestJS', 'OpenTelemetry', 'pgvector',
+  ],
+
+  authors: [{ name: 'Akul Dravin Engineering', url: 'https://akuldravin.com' }],
+  creator: 'Akul Dravin',
+  publisher: 'Akul Dravin Technologies Pvt Ltd',
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
+
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: 'https://hrms.akuldravin.com',
+    siteName: 'Akul Dravin Enterprise Platform',
+    title: 'Akul Dravin — Enterprise HRMS, ERP & CRM Platform',
+    description:
+      'A unified enterprise orchestration platform combining HRMS, ERP, CRM, AI automation, and recruitment. Built for global multi-tenant deployment.',
+    images: [
+      {
+        url: '/images/og-cover.png',
+        width: 1200,
+        height: 630,
+        alt: 'Akul Dravin Enterprise Platform',
+      },
+    ],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Akul Dravin — Enterprise HRMS, ERP & CRM Platform',
+    description:
+      'Unified enterprise platform: HRMS · ERP · CRM · AI Automation · Workflow Engine · Recruitment.',
+    images: ['/images/og-cover.png'],
+    creator: '@akuldravin',
+  },
+
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+
+  manifest: '/site.webmanifest',
 };
+
+import { AuthProvider } from '@/components/auth/AuthProvider';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${headingFont.variable} ${bodyFont.variable} dark`}>
-      <body className="antialiased">{children}</body>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
+      <body className="antialiased font-sans">
+        <AuthProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </AuthProvider>
+        <ToastContainer />
+      </body>
     </html>
   );
 }

@@ -1,6 +1,9 @@
-import { LegacyModuleView } from '@/components/modules/LegacyModuleView';
+import type { Metadata } from 'next';
 
-export default function PlanCatalogPage() {
-  return <LegacyModuleView moduleKey="plan-catalog" />;
-}
+export const metadata: Metadata = {
+  title: 'Plan Catalog � AKUL DRAVIN',
+  description: 'Subscription plan management: feature packages, seat limits, trial periods and enterprise licensing.',
+};
 
+import { PlanCatalogModuleView } from '@/components/modules/PlanCatalogModuleView';
+export default function PlanCatalogPage() { return <PlanCatalogModuleView />; }

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { apiRequest } from './http-client';
 
@@ -12,7 +12,11 @@ export type EmployeeApiRecord = {
   designation: string;
   status: string;
   createdAt: string;
+  updatedAt?: string;
+  /** Computed convenience field: `firstName + ' ' + lastName` — set by hooks */
+  name: string;
 };
+
 
 export type AttendanceApiRecord = {
   id: string;
@@ -35,6 +39,23 @@ export type PayrollApiRecord = {
   generatedAt: string | null;
 };
 
+export type PayrollItemApiRecord = {
+  id: string;
+  batchId: string;
+  employeeId: string;
+  grossSalary: string;
+  deductions: string;
+  netPayable: string;
+  currency: string;
+  calculationStatus: string;
+  executionStatus: string;
+  metadata?: {
+    breakdown?: { tds?: string; pf?: string; esi?: string };
+    period?: string;
+  };
+  createdAt: string;
+};
+
 export type RecruitmentJobApiRecord = {
   id: string;
   requisitionCode: string;
@@ -49,9 +70,12 @@ export type RecruitmentApplicationApiRecord = {
   jobId: string;
   candidateId: string;
   stage: string;
-  score: string | null;
+  score: number | null;
   status: string;
+  createdAt: string;
+  updatedAt?: string;
 };
+
 
 export type DocumentApiRecord = {
   id: string;
@@ -119,6 +143,30 @@ export type AnalyticsEventApiRecord = {
   module: string;
   eventType: string;
   createdAt: string;
+};
+
+export type WorkforceKpiApiRecord = {
+  headcount: { total: number; active: number; onLeave: number; inactive: number; byDepartment: Array<{ departmentId: string; count: number }>; byEmploymentType: Array<{ type: string; count: number }> };
+  attrition: { attritionRate: number; exits: number; avgHeadcount: number; turnoverRisk: string; voluntaryExits: number; involuntaryExits: number };
+  tenure: { lessThan90Days: number; threeToTwelveMonths: number; oneToThreeYears: number; threeToFiveYears: number; moreThanFiveYears: number; avgTenureDays: number };
+  newHiresThisMonth: number;
+  offboardingsThisMonth: number;
+  openPositions: number;
+  avgSalary: number;
+  salaryBudget: number;
+};
+
+export type RecruitmentKpiApiRecord = {
+  funnel: { totalApplications: number; totalHired: number; totalOffered: number; totalInterviewed: number; conversionRates: { overallConversion: number; offerToHire: number } };
+  timeToHire: { avgDaysToHire: number; medianDaysToHire: number; p90DaysToHire: number };
+  pipeline: { bottleneckStage: string; stageBreakdown: Array<{ stage: string; count: number; dropoffRate: number }> };
+};
+
+export type RevenueKpiApiRecord = {
+  snapshot: { mrr: number; arr: number; arpu: number; totalPaidTenants: number; trialTenants: number };
+  churn: { churnRate: number; churned: number; netRevenueRetentionRate: number };
+  planDistribution: Array<{ planName: string; count: number; mrr: number; percentage: number }>;
+  growthTrend: Array<{ month: string; newMrr: number; churnedMrr: number; netMrr: number; cumulativeMrr: number }>;
 };
 
 export type SalesSummaryApiRecord = {
@@ -390,6 +438,29 @@ export type BillingInvoiceApiRecord = {
   createdAt: string;
   updatedAt: string;
 };
+export type LeaveRequestApiRecord = {
+  id: string;
+  employeeId: string;
+  leaveTypeId: string | null;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  reason: string | null;
+  status: string;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  createdAt: string;
+};
+
+export type LeaveTypeApiRecord = {
+  id: string;
+  leaveName: string;
+  maxDaysPerYear: number;
+  carryForward: boolean;
+  isPaid: boolean;
+  isActive: boolean;
+};
+
 export type HelpdeskTicketApiRecord = {
   id: string;
   ticketNumber: string;
@@ -465,6 +536,40 @@ export const platformApi = {
   getEmployees: () => apiRequest<EmployeeApiRecord[]>('/employees'),
   getAttendance: () => apiRequest<AttendanceApiRecord[]>('/attendance'),
   getPayroll: () => apiRequest<PayrollApiRecord[]>('/payroll'),
+
+  punchIn: (payload: { lat?: number; lng?: number; ipAddress?: string; geoLocation?: string }) =>
+    apiRequest<AttendanceApiRecord>('/attendance/punch-in', { method: 'POST', body: payload }),
+
+  punchOut: () =>
+    apiRequest<AttendanceApiRecord>('/attendance/punch-out', { method: 'POST' }),
+
+  /** Employee self-service: own payslip items (or admin override with ?employeeId=) */
+  getMyPayslips: (adminEmployeeId?: string) =>
+    apiRequest<PayrollItemApiRecord[]>(
+      '/payroll/me/payslips',
+      adminEmployeeId ? { query: { employeeId: adminEmployeeId } } : {},
+    ),
+
+  /**
+   * Downloads a payslip PDF for the given payroll item ID.
+   * Returns a Blob that can be streamed to the user via URL.createObjectURL.
+   * Falls back gracefully to HTML if Playwright is unavailable on the server.
+   */
+  downloadPayslipBlob: async (itemId: string): Promise<{ blob: Blob; filename: string }> => {
+    const { useAuthStore } = await import('@/store/auth-store');
+    const token = useAuthStore.getState().accessToken;
+    const BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4001/api/v1').replace(/\/$/, '');
+    const response = await fetch(`${BASE_URL}/payroll/payslip/${itemId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error(`Payslip download failed: ${response.status}`);
+    const contentDisposition = response.headers.get('Content-Disposition') ?? '';
+    const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+    const filename = filenameMatch?.[1] ?? `payslip-${itemId}.pdf`;
+    const blob = await response.blob();
+    return { blob, filename };
+  },
 
   getRecruitmentJobs: () => apiRequest<RecruitmentJobApiRecord[]>('/recruitment/jobs'),
   getRecruitmentApplications: () => apiRequest<RecruitmentApplicationApiRecord[]>('/recruitment/applications'),
@@ -554,6 +659,10 @@ export const platformApi = {
   getAnalyticsDashboard: () => apiRequest<AnalyticsDashboardApiRecord>('/analytics/dashboard'),
   getAnalyticsEvents: () => apiRequest<AnalyticsEventApiRecord[]>('/analytics/events'),
 
+  getWorkforceKpi: () => apiRequest<WorkforceKpiApiRecord>('/analytics/workforce'),
+  getRecruitmentKpi: () => apiRequest<RecruitmentKpiApiRecord>('/analytics/recruitment'),
+  getRevenueKpi: () => apiRequest<RevenueKpiApiRecord>('/analytics/revenue'),
+
   getWorkActivities: () => apiRequest<WorkActivityApiRecord[]>('/work-tracking/activities'),
   getWorkdaySummary: () => apiRequest<WorkdaySummaryApiRecord[]>('/work-tracking/workdays'),
 
@@ -571,8 +680,31 @@ export const platformApi = {
 
   getNotifications: () => apiRequest<NotificationApiRecord[]>('/notifications'),
 
+  getLeaveRequests: () => apiRequest<LeaveRequestApiRecord[]>('/leave/requests'),
+  getLeaveTypes: () => apiRequest<LeaveTypeApiRecord[]>('/leave/types'),
+  createLeaveRequest: (payload: {
+    employeeId: string;
+    leaveTypeId?: string;
+    startDate: string;
+    endDate: string;
+    totalDays: number;
+    reason?: string;
+  }) => apiRequest<LeaveRequestApiRecord>('/leave/requests', { method: 'POST', body: payload }),
+  updateLeaveRequestStatus: (id: string, status: string, approvedBy?: string) =>
+    apiRequest<LeaveRequestApiRecord>(`/leave/requests/${id}/status`, {
+      method: 'PATCH',
+      body: { status, approvedBy },
+    }),
+
   getMarketplaceJobs: () => apiRequest<MarketplaceJobApiRecord[]>('/job-marketplace/jobs', { auth: false }),
+
+  // ── LMS (Learning Management System) ─────────────────────────────────────────────
+  getLmsCourses:         () => apiRequest<{ id: string; title: string; category: string; duration: string; enrolled: number; completion: number; status: string }[]>('/lms/courses'),
+  getLmsMyLearning:      () => apiRequest<{ id: string; course: string; progress: number; dueDate: string; status: string }[]>('/lms/my-learning'),
+  getLmsCompletionTrend: () => apiRequest<{ name: string; value: number }[]>('/lms/completion-trend'),
+  getLmsSummary:         () => apiRequest<{ totalCourses: number; avgCompletion: number; totalEnrolled: number; myCoursesCount: number; completedCount: number }>('/lms/summary'),
 };
+
 
 
 

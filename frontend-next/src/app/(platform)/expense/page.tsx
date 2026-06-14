@@ -1,6 +1,9 @@
-import { LegacyModuleView } from '@/components/modules/LegacyModuleView';
+import type { Metadata } from 'next';
 
-export default function ExpensePage() {
-  return <LegacyModuleView moduleKey="expense" />;
-}
+export const metadata: Metadata = {
+  title: 'Expense Management � AKUL DRAVIN',
+  description: 'Employee expense reporting: claim submission, receipt uploads, manager approvals and reimbursement tracking.',
+};
 
+import { ExpenseModuleView } from '@/components/modules/ExpenseModuleView';
+export default function ExpensePage() { return <ExpenseModuleView />; }

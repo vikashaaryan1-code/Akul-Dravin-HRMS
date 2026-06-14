@@ -1,0 +1,206 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "akul-dravin-hrms.fullname" . }}-api
+  labels:
+    {{- include "akul-dravin-hrms.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  {{- if not .Values.autoscaling.api.enabled }}
+  replicas: {{ .Values.replicaCount.api }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "akul-dravin-hrms.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0  # Zero-downtime deployments
+  template:
+    metadata:
+      labels:
+        {{- include "akul-dravin-hrms.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: api
+      annotations:
+        # Force pod restart when config changes
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "akul-dravin-hrms.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: api
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}/api:{{ .Values.image.api.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 4001
+              protocol: TCP
+          env:
+            # Static env vars
+            - name: NODE_ENV
+              value: {{ .Values.env.NODE_ENV | quote }}
+            - name: PORT
+              value: {{ .Values.env.PORT | quote }}
+            - name: SKIP_MICROSERVICES
+              value: {{ .Values.env.SKIP_MICROSERVICES | quote }}
+            - name: OTEL_ENABLED
+              value: {{ .Values.env.OTEL_ENABLED | quote }}
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.env.OTEL_SERVICE_NAME | quote }}
+
+            # Database connection
+            - name: DB_HOST
+              value: {{ if .Values.postgresql.enabled }}{{ include "akul-dravin-hrms.fullname" . }}-postgresql{{ else }}{{ .Values.externalDatabase.host | quote }}{{ end }}
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: {{ .Values.postgresql.auth.database | quote }}
+            - name: DB_USER
+              value: {{ .Values.postgresql.auth.username | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: postgresql-password
+
+            # Redis
+            - name: REDIS_HOST
+              value: {{ if .Values.redis.enabled }}{{ include "akul-dravin-hrms.fullname" . }}-redis-master{{ else }}{{ .Values.externalRedis.host | quote }}{{ end }}
+            - name: REDIS_PORT
+              value: "6379"
+
+            # App secrets
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.JWT_SECRET }}
+            - name: STRIPE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.STRIPE_SECRET }}
+                  optional: true
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.OPENAI_API_KEY }}
+                  optional: true
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.SENTRY_DSN }}
+                  optional: true
+            - name: TOTP_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.TOTP_ENCRYPTION_KEY }}
+                  optional: true
+
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.api.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.api.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.api.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.api.liveness.failureThreshold }}
+
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.api.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.api.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.api.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.api.readiness.failureThreshold }}
+
+          resources:
+            {{- toYaml .Values.resources.api | nindent 12 }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+---
+# ── Worker Deployment ─────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "akul-dravin-hrms.fullname" . }}-worker
+  labels:
+    {{- include "akul-dravin-hrms.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  {{- if not .Values.autoscaling.worker.enabled }}
+  replicas: {{ .Values.replicaCount.worker }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "akul-dravin-hrms.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        {{- include "akul-dravin-hrms.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+    spec:
+      serviceAccountName: {{ include "akul-dravin-hrms.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: worker
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}/api:{{ .Values.image.worker.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.env.NODE_ENV | quote }}
+            - name: WORKER_TYPE
+              value: "all"   # Override per-deployment for queue partitioning
+            - name: DB_HOST
+              value: {{ if .Values.postgresql.enabled }}{{ include "akul-dravin-hrms.fullname" . }}-postgresql{{ else }}{{ .Values.externalDatabase.host | quote }}{{ end }}
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: {{ .Values.postgresql.auth.database | quote }}
+            - name: DB_USER
+              value: {{ .Values.postgresql.auth.username | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: postgresql-password
+            - name: REDIS_HOST
+              value: {{ if .Values.redis.enabled }}{{ include "akul-dravin-hrms.fullname" . }}-redis-master{{ else }}{{ .Values.externalRedis.host | quote }}{{ end }}
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.JWT_SECRET }}
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.secretKeys.OPENAI_API_KEY }}
+                  optional: true
+          resources:
+            {{- toYaml .Values.resources.worker | nindent 12 }}

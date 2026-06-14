@@ -1,0 +1,11 @@
+companyId,requestType
+company-alpha,FULL_ONBOARDING
+company-beta,MODULE_ACTIVATION
+company-gamma,FULL_ONBOARDING
+company-delta,COMPLIANCE_SETUP
+company-epsilon,MODULE_ACTIVATION
+company-zeta,FULL_ONBOARDING
+company-eta,CRM_INTEGRATION
+company-theta,FULL_ONBOARDING
+company-iota,MODULE_ACTIVATION
+company-kappa,COMPLIANCE_SETUP

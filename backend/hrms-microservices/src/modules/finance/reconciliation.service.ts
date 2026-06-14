@@ -3,6 +3,7 @@ import { DataSource, EntityManager, Between } from 'typeorm';
 import { LedgerTransactionEntity, LedgerTransactionStatus, ForensicAuditStatus } from '../../database/entities/ledger-transaction.entity';
 import { ExternalTransactionEntity, ExternalTransactionSource, ExternalTransactionStatus, ReconciliationStatus } from '../../database/entities/external-transaction.entity';
 import { ForensicAuditEntity, AnomalyType } from '../../database/entities/forensic-audit.entity';
+import { LedgerEntryEntity } from '../../database/entities/ledger-entry.entity';
 import { TenantContext } from '../../common/context/tenant-context';
 import BigNumber from 'bignumber.js';
 import { createHmac } from 'node:crypto';
@@ -68,8 +69,9 @@ export class ReconciliationService {
       // We try to reconcile immediately, but failures are handled gracefully (Event-Store pattern).
       try {
           await this.resolve(manager, saved.id);
-      } catch (e) {
-          this.logger.log(`Resolution Deferred for ${saved.externalReferenceId}: ${e.message}`);
+      } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
+          this.logger.log(`Resolution Deferred for ${saved.externalReferenceId}: ${msg}`);
       }
 
       return saved;
@@ -114,18 +116,21 @@ export class ReconciliationService {
             ledgerTx.settledAt = new Date();
         }
 
-        // Step 2: Transitions to RECONCILED (Internal parity match)
-        if (externalTx.reconciliationStatus === ReconciliationStatus.MATCHED) {
+        // Step 2: Parity was evaluated by runParityAudit() above.
+        // Read the result via a local to help TS narrowing.
+        const pairedStatus = externalTx.reconciliationStatus as ReconciliationStatus;
+        if (pairedStatus === ReconciliationStatus.MATCHED) {
             if (ledgerTx.canTransitionTo(LedgerTransactionStatus.RECONCILED)) {
                 ledgerTx.status = LedgerTransactionStatus.RECONCILED;
                 ledgerTx.reconciledAt = new Date();
                 ledgerTx.auditStatus = ForensicAuditStatus.CLEAR;
             }
-        } else if (externalTx.reconciliationStatus === ReconciliationStatus.MISMATCH) {
+        } else if (pairedStatus === ReconciliationStatus.MISMATCH) {
              ledgerTx.status = LedgerTransactionStatus.ANOMALY;
              await this.flagAnomaly(manager, ledgerTx, externalTx, AnomalyType.AMOUNT_MISMATCH);
         }
     } else if (externalTx.status === ExternalTransactionStatus.FAILED) {
+
         ledgerTx.status = LedgerTransactionStatus.FAILED;
     }
 
@@ -149,8 +154,9 @@ export class ReconciliationService {
                 await this.resolve(manager, orphan.id);
             });
             resolvedCount++;
-        } catch (e) {
-            this.logger.error(`Retry Failed for ${orphan.externalReferenceId}: ${e.message}`);
+        } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : String(e);
+            this.logger.error(`Retry Failed for ${orphan.externalReferenceId}: ${msg}`);
         }
     }
 
@@ -189,7 +195,24 @@ export class ReconciliationService {
   }
 
   private async verifySignature(event: ExternalEvent): Promise<void> {
-    const secret = process.env.FINANCE_PROVIDER_SECRET || 'PROVIDER_SECRET_PLACEHOLDER'; 
+    const raw = process.env.FINANCE_PROVIDER_SECRET;
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (!raw || raw === 'PROVIDER_SECRET_PLACEHOLDER') {
+      if (isProduction) {
+        // Fatal — never accept webhook traffic with a missing/placeholder secret
+        throw new Error(
+          'FINANCE_PROVIDER_SECRET is not configured. Set it in your environment before accepting webhook traffic.',
+        );
+      }
+      // Non-production: warn loudly and skip signature check
+      this.logger.warn(
+        '[RECON] FINANCE_PROVIDER_SECRET not set — skipping signature verification (dev/test only)',
+      );
+      return;
+    }
+
+    const secret = raw;
     const payload = JSON.stringify({ ref: event.externalReferenceId, amount: event.amount });
     const expected = createHmac('sha256', secret).update(payload).digest('hex');
 
@@ -211,9 +234,7 @@ export class ReconciliationService {
   }
 
   private async calculateLedgerTotal(manager: EntityManager, txId: string): Promise<BigNumber> {
-    // Note: In a production environment, we should have a 'total_amount' field on the transaction header
-    // for performance. For now, we sum the entries.
-    const entries = await manager.find(require('../../database/entities/ledger-entry.entity').LedgerEntryEntity, {
+    const entries = await manager.find(LedgerEntryEntity, {
         where: { transactionId: txId }
     });
     return entries.reduce((acc, e) => acc.plus(new BigNumber(e.amount)), new BigNumber(0));

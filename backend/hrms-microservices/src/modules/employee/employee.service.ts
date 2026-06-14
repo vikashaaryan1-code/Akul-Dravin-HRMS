@@ -29,7 +29,7 @@ export class EmployeeService {
   }
 
   async create(dto: CreateEmployeeDto): Promise<EmployeeEntity> {
-    const tenantId = TenantContext.getTenantId();
+    const tenantId = TenantContext.getRequiredTenantId();
     const entity = this.repo.create({
       ...dto,
       tenantId,

@@ -1,3 +1,5 @@
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { TenantScopedEntity } from './tenant-scoped.entity';
 import { PayrollBatchEntity } from './payroll-batch.entity';
 import { LedgerTransactionEntity } from './ledger-transaction.entity';
 
@@ -5,6 +7,7 @@ export enum PayrollItemExecutionStatus {
   PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
+  REVERSED = 'REVERSED',
 }
 
 @Entity({ name: 'payroll_items' })
@@ -35,7 +38,7 @@ export class PayrollItemEntity extends TenantScopedEntity {
   @Column({ type: 'varchar', length: 10, default: 'INR' })
   currency!: string;
 
-  @Column({ type: 'varchar', length: 30, default: 'draft' })
+  @Column({ name: 'calculation_status', type: 'varchar', length: 30, default: 'draft' })
   calculationStatus!: string;
 
   @Column({

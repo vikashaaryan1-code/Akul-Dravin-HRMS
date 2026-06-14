@@ -1,6 +1,7 @@
 import { Controller, Get, Query, UseGuards, Res, BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { TrialBalanceService } from './trial-balance.service';
+import { DashboardAggregatorService } from './dashboard-aggregator.service';
 import { LedgerReportService } from './ledger-report.service';
 import { PayrollReportService } from './payroll-report.service';
 import { StatutoryReportService } from './statutory-report.service';

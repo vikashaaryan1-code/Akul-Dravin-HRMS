@@ -2,6 +2,9 @@ import { Column, Entity, Index, OneToMany, ManyToOne, JoinColumn } from 'typeorm
 import { TenantScopedEntity } from './tenant-scoped.entity';
 import { AttendanceEntity } from './attendance.entity';
 
+@Index(['tenantId', 'status'])
+@Index(['tenantId', 'departmentId'])
+@Index(['tenantId', 'employeeCode'])
 @Entity({ name: 'employees' })
 export class EmployeeEntity extends TenantScopedEntity {
   @Column({ name: 'company_id', type: 'uuid' })
@@ -58,6 +61,41 @@ export class EmployeeEntity extends TenantScopedEntity {
   @Column({ type: 'varchar', length: 20, default: 'active' })
   status!: string;
 
+  @Column({ 
+    name: 'onboarding_status', 
+    type: 'varchar', 
+    length: 32, 
+    default: 'completed' 
+  })
+  onboardingStatus!: string;
+
+  @Column({ name: 'last_promotion_date', type: 'date', nullable: true })
+  lastPromotionDate?: string;
+
+  @Column({ name: 'shift_id', type: 'uuid', nullable: true })
+  shiftId?: string;
+
+  /**
+   * Link to the auth UserEntity.
+   * Nullable: existing rows have no user account until explicitly assigned.
+   * Used by GET /payroll/me/payslips to resolve employeeId from JWT sub.
+   */
+  @Index()
+  @Column({ name: 'user_id', type: 'uuid', nullable: true })
+  userId?: string | null;
+
   @OneToMany(() => AttendanceEntity, (a) => a.employee)
   attendance!: AttendanceEntity[];
+
+  // ── Forensic Provenance ──
+  @Column({ name: 'governance_provenance_hash', type: 'varchar', length: 128, nullable: true })
+  governanceProvenanceHash?: string;
+
+  @Column({ name: 'epistemic_confidence', type: 'float', nullable: true })
+  epistemicConfidence?: number;
+
+  leaveRequests?: import('./leave-request.entity').LeaveRequestEntity[];
+
+  @Column({ type: 'jsonb', nullable: true })
+  leaveBalances?: any;
 }

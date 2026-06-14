@@ -35,8 +35,9 @@ export class PolicyAuditService {
 
       await this.auditRepo.save(audit);
       this.logger.log(`Forensic Audit Recorded: ${context.targetField} -> ${result.mode} [Trace: ${context.metadata?.traceId}]`);
-    } catch (error) {
-      this.logger.error(`Failed to record policy decision: ${error.message}`);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to record policy decision: ${msg}`);
     }
   }
 

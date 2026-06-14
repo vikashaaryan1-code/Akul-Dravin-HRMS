@@ -1,0 +1,143 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Artillery Load Test — Payroll Batch (Critical Path + Throttle Validation)
+# Target : POST /api/v1/payroll/batch
+#
+# Goals  :
+#  1. Validate DB transaction stability under concurrent write load
+#  2. Confirm Redlock distributed locking prevents corrupted payroll state
+#  3. Verify throttle guard fires 429 (not 500) on overload
+#  4. Measure p95 latency on the submit → queue path
+#
+# Run    :
+#   export HR_ADMIN_JWT="<valid_hr_admin_jwt>"
+#   npx artillery run load-tests/payroll-batch.yml
+#
+# Throttle config (app.module.ts):
+#   name: 'payroll', ttl: 60000 ms, limit: 10
+#   → Requests 11+ within 60 s should return 429, never 500.
+#
+# Watch Prometheus during the test:
+#   curl http://localhost:4001/api/v1/internal/metrics | grep hrms_
+#
+#   Key signals:
+#     hrms_queue_depth{queue="payroll",state="waiting"}   → must not grow unbounded
+#     hrms_job_duration_seconds_bucket{queue="payroll"}   → p95 target < 5 s
+#     hrms_jobs_total{queue="payroll",status="failed"}    → must stay 0
+#
+# Decision rule after running:
+#   STAY MONOLITH  → no sustained queue build-up, 429s firing correctly
+#   SPLIT WORKERS  → queue depth climbs during sustained load window
+# ─────────────────────────────────────────────────────────────────────────────
+
+config:
+  target: "http://localhost:4001"
+  phases:
+    # Phase 1 — Below-throttle baseline (2 VU/s × 30 s = 60 hits, throttle limit=10/60s)
+    # ALL requests within the throttle budget — zero 429s expected here.
+    - name: "Baseline (below throttle)"
+      duration: 30
+      arrivalRate: 2
+      maxVusers: 3
+
+    # Phase 2 — At-limit: exactly at throttle ceiling
+    # 10 VU/s approaches the 10/60s limit — some 429s expected near end of window.
+    - name: "At throttle limit"
+      duration: 60
+      arrivalRate: 5
+      maxVusers: 10
+
+    # Phase 3 — Over-limit: deliberately blow past the throttle
+    # Primary validation: MUST see 429s, must NOT see 500s.
+    - name: "Over throttle (429 validation)"
+      duration: 60
+      arrivalRate: 15
+      maxVusers: 20
+
+    # Phase 4 — Cooldown: let the 60s throttle window reset
+    - name: "Cooldown"
+      duration: 70
+      arrivalRate: 1
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ $env.HR_ADMIN_JWT }}"
+
+  ensure:
+    thresholds:
+      # p95 submit latency — payroll enqueue is async so should be fast
+      - "http.response_time.p95 < 3000"
+      # HARD STOP: any 500 means throttle degraded into a crash — must be zero
+      # This is distinct from the condition below; Artillery fails immediately on breach.
+      - "http.codes.500 < 1"
+    conditions:
+      # Throttle MUST be tested — if no 429s fired, throttle is broken
+      - expression: "return (stats.counters['http.codes.429'] || 0) > 0"
+        description: "429 must fire — throttle guard is active"
+      # Zero 503 — overload should not kill the service
+      - expression: "return stats.counters['http.codes.503'] === undefined"
+        description: "Zero 503 — service remains available under throttle"
+      # Throughput check: 200s (or 202s) must flow during baseline phase
+      # If only 429s exist, throttle is misconfigured to fire too early
+      - expression: "return ((stats.counters['http.codes.200'] || 0) + (stats.counters['http.codes.201'] || 0) + (stats.counters['http.codes.202'] || 0)) > 0"
+        description: "At least some successful responses — throttle must allow baseline traffic"
+
+scenarios:
+  # Primary: batch generate (main throttle target)
+  - name: "Payroll Batch Submit"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/v1/payroll/batch"
+          json:
+            year: 2026
+            month: 8
+          # Artillery counts status per code; we allow all responses here.
+          # The ensure → conditions block validates aggregate 429 presence.
+
+  # Secondary: batch lock (passes through same throttle guard)
+  - name: "Payroll Batch Lock"
+    weight: 2
+    flow:
+      - post:
+          url: "/api/v1/payroll/batch/load-test-sentinel/lock"
+          # This will 404 (no real batch) but still exercises the throttle middleware.
+
+  # Read scenario: unthrottled status poll — validates 200s under same load
+  - name: "Payroll Job Status Poll"
+    weight: 3
+    flow:
+      - get:
+          url: "/api/v1/payroll/batch/job/load-test-job/status"
+          # Will 404 (no real job) — validates read path doesn't degrade under write load
+
+  # ── Single-tenant saturation (noisy-neighbour / lock contention test) ──────
+  # ALL load targets tenant t-1 only.
+  #
+  # What this exposes that random-tenant tests hide:
+  #   - Redlock contention: concurrent payroll jobs for the same tenant fight
+  #     for the same lock key. If locking is broken, you'll see DB corruption or
+  #     duplicate payroll batches.
+  #   - Queue unfairness: t-1 jobs may starve other tenants' jobs if the worker
+  #     has no tenant-aware scheduling.
+  #   - Pessimistic lock timeout: if the lock TTL is too short relative to
+  #     job processing time, jobs will fail under high concurrency for one tenant.
+  #
+  # Signals to watch:
+  #   hrms_jobs_total{status="failed"} rising → lock contention or timeout
+  #   DLQ / alert webhook firing → permanent lock failure
+  - name: "Single-tenant saturation (t-1 only)"
+    weight: 2
+    flow:
+      - post:
+          url: "/api/v1/payroll/batch"
+          json:
+            year: 2026
+            month: 8
+            tenantId: "t-1"
+          # Intentionally no expect — 429s, 409s (lock conflict), and 202s are
+          # all valid responses. The ensure thresholds catch 500s.
+      - think: 1
+      - post:
+          url: "/api/v1/payroll/batch/t-1-sentinel/lock"
+          # Exercises the pessimistic lock path for the same tenant back-to-back.

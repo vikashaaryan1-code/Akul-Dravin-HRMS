@@ -37,7 +37,7 @@ export class ReconReportService {
     // 2. Get External Bank Confirmations
     const externalTxs = await this.dataSource.getRepository(ExternalTransactionEntity).find({
         where: { tenantId },
-        order: { transactionDate: 'ASC' }
+        order: { eventDate: 'ASC' }
     });
 
     // Mapping logic (simplified for proof of concept)
@@ -48,7 +48,7 @@ export class ReconReportService {
         if (entry.createdAt < startDate || entry.createdAt > endDate) continue;
 
         // Try to find matching evidence
-        const evidence = externalTxs.find(tx => tx.referenceId === entry.transaction.reference);
+        const evidence = externalTxs.find(tx => tx.externalReferenceId === entry.transaction?.reference);
 
         report.push({
             date: entry.createdAt,
@@ -62,4 +62,36 @@ export class ReconReportService {
 
     return report;
   }
+
+  /**
+   * ANOMALY SUMMARY
+   * Quick status snapshot for DashboardAggregatorService.
+   */
+  async getAnomalySummary(_snapshotAt?: Date): Promise<{
+    anomalies: Array<{ type: string; id: string }>;
+    pendingExternalCount: number;
+    lastReconciledAt: Date | null;
+  }> {
+    const tenantId = TenantContext.getRequiredTenantId();
+    const { ReconciliationStatus } = await import('../../database/entities/external-transaction.entity');
+    const repo = this.dataSource.getRepository(ExternalTransactionEntity);
+
+    const unmatchedCount = await repo.count({ where: { tenantId, reconciliationStatus: ReconciliationStatus.UNMATCHED } });
+    const mismatchCount = await repo.count({ where: { tenantId, reconciliationStatus: ReconciliationStatus.MISMATCH } });
+
+    const anomalies = Array.from({ length: mismatchCount }, (_, i) => ({ type: 'AMOUNT_MISMATCH', id: `ANOMALY-${i}` }));
+
+    // Last reconciled timestamp
+    const lastMatched = await repo.findOne({
+      where: { tenantId, reconciliationStatus: ReconciliationStatus.MATCHED },
+      order: { eventDate: 'DESC' }
+    });
+
+    return {
+      anomalies,
+      pendingExternalCount: unmatchedCount,
+      lastReconciledAt: lastMatched?.eventDate ?? null,
+    };
+  }
 }
+

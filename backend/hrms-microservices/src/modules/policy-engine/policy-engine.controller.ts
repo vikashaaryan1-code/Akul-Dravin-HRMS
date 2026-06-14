@@ -1,8 +1,14 @@
-import { Controller, Get, Query, UseGuards, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { TenantContext } from '../../../common/context/tenant-context';
+import { Controller, Get, Query, Param } from '@nestjs/common';
+import { TenantContext } from '../../common/context/tenant-context';
 import { PolicyAuditEntity } from './entities/policy-audit.entity';
 import { PolicyDefinitionEntity } from './entities/policy.entity';
+
+// No-op decorators – swap for @nestjs/swagger when Swagger UI is wired up
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ApiTags(..._args: string[]): ClassDecorator { return () => {}; }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ApiOperation(_opts?: Record<string, unknown>): MethodDecorator { return () => {}; }
+
 
 @ApiTags('Policy Decision Engine (PDE)')
 @Controller('pde/v1')

@@ -40,11 +40,17 @@ export function ServicesSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                   </div>
                   
-                  {/* Floating Tech Badge */}
-                  <div className="absolute -bottom-6 -right-6 glass-panel p-6 rounded-2xl border-white/20 hidden sm:block animate-bounce shadow-2xl">
-                    <div className="flex flex-col items-center">
-                      <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">{service.id === 'hrms' ? 'AI Score' : 'Network'}</span>
-                      <span className="text-2xl font-black text-white">{service.id === 'hrms' ? '98.5' : 'Global'}</span>
+                  {/* Floating Architecture Badge */}
+                  <div className="absolute -bottom-6 -right-6 glass-panel p-4 rounded-2xl border-white/20 hidden sm:block shadow-2xl">
+                    <div className="flex flex-col gap-1">
+                      {(service.id === 'hrms'
+                        ? ['BullMQ Engine', 'pgvector AI', 'OTel Traced']
+                        : ['Helm + HPA', 'Multi-Tenant', 'dnd-kit Canvas']
+                      ).map(t => (
+                        <span key={t} className="text-[9px] font-mono text-emerald-400 font-semibold uppercase tracking-widest flex items-center gap-1.5">
+                          <span className="h-1 w-1 rounded-full bg-emerald-400" />{t}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>

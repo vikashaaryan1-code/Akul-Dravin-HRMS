@@ -1,0 +1,4 @@
+# Governance baseline file — MUST be committed to Git.
+# This file controls which violations are accepted vs. regressions.
+# Do NOT add governance-baseline.json to .gitignore.
+!governance/baseline/governance-baseline.json

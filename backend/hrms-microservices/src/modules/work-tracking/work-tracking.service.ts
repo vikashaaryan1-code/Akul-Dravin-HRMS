@@ -1,67 +1,126 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TenantContext } from '../../common/context/tenant-context';
+import { WorkActivityEntity } from '../../database/entities/work-activity.entity';
+import { WorkdaySummaryEntity } from '../../database/entities/workday-summary.entity';
+
+export interface CreateActivityDto {
+  employeeId: string;
+  projectName?: string;
+  date?: string;
+  loginAt?: string;
+  logoutAt?: string;
+  tasksCompleted?: number;
+  productiveHours?: number;
+}
+
+export interface CreateWorkdaySummaryDto {
+  employeeId: string;
+  employeeName?: string;
+  month: string;
+  presentDays?: number;
+  absentDays?: number;
+  paidLeave?: number;
+  unpaidLeave?: number;
+  wfhDays?: number;
+  overtimeHours?: number;
+}
 
 @Injectable()
 export class WorkTrackingService {
-  private readonly activities = [
-    {
-      id: 'ACT-101',
-      employeeName: 'Ananya Rao',
-      loginAt: '09:05',
-      logoutAt: '18:22',
-      tasksCompleted: 9,
-      productiveHours: 8.4,
-      project: 'Workforce Command UI',
-    },
-    {
-      id: 'ACT-102',
-      employeeName: 'Meera Joshi',
-      loginAt: '08:57',
-      logoutAt: '18:08',
-      tasksCompleted: 7,
-      productiveHours: 7.9,
-      project: 'Sales CRM Automation',
-    },
-    {
-      id: 'ACT-103',
-      employeeName: 'Raghav Menon',
-      loginAt: '09:18',
-      logoutAt: '17:54',
-      tasksCompleted: 6,
-      productiveHours: 7.2,
-      project: 'Payroll Compliance Engine',
-    },
-    {
-      id: 'ACT-104',
-      employeeName: 'Neha Kapoor',
-      loginAt: '09:12',
-      logoutAt: '18:10',
-      tasksCompleted: 8,
-      productiveHours: 7.8,
-      project: 'Talent Operations Sprint',
-    },
-    {
-      id: 'ACT-105',
-      employeeName: 'Siddharth Iyer',
-      loginAt: '09:00',
-      logoutAt: '19:02',
-      tasksCompleted: 10,
-      productiveHours: 8.9,
-      project: 'Automation Reliability Program',
-    },
-  ];
-
-  private readonly workdays = [
-    { id: 'WD-1', employeeName: 'Ananya Rao', presentDays: 21, absentDays: 1, paidLeave: 1, unpaidLeave: 0, wfhDays: 6 },
-    { id: 'WD-2', employeeName: 'Meera Joshi', presentDays: 20, absentDays: 0, paidLeave: 2, unpaidLeave: 0, wfhDays: 8 },
-    { id: 'WD-3', employeeName: 'Raghav Menon', presentDays: 19, absentDays: 1, paidLeave: 1, unpaidLeave: 1, wfhDays: 4 },
-    { id: 'WD-4', employeeName: 'Neha Kapoor', presentDays: 18, absentDays: 2, paidLeave: 2, unpaidLeave: 0, wfhDays: 7 },
-  ];
-
-  getActivities() {
-    return this.activities;
+  private get activityRepo() {
+    return TenantContext.getRepository(WorkActivityEntity);
   }
 
-  getWorkdays() {
-    return this.workdays;
+  private get workdayRepo() {
+    return TenantContext.getRepository(WorkdaySummaryEntity);
+  }
+
+  // ── Activities ──────────────────────────────────────────────────────────────
+
+  async getActivities(limit = 50): Promise<WorkActivityEntity[]> {
+    return this.activityRepo.find({
+      order: { date: 'DESC', createdAt: 'DESC' },
+      take: limit,
+    });
+  }
+
+  async getActivityById(id: string): Promise<WorkActivityEntity> {
+    const record = await this.activityRepo.findOne({ where: { id } });
+    if (!record) throw new NotFoundException(`Work activity ${id} not found`);
+    return record;
+  }
+
+  async createActivity(payload: CreateActivityDto): Promise<WorkActivityEntity> {
+    const tenantId = TenantContext.getRequiredTenantId();
+    const activity = this.activityRepo.create({
+      tenantId,
+      employeeId: payload.employeeId,
+      projectName: payload.projectName ?? null,
+      date: payload.date ?? new Date().toISOString().split('T')[0],
+      loginAt: payload.loginAt ?? null,
+      logoutAt: payload.logoutAt ?? null,
+      tasksCompleted: payload.tasksCompleted ?? 0,
+      productiveHours: payload.productiveHours ?? 0,
+    });
+    return this.activityRepo.save(activity);
+  }
+
+  async updateActivity(id: string, payload: Partial<CreateActivityDto>): Promise<WorkActivityEntity> {
+    const activity = await this.getActivityById(id);
+    const merged = this.activityRepo.merge(activity, payload as Partial<WorkActivityEntity>);
+    return this.activityRepo.save(merged);
+  }
+
+  // ── Workday Summaries ────────────────────────────────────────────────────────
+
+  async getWorkdays(month?: string): Promise<WorkdaySummaryEntity[]> {
+    const where: Record<string, unknown> = {};
+    if (month) where['month'] = month;
+    return this.workdayRepo.find({
+      where,
+      order: { month: 'DESC', employeeName: 'ASC' },
+    });
+  }
+
+  async upsertWorkdaySummary(payload: CreateWorkdaySummaryDto): Promise<WorkdaySummaryEntity> {
+    const tenantId = TenantContext.getRequiredTenantId();
+    const existing = await this.workdayRepo.findOne({
+      where: { tenantId, employeeId: payload.employeeId, month: payload.month },
+    });
+
+    if (existing) {
+      const merged = this.workdayRepo.merge(existing, payload as Partial<WorkdaySummaryEntity>);
+      return this.workdayRepo.save(merged);
+    }
+
+    const summary = this.workdayRepo.create({
+      tenantId,
+      employeeId: payload.employeeId,
+      employeeName: payload.employeeName ?? null,
+      month: payload.month,
+      presentDays: payload.presentDays ?? 0,
+      absentDays: payload.absentDays ?? 0,
+      paidLeave: payload.paidLeave ?? 0,
+      unpaidLeave: payload.unpaidLeave ?? 0,
+      wfhDays: payload.wfhDays ?? 0,
+      overtimeHours: payload.overtimeHours ?? 0,
+    });
+    return this.workdayRepo.save(summary);
+  }
+
+  // ── Analytics ────────────────────────────────────────────────────────────────
+
+  async getProductivitySummary() {
+    const activities = await this.activityRepo.find({ take: 500 });
+    const totalProductiveHours = activities.reduce((sum, a) => sum + Number(a.productiveHours), 0);
+    const totalTasksCompleted = activities.reduce((sum, a) => sum + a.tasksCompleted, 0);
+    const avgProductivity = activities.length > 0 ? totalProductiveHours / activities.length : 0;
+
+    return {
+      totalActivities: activities.length,
+      totalProductiveHours: Math.round(totalProductiveHours * 10) / 10,
+      totalTasksCompleted,
+      avgProductivityHours: Math.round(avgProductivity * 10) / 10,
+    };
   }
 }

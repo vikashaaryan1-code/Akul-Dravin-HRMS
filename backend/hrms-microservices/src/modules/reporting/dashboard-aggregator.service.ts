@@ -24,11 +24,14 @@ export class DashboardAggregatorService {
     const tenantId = TenantContext.getRequiredTenantId();
     const snapshotAt = asOfDate || new Date();
 
+    const periodStart = new Date(snapshotAt);
+    periodStart.setDate(periodStart.getDate() - 30); // 30-day statutory rolling window
+
     // 1. Fetch Component Snapshots & Forensic Insights
     const [tb, recon, statutory, forensicAnomalies, forensicWarnings, slaDetails] = await Promise.all([
         this.trialBalanceService.getReport(snapshotAt),
         this.reconReportService.getAnomalySummary(snapshotAt),
-        this.statutoryReportService.getComplianceSummary(snapshotAt),
+        this.statutoryReportService.getComplianceSummary(periodStart, snapshotAt),
         this.forensicService.detectHardAnomalies(snapshotAt),
         this.forensicService.detectWarnings(snapshotAt),
         this.forensicService.getReconciliationSlaDetails(snapshotAt)
@@ -40,7 +43,7 @@ export class DashboardAggregatorService {
     
     // Reconciliation Status logic (PASS/WARN/FAIL)
     let reconStatus: 'PASS' | 'WARN' | 'FAIL' = 'PASS';
-    if (recon.anomalies.length > 0 || forensicAnomalies.some(a => a.type === 'STALE_RECONCILIATION') || slaDetails.breachedSla > 0) {
+    if (recon.anomalies.length > 0 || forensicAnomalies.some((a: { type: string }) => a.type === 'STALE_RECONCILIATION') || slaDetails.breachedSla > 0) {
         reconStatus = 'FAIL';
     } else if (recon.pendingExternalCount > 0 || forensicWarnings.length > 0) {
         reconStatus = 'WARN';
@@ -79,9 +82,9 @@ export class DashboardAggregatorService {
         withinSLA: slaDetails.withinSla,
         breachedSLA: slaDetails.breachedSla,
         slaMinutes: slaDetails.slaMinutes,
-        lastReconciledAt: recon.lastReconciledAt,
+        lastReconciledAt: recon.lastReconciledAt ?? undefined,
       },
-      liabilities: statutory.obligations.map(o => ({
+      liabilities: statutory.map((o: { accountCode: string; accountName: string; closingBalance: string }) => ({
         accountCode: o.accountCode,
         account: o.accountName,
         balance: o.closingBalance,

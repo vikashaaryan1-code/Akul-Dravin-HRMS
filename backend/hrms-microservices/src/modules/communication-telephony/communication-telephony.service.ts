@@ -1,53 +1,36 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 
+/**
+ * CommunicationTelephonyService — TELEPHONY GATEWAY (NOT CONFIGURED)
+ *
+ * This service requires a Twilio / SIP provider to be operational.
+ * To enable:
+ *   1. Set TELEPHONY_PROVIDER=twilio in .env
+ *   2. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER
+ *   3. Replace assertConfigured() bodies with real Twilio SDK calls.
+ *
+ * Until configured, ALL methods throw 503 so callers fail loudly instead of
+ * silently returning a fake success response.
+ */
 @Injectable()
 export class CommunicationTelephonyService {
   private readonly logger = new Logger(CommunicationTelephonyService.name);
 
-  async initiateAiCall(payload: { 
-    to: string; 
-    template: string; 
-    metadata: Record<string, any> 
-  }) {
-    // 1. 🧬 Call Orchestrator Layer
-    this.logger.log(`[CTL Orchestrator] Organizing call for ${payload.to}`);
-    
-    // 2. 📞 Dialer Execution (Placeholder for Twilio/SIP)
-    const callExecution = await this.executeDialer(payload.to, payload.template);
-    
-    // 3. 📝 Post-Call Processing (Transcript + AI Analysis)
-    const analysis = await this.analyzeInteraction(callExecution.callId);
-    
-    // 4. 🔄 CRM / HRMS Sync
-    await this.syncToCore(payload.metadata.employeeId, analysis);
-
-    return {
-      callId: callExecution.callId,
-      status: 'completed',
-      analysis,
-      compliance: callExecution.compliance
-    };
+  private assertConfigured(): never {
+    this.logger.error(
+      '[CTL] Telephony provider is not configured. ' +
+        'Set TELEPHONY_PROVIDER, TWILIO_ACCOUNT_SID, and TWILIO_AUTH_TOKEN to enable.',
+    );
+    throw new ServiceUnavailableException(
+      'Telephony service is not configured. Contact your system administrator.',
+    );
   }
 
-  private async executeDialer(to: string, template: string) {
-    this.logger.log(`[CTL Dialer] Executing SIP call to ${to}`);
-    return {
-      callId: `SIP-${Date.now()}`,
-      compliance: { consentVerified: true, trai: 'OK' }
-    };
-  }
-
-  private async analyzeInteraction(callId: string) {
-    this.logger.log(`[CTL Analysis] Generating transcript + AI summary for ${callId}`);
-    return {
-      transcript: "[MOCK TRANSCRIPT]: AI Interview / Interaction completed successfully.",
-      summary: "Interpreted Positive Sentiment; Compliance guidelines met.",
-      sentiment: "positive"
-    };
-  }
-
-  private async syncToCore(employeeId: string, analysis: any) {
-    this.logger.log(`[CTL Sync] Pushing interaction data to CRM/HRMS for Employee: ${employeeId}`);
-    // This would call the CRMService or recruitment modules
+  async initiateAiCall(_payload: {
+    to: string;
+    template: string;
+    metadata: Record<string, unknown>;
+  }): Promise<never> {
+    return this.assertConfigured();
   }
 }

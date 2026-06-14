@@ -23,4 +23,19 @@ export class CareerGrowthService {
   async getEventsByEmployee(employeeId: string): Promise<CareerGrowthEntity[]> {
     return this.careerRepo.find({ where: { employeeId }, order: { createdAt: 'DESC' } });
   }
+
+  /**
+   * Counts the total number of in-flight promotion and lateral-move career events
+   * in the current tenant scope. Used by the Control Center snapshot.
+   */
+  async aggregateActivePipelineCount(): Promise<number> {
+    try {
+      return await this.careerRepo.count({
+        where: { status: CareerEventStatus.GATED },
+      });
+    } catch {
+      this.logger.warn('aggregateActivePipelineCount: could not query career events');
+      return 0;
+    }
+  }
 }

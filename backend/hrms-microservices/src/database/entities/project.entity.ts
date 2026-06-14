@@ -19,4 +19,11 @@ export class ProjectEntity extends TenantScopedEntity {
   @ManyToOne(() => EmployeeEntity)
   @JoinColumn({ name: 'owner_id' })
   owner!: EmployeeEntity;
+
+  // ── Forensic Provenance ──
+  @Column({ name: 'governance_provenance_hash', type: 'varchar', length: 128, nullable: true })
+  governanceProvenanceHash?: string;
+
+  @Column({ name: 'epistemic_confidence', type: 'float', nullable: true })
+  epistemicConfidence?: number;
 }

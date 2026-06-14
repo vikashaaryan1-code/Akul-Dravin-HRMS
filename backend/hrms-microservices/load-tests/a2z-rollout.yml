@@ -1,0 +1,171 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Artillery Load Test — A2Z Rollout Engine (Queue Stress)
+# Target : POST /api/v1/a2z-engine/submit
+#
+# Goal   : Saturate the rollout queue and measure:
+#            - Worker throughput (jobs/sec via hrms_jobs_total rate)
+#            - Queue depth trend (via /api/v1/internal/metrics)
+#            - p95 API response latency
+#
+# Run    :
+#   export TEST_JWT="<valid_jwt>"
+#   npx artillery run load-tests/a2z-rollout.yml
+#
+# Decision rule after running:
+#   STAY MONOLITH  → queue depth stabilises + p95 < 2000 ms
+#   SPLIT WORKERS  → queue depth grows linearly / never drains
+#
+# Watch Prometheus during the test:
+#   curl http://localhost:4001/api/v1/internal/metrics | grep hrms_
+#
+#   Key signals:
+#     hrms_queue_depth{queue="rollout",state="waiting"}  → must not grow unbounded
+#     hrms_job_duration_seconds_bucket{queue="rollout"}  → p95 target < 2 s
+#     hrms_jobs_total{queue="rollout",status="failed"}   → must stay 0
+#
+# ── Throughput diagnostic model ──────────────────────────────────────────
+# DO NOT judge queue depth alone. Read depth + throughput together:
+#
+#   Symptom                           Meaning
+#   ──────────────────────────────────  ───────────────────────────────────
+#   depth ↑ + jobs_total rate flat    ❌ Bottleneck — worker can't keep up
+#   depth ↑ + jobs_total rate rising  ✔ High load but healthy — worker scaling
+#   depth stable, rate stable         ✔ Steady state — no action needed
+#   depth ↑ during spike, recovers   ✔ Burst absorbed — drain phase clears it
+#   depth ↑ during sustained, never  ❌ Split signal — monolith saturated
+#     drains in drain phase
+# ─────────────────────────────────────────────────────────────────────────────
+
+config:
+  target: "http://localhost:4001"
+  phases:
+    # Phase 1 — Warm-up: gentle ramp so workers reach steady state
+    - name: "Warm-up"
+      duration: 30
+      arrivalRate: 2
+      rampTo: 10
+
+    # Phase 2 — Sustained load: hold 20 VUs for 2 min
+    #   → This is the primary observation window.
+    #   → Watch queue depth on /metrics — should stabilise, not climb.
+    - name: "Sustained load"
+      duration: 120
+      arrivalRate: 20
+
+    # Phase 3 — Spike: double pressure for 60 s
+    #   → Worker-split signal: depth spikes and stays elevated after burst
+    - name: "Spike"
+      duration: 60
+      arrivalRate: 40
+
+    # Phase 4 — Drain: let workers clear the queue
+    - name: "Drain"
+      duration: 60
+      arrivalRate: 2
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ $env.TEST_JWT }}"
+
+  payload:
+    path: "load-tests/fixtures/a2z-payloads.csv"
+    fields:
+      - "companyId"
+      - "requestType"
+    order: "random"
+    skipHeader: true
+
+  ensure:
+    thresholds:
+      # SLO: 95th percentile must be under 2 s (submit enqueue, not job completion)
+      - "http.response_time.p95 < 2000"
+      # SLO: p99 under 5 s
+      - "http.response_time.p99 < 5000"
+      # SLO: request rate proves load actually ramped
+      - "http.request_rate > 0"
+    conditions:
+      # Zero 5xx — any server error is a hard failure
+      - expression: "return stats.counters['http.codes.500'] === undefined"
+        description: "Zero 5xx errors"
+      # 202 Accepted must dominate — all valid submits should be queued
+      - expression: "return (stats.counters['http.codes.202'] || 0) > 0"
+        description: "At least one 202 Accepted (job enqueued)"
+
+scenarios:
+  - name: "Submit A2Z Rollout + poll status"
+    weight: 4
+    flow:
+      # Step 1: submit a new rollout request
+      - post:
+          url: "/api/v1/a2z-engine/submit"
+          json:
+            companyId: "{{ companyId }}"
+            requestType: "{{ requestType }}"
+            payload:
+              planId: "load-plan-{{ $randomNumber(1000, 9999) }}"
+              priority: "normal"
+          expect:
+            # 202 = queued async, 429 = throttle working (both are correct)
+            - statusCode:
+                - 202
+                - 429
+          capture:
+            - json: "$.data.requestId"
+              as: "requestId"
+
+      # Step 2: simulate client polling after 2 s
+      - think: 2
+      - get:
+          url: "/api/v1/a2z-engine/status/{{ requestId }}"
+          ifTrue: "requestId"
+          expect:
+            - statusCode:
+                - 200
+                # 404 is valid if job hasn't started yet
+                - 404
+
+  # Low-weight scenario: just hit submit repeatedly (no status poll)
+  # Tests raw submission throughput without think time
+  - name: "Submit only (burst)"
+    weight: 1
+    flow:
+      - post:
+          url: "/api/v1/a2z-engine/submit"
+          json:
+            companyId: "{{ companyId }}"
+            requestType: "{{ requestType }}"
+            payload:
+              planId: "burst-plan-{{ $randomNumber(1, 999) }}"
+              priority: "normal"
+
+  # ── Single-tenant saturation (noisy-neighbour test) ─────────────────────
+  # ALL load targets company-001 only (no tenant spread).
+  #
+  # What this exposes that random-company tests hide:
+  #   - Queue unfairness: if one company saturates the worker, other companies'
+  #     jobs never progress (visible as depth rising across ALL queues, not just
+  #     the noisy tenant's).
+  #   - Idempotency guard correctness: the processor's duplicate-run guard
+  #     (status.step == execution && progress == 100) is hit more often when
+  #     one company submits many overlapping rollout requests.
+  #   - Rate limiter fairness: the @Throttle({ default: { limit: 5 } }) on
+  #     /submit should start 429ing this scenario before the multi-tenant one.
+  #
+  # Signals to watch:
+  #   hrms_queue_depth{state="waiting"} growing even in drain phase → unfairness
+  #   hrms_jobs_total{status="completed"} rate drops vs multi-tenant run → starvation
+  - name: "Single-tenant saturation (company-001 only)"
+    weight: 1
+    flow:
+      - post:
+          url: "/api/v1/a2z-engine/submit"
+          json:
+            companyId: "company-001"
+            requestType: "full_rollout"
+            payload:
+              planId: "noisy-plan-{{ $randomNumber(1, 9999) }}"
+              priority: "normal"
+          # Intentionally no expect — 429s are expected as throttle activates.
+          # The ensure thresholds catch failures (500s).
+

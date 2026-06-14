@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, LessThan } from 'typeorm';
 import { LedgerEntryEntity } from '../../database/entities/ledger-entry.entity';
 import { ExternalTransactionEntity, ReconciliationStatus } from '../../database/entities/external-transaction.entity';
-import { PayrollBatchEntity } from '../../database/entities/payroll-batch.entity';
+import { PayrollBatchEntity, PayrollBatchStatus } from '../../database/entities/payroll-batch.entity';
 import { AiInsightEntity } from '../../database/entities/ai-insight.entity';
 import { TenantContext } from '../../common/context/tenant-context';
 import BigNumber from 'bignumber.js';
+
 
 @Injectable()
 export class ForensicAdvisoryService {
@@ -88,10 +89,10 @@ export class ForensicAdvisoryService {
     const previousBatch = await batchRepo.findOne({
         where: { 
             tenantId, 
-            status: 'COMPLETED',
-            batchDate: LessThan(currentBatch.batchDate)
+            status: PayrollBatchStatus.COMPLETED,
+            periodStart: LessThan(currentBatch.periodStart ?? new Date())
         },
-        order: { batchDate: 'DESC' }
+        order: { periodStart: 'DESC' }
     });
 
     if (!previousBatch) return [];

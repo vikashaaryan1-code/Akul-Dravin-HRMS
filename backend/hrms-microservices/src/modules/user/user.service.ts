@@ -35,12 +35,12 @@ export class UserService {
     this.logger.log(`Creating user for email=${dto.email}`);
 
     const entity = this.userRepository.create({
-      tenantId: dto.tenantId ?? null,
+      tenantId: dto.tenantId ?? undefined,
       email: dto.email,
       passwordHash: dto.password,
       fullName: dto.fullName,
       isActive: true,
-    } as any);
+    } satisfies Partial<UserEntity>);
 
     try {
       return await this.userRepository.save(entity);

@@ -45,4 +45,18 @@ export class PermissionControlService {
     role.permissions = permissions;
     return this.roleRepository.save(role);
   }
+
+  /** Get permission-change audit log (stub — replace with AuditEntity when wired) */
+  async getAudits(tenantId?: string): Promise<unknown[]> {
+    // TODO: wire to a dedicated AuditLogEntity when audit persistence is implemented
+    return [];
+  }
+
+  /** Update a role's metadata (name, isSystemRole) */
+  async updateRole(roleId: string, payload: { name?: string; isSystemRole?: boolean }): Promise<RoleEntity> {
+    const role = await this.roleRepository.findOne({ where: { id: roleId } });
+    if (!role) throw new NotFoundException('Role not found');
+    Object.assign(role, payload);
+    return this.roleRepository.save(role);
+  }
 }

@@ -1,0 +1,31 @@
+# Railway service config — Backend (NestJS API)
+# Docs: https://docs.railway.app/reference/config-as-code
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "node dist/main.js"
+healthcheckPath = "/api/v1/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# ── Environment variables configured via Railway dashboard / CLI ───────────────
+# Required vars (set in Railway → Variables tab for each environment):
+#
+# DATABASE_URL         = ${{Postgres.DATABASE_URL}}   ← injected by Railway Postgres plugin
+# REDIS_URL            = ${{Redis.REDIS_URL}}          ← injected by Railway Redis plugin
+# NODE_ENV             = production
+# PORT                 = 4001
+# JWT_SECRET           = <generate: openssl rand -hex 64>
+# JWT_EXPIRES_IN       = 12h
+# STRIPE_SECRET        = sk_live_... (or sk_test_... for staging)
+# STRIPE_WEBHOOK_SECRET = whsec_...
+# AWS_SES_REGION       = ap-south-1
+# AWS_SES_FROM_EMAIL   = noreply@akuldravin.com
+# AWS_ACCESS_KEY_ID    = <from IAM>
+# AWS_SECRET_ACCESS_KEY = <from IAM>
+# PAYROLL_NOTIFY_EMAIL = hr@akuldravin.com
+# APP_URL              = https://app.akuldravin.com

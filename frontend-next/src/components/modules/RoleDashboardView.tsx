@@ -97,11 +97,11 @@ export function RoleDashboardView() {
 
   const statusMessage = useMemo(() => {
     if (isLive) {
-      return 'Realtime analytics, notification, and sales telemetry are synced from the backend mesh.';
+      return 'Realtime analytics, notification, and sales telemetry are synced under deterministic governance attestation.';
     }
 
     if (error) {
-      return 'Live analytics endpoint is unavailable right now, so protected fallback intelligence is active.';
+      return 'Live analytics endpoint is unavailable; protected fallback intelligence is active under bounded assumptions.';
     }
 
     return 'Protected fallback intelligence is active until live services reconnect.';
@@ -150,8 +150,14 @@ export function RoleDashboardView() {
       value: '200+ workflows',
       note: 'Attendance, tasks, payroll, location and approvals monitored',
       icon: Workflow,
-      className:
-        'from-fuchsia-500/15 to-fuchsia-500/5 text-fuchsia-700 dark:text-fuchsia-200',
+      className: 'from-fuchsia-500/15 to-fuchsia-500/5 text-fuchsia-700 dark:text-fuchsia-200',
+    },
+    {
+      label: 'Governance secure',
+      value: 'Forensic Lock',
+      note: 'Every mutation is forensically anchored to a sovereign epoch',
+      icon: ShieldCheck,
+      className: 'from-pink-500/15 to-pink-500/5 text-pink-700 dark:text-pink-200',
     },
   ] as const;
 
@@ -176,6 +182,9 @@ export function RoleDashboardView() {
                 }`}
               >
                 {isLive ? 'Realtime command mesh' : 'Fallback intelligence'}
+              </span>
+              <span className="inline-flex rounded-full bg-pink-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-pink-700 dark:bg-pink-900/40 dark:text-pink-200">
+                Forensic Lock Active
               </span>
             </div>
 

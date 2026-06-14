@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "concurrently --names \"next,api\" --prefix-colors \"cyan,yellow\" \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "npm --prefix frontend-next run dev",
-    "dev:backend": "node backend/server.js",
+    "dev:backend": "npm --prefix backend/hrms-microservices run start:dev",
     "build": "npm --prefix frontend-next run build",
     "start": "npm --prefix frontend-next run start",
     "lint": "npm --prefix frontend-next run lint"

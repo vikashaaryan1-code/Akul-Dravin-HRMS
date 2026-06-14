@@ -98,19 +98,19 @@ ALTER TABLE payroll_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payroll_items ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY users_tenant_isolation ON users
-  USING (tenant_id::text = current_setting('app.current_tenant', true));
+  USING (tenant_id::text = current_setting('app.tenant_id', true));
 
 CREATE POLICY employees_tenant_isolation ON employees
-  USING (tenant_id::text = current_setting('app.current_tenant', true));
+  USING (tenant_id::text = current_setting('app.tenant_id', true));
 
 CREATE POLICY jobs_tenant_isolation ON ats_jobs
-  USING (tenant_id::text = current_setting('app.current_tenant', true));
+  USING (tenant_id::text = current_setting('app.tenant_id', true));
 
 CREATE POLICY candidates_tenant_isolation ON ats_candidates
-  USING (tenant_id::text = current_setting('app.current_tenant', true));
+  USING (tenant_id::text = current_setting('app.tenant_id', true));
 
 CREATE POLICY payroll_runs_tenant_isolation ON payroll_runs
-  USING (tenant_id::text = current_setting('app.current_tenant', true));
+  USING (tenant_id::text = current_setting('app.tenant_id', true));
 
 CREATE POLICY payroll_items_tenant_isolation ON payroll_items
-  USING (tenant_id::text = current_setting('app.current_tenant', true));
+  USING (tenant_id::text = current_setting('app.tenant_id', true));

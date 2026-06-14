@@ -25,6 +25,9 @@ import { UpdateLeadDto } from './dto/update-lead.dto';
 import { UpdatePipelineStageDto } from './dto/update-pipeline-stage.dto';
 import { UpdateSalesDealDto } from './dto/update-sales-deal.dto';
 import { UpdateSalesTargetDto } from './dto/update-sales-target.dto';
+import { AiEngineService } from '../ai-engine/ai-engine.service';
+import { CommunicationHubService } from '../communication/communication-hub.service';
+import { SaaSProvisioningService } from '../admin/saas-provisioning.service';
 
 const PIPELINE_STAGES = [
   'new-lead',
@@ -64,6 +67,9 @@ export class SalesAutomationService {
     @InjectRepository(AnalyticsEventEntity)
     private readonly analyticsEventRepository: Repository<AnalyticsEventEntity>,
     private readonly payrollService: PayrollService,
+    private readonly aiEngine: AiEngineService,
+    private readonly commsHub: CommunicationHubService,
+    private readonly saasProvisioning: SaaSProvisioningService,
   ) {}
 
   findAllLeads(): Promise<SalesLeadEntity[]> {
@@ -180,8 +186,8 @@ export class SalesAutomationService {
     }
 
     const entity = this.customerAccountRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId ?? null,
+      tenantId: dto.tenantId ?? undefined,
+      companyId: dto.companyId ?? undefined,
       accountName: dto.accountName,
       industry: dto.industry ?? null,
       website: dto.website ?? null,
@@ -318,8 +324,8 @@ export class SalesAutomationService {
     }
 
     const entity = this.dealRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId ?? null,
+      tenantId: dto.tenantId ?? undefined,
+      companyId: dto.companyId ?? undefined,
       leadId: dto.leadId ?? null,
       customerAccountId: dto.customerAccountId ?? null,
       dealName: dto.dealName,
@@ -392,8 +398,8 @@ export class SalesAutomationService {
     }
 
     const entity = this.targetRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId ?? null,
+      tenantId: dto.tenantId ?? undefined,
+      companyId: dto.companyId ?? undefined,
       employeeId: dto.employeeId ?? null,
       targetPeriod: dto.targetPeriod,
       periodKey: dto.periodKey,
@@ -464,8 +470,8 @@ export class SalesAutomationService {
     const finalCommission = baseCommission + bonusSla.finalBonus;
 
     const entity = this.commissionRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId ?? null,
+      tenantId: dto.tenantId ?? undefined,
+      companyId: dto.companyId ?? undefined,
       employeeId: dto.employeeId,
       salesTargetId: dto.salesTargetId ?? null,
       dealId: dto.dealId ?? null,
@@ -658,8 +664,8 @@ export class SalesAutomationService {
     const score = dto.score ?? this.calculateLeadScore(dto);
 
     const entity = this.leadRepository.create({
-      tenantId: dto.tenantId ?? null,
-      companyId: dto.companyId ?? null,
+      tenantId: dto.tenantId ?? undefined,
+      companyId: dto.companyId ?? undefined,
       source: dto.source,
       firstName: dto.firstName,
       lastName: dto.lastName ?? null,
@@ -745,14 +751,56 @@ export class SalesAutomationService {
     actorId: string | null,
   ) {
     const event = this.analyticsEventRepository.create({
-      tenantId,
+      tenantId: tenantId ?? undefined,
       module: 'sales-automation',
       eventType,
-      actorId,
+      actorId: actorId ?? undefined,
       eventPayload: payload,
     });
 
     await this.analyticsEventRepository.save(event);
+  }
+
+  /**
+   * Orchestrates the Autonomous Sales Workflow.
+   * Lead -> Enrichment -> Outreach -> Call -> Qualification -> Conversion -> Provisioning.
+   */
+  async executeAutonomousSalesCycle(leadId: string) {
+    const lead = await this.findLead(leadId);
+    if (!lead) throw new NotFoundException(`Lead not found: ${leadId}`);
+
+    this.logger.log(`Initiating autonomous sales cycle for lead=${lead.id}`);
+
+    // 1. AI Enrichment & Scoring
+    const scoring = await this.aiEngine.chat({
+      tenantId: 'system',
+      userId: 'ai-sales-bot',
+      messages: [{ role: 'user', content: `Analyze and enrich this lead: ${JSON.stringify(lead)}` }]
+    });
+
+    // 2. Multi-Channel Outreach
+    await this.commsHub.sendEnterpriseEmail(lead.email, 'Revolutionize Your Workforce with PUERI', 'AI-generated personalized proposal content...');
+    if (lead.phone) {
+      await this.commsHub.sendWhatsAppAlert(lead.phone, 'sales_intro', { company: lead.organization || 'your company' });
+      await this.commsHub.triggerAiVoiceCall(lead.phone, 'Hello, I am the AI assistant from PUERI. We noticed your logistics growth...');
+    }
+
+    // 3. Autonomous Conversion (Simulated)
+    this.logger.log(`Lead ${lead.id} qualified by AI. Triggering auto-provisioning...`);
+    
+    const tenant = await this.saasProvisioning.provisionNewTenant({
+      companyName: lead.organization || 'New Enterprise Customer',
+      adminEmail: lead.email,
+      plan: 'Sovereign Suite',
+    });
+
+    await this.updateLead(leadId, { pipelineStage: 'closed-won', status: 'converted' });
+
+    return {
+      success: true,
+      tenantId: tenant.tenantId,
+      status: 'PROVISIONED',
+    };
   }
 
   private round(value: number, decimals = 2): number {

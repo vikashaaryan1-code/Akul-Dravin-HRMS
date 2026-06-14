@@ -140,34 +140,40 @@ export const FEATURE_ITEMS: FeatureItem[] = [
 
 export const AUTOMATION_ITEMS: AutomationItem[] = [
   {
-    title: 'Attendance Automation',
-    description: 'Automate attendance capture using check-ins, geofencing, and shift policy engines.',
-    icon: CalendarDays,
-    tag: 'Attendance Engine',
+    title: 'BullMQ Background Engine',
+    description: 'Nine dedicated queues (email, AI, reports, payroll, webhooks, search, activity, automation, cron) with retry, dead-letter, and graceful degradation.',
+    icon: Workflow,
+    tag: '9 Queue Types',
   },
   {
-    title: 'Task Automation',
-    description: 'Route task assignments, reminders, escalations, and closure actions by role and SLA.',
+    title: 'Event-Driven Workflow Engine',
+    description: 'Trigger automations on HR events — employee created, leave approved, payroll generated — with condition branching and step-based orchestration.',
     icon: ArrowUpRight,
-    tag: 'Work Management',
+    tag: 'Event-Triggered',
+  },
+  {
+    title: 'AI Memory + Semantic Search',
+    description: 'pgvector-backed conversation memory and cross-module entity indexing with OpenAI embeddings and IVFFlat cosine similarity search.',
+    icon: Sparkles,
+    tag: 'pgvector · RAG',
   },
   {
     title: 'Document Generation',
-    description: 'Generate letters, certificates, and employee documentation from trigger-based templates.',
+    description: 'Generate letters, certificates, salary slips, and ID cards from event-based templates with BullMQ background processing.',
     icon: FileStack,
     tag: '150+ Templates',
   },
   {
-    title: 'AI Performance Predictions',
-    description: 'Predict productivity risk, achievement trends, and team capacity using AI models.',
-    icon: Sparkles,
-    tag: '250+ Models',
+    title: 'OpenTelemetry Observability',
+    description: 'Distributed tracing across HTTP, PostgreSQL, Redis, and AI calls. Prometheus metrics endpoint, Sentry error tracking, correlation ID propagation.',
+    icon: ShieldCheck,
+    tag: 'OTel + Sentry',
   },
   {
-    title: 'Security & Permission Automation',
-    description: 'Apply role policies, approval chains, and access revocation rules with complete audit logs.',
+    title: 'Deterministic Governance Kernel',
+    description: 'A layered coordination substrate with SHA-256 state hashing, human-sovereign overrides, and forensic replay isolation for institutional-grade auditability.',
     icon: ShieldCheck,
-    tag: 'RBAC + Audit',
+    tag: 'Sovereign Kernel',
   },
 ];
 
@@ -204,11 +210,11 @@ export const PRICING_PLANS: PricingPlan[] = [
 ];
 
 export const PLATFORM_STATS: StatItem[] = [
-  { value: '1B+', label: 'Workforce Records' },
-  { value: '250+', label: 'AI Models' },
-  { value: '200+', label: 'Auto Workflows' },
-  { value: '500+', label: 'Enterprise Reports' },
-  { value: '99.99%', label: 'Platform Uptime' },
+  { value: '99.99%', label: 'Platform Uptime SLA' },
+  { value: '9', label: 'BullMQ Queue Types' },
+  { value: '200+', label: 'Workflow Automations' },
+  { value: '~35ms', label: 'Avg API Latency' },
+  { value: 'pgvector', label: 'AI Memory Layer' },
 ];
 
 export const TESTIMONIALS: TestimonialItem[] = [
@@ -309,32 +315,37 @@ export const SOCIAL_LINKS: SocialLink[] = [
 export const SERVICES_DATA: ServiceItem[] = [
   {
     id: 'hrms',
-    badge: 'Autonomous Intelligence',
-    title: 'AI-Orchestrated Workforce HRMS',
-    subtitle: 'Efficiency Redefined through Neural Orchestration',
-    description: 'Transform your human capital management with an autonomous engine that predicts performance, automates compliance, and orchestrates workflows across global teams.',
+    badge: 'Enterprise HRMS + Payroll',
+    title: 'AI-Orchestrated Workforce Platform',
+    subtitle: 'End-to-End Workforce Intelligence — From Hire to Retire',
+    description: 'A complete workforce platform with attendance, payroll, performance, leave management, and recruitment — all backed by a BullMQ background engine, pgvector AI memory, and OpenTelemetry distributed tracing. Built for multi-tenant enterprise deployment from day one.',
     features: [
-      'Self-Learning Performance Scoring',
-      'Automated Compliance & Regulatory Guardrails',
-      'Hyper-Personalized Employee Growth Paths',
-      'Real-time Cognitive Workforce Analytics'
+      'Payroll with BullMQ background processing',
+      'pgvector semantic AI memory & recall',
+      'Deterministic Governance with Forensic Replay',
+      'Sovereign Multi-Party Quorum Overrides',
+      'RFC 6238 TOTP 2FA with AES-256-GCM encryption',
+      'SHA-256 refresh token family rotation',
+      'Complexity-Bounded Adaptive Regulation',
     ],
     image: '/images/landing/hrms-ai.png',
   },
   {
     id: 'business-os',
-    badge: 'Strategic Ecosystem',
-    title: 'Sovereign Business Operating System',
-    subtitle: 'A Unified Command Center for Global Enterprise',
-    description: 'A comprehensive, multi-tenant ecosystem integrating CRM, ERP, and Strategic Intelligence. Scale your operations with sovereign data control and unified business logic.',
+    badge: 'ERP + CRM + Automation',
+    title: 'Unified Enterprise Operating System',
+    subtitle: 'One Platform — CRM, Finance, Procurement, Workflows',
+    description: 'A multi-tenant business OS integrating CRM pipeline management, vendor procurement, financial reconciliation, and a 200+ workflow automation engine — orchestrated by an event-driven BullMQ architecture with Kubernetes Helm charts, HPA autoscaling, and full OpenTelemetry observability.',
     features: [
-      'Multi-Tenant Infrastructure Isolation',
-      'Unified CRM & Revenue Intelligence',
-      'Automated Financial Reconciliation',
-      'Marketplace Integration & Partner Orchestration'
+      'Kubernetes-ready Helm chart with HPA + PDB',
+      'OpenTelemetry traces (HTTP, PG, Redis, AI calls)',
+      'Prometheus /metrics endpoint',
+      'dnd-kit drag-and-drop workflow canvas',
+      'Webhook delivery with retry + dead-letter queues',
+      'Tenant-isolated multi-company architecture',
     ],
     image: '/images/landing/business-os.png',
-  }
+  },
 ];
 
 

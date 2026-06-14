@@ -4,7 +4,7 @@ import { WORKFORCE_EVENTS } from '../events/events.registry';
 
 @Injectable()
 export class RedisEventBusService {
-  private readonly logger = new Logger(RedisEventBusService.class.name);
+  private readonly logger = new Logger(RedisEventBusService.name);
   private readonly STREAM_NAME = 'workforce_governance_stream';
 
   constructor(
@@ -14,7 +14,7 @@ export class RedisEventBusService {
   /**
    * Publishes an event to the Redis Stream for durable governance visibility.
    */
-  async publish(eventType: string, payload: any): Promise<string> {
+  async publish(eventType: keyof typeof WORKFORCE_EVENTS | string, payload: unknown): Promise<string> {
     try {
       const entryId = await this.redis.xadd(
         this.STREAM_NAME,
@@ -23,11 +23,13 @@ export class RedisEventBusService {
         'payload', JSON.stringify(payload),
         'timestamp', Date.now().toString()
       );
-      
+
       this.logger.debug(`[EVENT] Streamed ${eventType} -> ID: ${entryId}`);
-      return entryId;
-    } catch (error) {
-      this.logger.error(`Failed to publish event to Redis Stream: ${error.message}`);
+      // xadd returns null only if MAXLEN 0 is used; in normal usage it always returns a string.
+      return entryId!;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to publish event to Redis Stream: ${message}`);
       throw error;
     }
   }

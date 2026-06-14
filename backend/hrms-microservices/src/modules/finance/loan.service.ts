@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { LoanEntity } from '../../database/entities/loan.entity';
+import { TenantContext } from '../../common/context/tenant-context';
 
 @Injectable()
 export class LoanService {
-  constructor(
-    @InjectRepository(LoanEntity)
-    private readonly loanRepository: Repository<LoanEntity>,
-  ) {}
+  constructor() {}
+
+  private get loanRepository() {
+    return TenantContext.getRepository(LoanEntity);
+  }
 
   async findAll() {
     return this.loanRepository.find({

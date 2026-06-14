@@ -1,5 +1,7 @@
 import { EvaluationContext, EvaluationResult, ExecutionMode } from '../../modules/policy-engine/types/policy.types';
-import { CareerEventStatus } from '../../modules/career-growth/types/career-growth.types';
+
+// Inline type – the career-growth module does not expose a types sub-directory.
+export type CareerEventStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED';
 
 export const WORKFORCE_EVENTS = {
   POLICY_DECISION: 'workforce.policy.decision',
@@ -14,30 +16,30 @@ export const WORKFORCE_EVENTS = {
  * { "employee": "E123", "decision": "PROMOTION_RECOMMENDATION", "mode": "REVIEW", ... }
  */
 export class PolicyDecisionEvent {
-  employee: string;
-  decision: string;
-  mode: ExecutionMode;
-  policy: string;
-  risk: string;
-  timestamp: string;
-  traceId: string;
-  raw_result: EvaluationResult;
-  raw_context: EvaluationContext;
+  employee!: string;
+  decision!: string;
+  mode!: ExecutionMode;
+  policy!: string;
+  risk!: string;
+  timestamp!: string;
+  traceId!: string;
+  raw_result!: EvaluationResult;
+  raw_context!: EvaluationContext;
 }
 
 export class PromotionEvent {
-  employeeId: string;
-  type: 'promotion' | 'increment';
-  status: CareerEventStatus;
-  traceId: string;
+  employeeId!: string;
+  type!: 'promotion' | 'increment';
+  status!: CareerEventStatus;
+  traceId!: string;
   metadata?: any;
 }
 
 export class TelephonyEvent {
-  callId: string;
-  to: string;
+  callId!: string;
+  to!: string;
   duration?: number;
-  sentiment: string;
+  sentiment!: string;
   transcript?: string;
-  employeeId: string;
+  employeeId!: string;
 }

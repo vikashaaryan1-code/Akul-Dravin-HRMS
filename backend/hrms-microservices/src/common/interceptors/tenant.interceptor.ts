@@ -31,21 +31,25 @@ export class TenantInterceptor implements NestInterceptor {
     // Wrap the entire request in a transaction to safely use SET LOCAL
     return from(
       this.dataSource.transaction(async (manager) => {
-        // 1. Set the imperative context for application logic
-        TenantContext.setTenantId(tenantId);
-        
-        // 2. Set the global transaction manager for scoped access
-        TenantContext.setManager(manager);
+        // Use the proper scoped runners that back AsyncLocalStorage
+        return TenantContext.runWithManager(manager, () =>
+          TenantContext.runScoped(
+            tenantId,
+            // Settings are loaded lazily inside handlers; pass empty sentinel here
+            {} as any,
+            { epochHash: 'LEGACY_UNANCHORED', confidence: 0, residualRisk: 'UNGOVERNED_EXECUTION' },
+            async () => {
+              // Initialize the Postgres session variable for RLS
+              await TenantContext.setTenantSession(manager, tenantId);
 
-        // 3. Initialize the Postgres session variable for RLS
-        // SET LOCAL ensures the variable expires at the end of this transaction
-        await TenantContext.setTenantSession(manager, tenantId);
+              // Make the manager available on request for controllers that need direct access
+              (request as any).tenantManager = manager;
 
-        // 4. Optional: Map the manager to the request if any controllers need direct access
-        (request as any).tenantManager = manager;
-
-        // 5. Execute the actual request handler
-        return await lastValueFrom(next.handle());
+              // Execute the actual request handler
+              return await lastValueFrom(next.handle());
+            },
+          )
+        );
       })
     );
   }
