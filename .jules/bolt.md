@@ -1,0 +1,3 @@
+## 2025-05-15 - [Database Aggregation for Service Statistics]
+**Learning:** Multiple modules (Attendance, Employee, Candidate, Appraisal, etc.) follow a pattern of fetching all matching records for a month/filter and performing O(N) in-memory aggregation (filtering, counting, reducing) for dashboard stats. This creates unnecessary network and memory overhead.
+**Action:** Use TypeORM's `createQueryBuilder` with `COUNT` and `SUM(CASE WHEN condition THEN 1 ELSE 0 END)` to move computation to the database and reduce transfer complexity to O(1). Always parse `getRawOne()` results as they are often returned as strings by the database driver.
