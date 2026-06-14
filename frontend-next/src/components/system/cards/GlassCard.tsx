@@ -10,7 +10,7 @@ interface GlassCardProps {
   className?: string;
   hover?: boolean;
   glow?: 'gold' | 'aqua' | 'ember' | 'jade' | 'none';
-  as?: React.ElementType;
+  as?: any;
 }
 
 const GLOW_MAP = {
@@ -65,7 +65,7 @@ interface KpiTileProps {
   value: string | number;
   trend?: number;
   trendUnit?: string;
-  icon?: React.ElementType;
+  icon?: any;
   iconColor?: string;
   detail?: string;
   glow?: GlassCardProps['glow'];

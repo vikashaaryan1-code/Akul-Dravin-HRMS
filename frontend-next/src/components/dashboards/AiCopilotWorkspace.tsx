@@ -19,7 +19,7 @@ import {
 } from '@/hooks/realtime/useAiStream';
 
 // ── Agent Mode Config ─────────────────────────────────────────────────────────
-const AGENT_ICONS: Record<AgentMode, React.ElementType> = {
+const AGENT_ICONS: Record<AgentMode, any> = {
   executive:   BrainCircuit,
   hr:          Users,
   payroll:     DollarSign,

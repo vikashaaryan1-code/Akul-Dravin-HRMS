@@ -102,7 +102,7 @@ const DEMO_PLANS: PlanDef[] = [
 
 // ── Step State Styles ─────────────────────────────────────────────────────────
 
-const STEP_STYLE: Record<StepState, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
+const STEP_STYLE: Record<StepState, { label: string; color: string; bg: string; border: string; icon: any }> = {
   PENDING:         { label: 'Pending',         color: 'text-slate-500', bg: 'bg-slate-800/60', border: 'border-slate-700/40', icon: Clock },
   EXECUTING:       { label: 'Executing',       color: 'text-blue-400',  bg: 'bg-blue-500/12',  border: 'border-blue-500/30',  icon: Activity },
   AWAITING_SUCCESS:{ label: 'Awaiting',        color: 'text-amber-400', bg: 'bg-amber-500/12', border: 'border-amber-500/30', icon: RefreshCw },

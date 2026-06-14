@@ -56,7 +56,7 @@ const DEMO_TIMELINE: IncidentTimeline = {
 
 // ── Event Styling ─────────────────────────────────────────────────────────────
 
-const EVENT_META: Record<IncidentEventType, { icon: React.ElementType; color: string; bgColor: string; label: string }> = {
+const EVENT_META: Record<IncidentEventType, { icon: any; color: string; bgColor: string; label: string }> = {
   SLO_BREACH:             { icon: AlertTriangle, color: 'text-red-400',     bgColor: 'bg-red-500/15 border-red-500/30',     label: 'SLO Breach' },
   SLO_RECOVERY:           { icon: CheckCircle,   color: 'text-emerald-400', bgColor: 'bg-emerald-500/10 border-emerald-500/20', label: 'SLO Recovery' },
   DLQ_ENTRY:              { icon: Inbox,         color: 'text-orange-400',  bgColor: 'bg-orange-500/12 border-orange-500/25', label: 'DLQ Entry' },

@@ -71,7 +71,7 @@ const DEMO_CONFIDENCE: ConfRecord[] = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const NODE_STYLE: Record<NodeType, { color: string; bg: string; border: string; icon: React.ElementType }> = {
+const NODE_STYLE: Record<NodeType, { color: string; bg: string; border: string; icon: any }> = {
   ACTIVE_SIGNAL:  { color: 'text-blue-400',    bg: 'bg-blue-500/12',    border: 'border-blue-500/30',    icon: Activity },
   DEFERRED_MATCH: { color: 'text-amber-400',   bg: 'bg-amber-500/12',   border: 'border-amber-500/30',   icon: Clock },
   PLAN_STEP:      { color: 'text-indigo-400',  bg: 'bg-indigo-500/12',  border: 'border-indigo-500/30',  icon: GitBranch },

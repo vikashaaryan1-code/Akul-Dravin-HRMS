@@ -81,7 +81,7 @@ const DEMO_STATS: SchedulerStats = {
 
 // ── Styling ───────────────────────────────────────────────────────────────────
 
-const REASON_STYLE: Record<DeferralReason, { label: string; color: string; bg: string; border: string; icon: React.ElementType; desc: string }> = {
+const REASON_STYLE: Record<DeferralReason, { label: string; color: string; bg: string; border: string; icon: any; desc: string }> = {
   RESOURCE_BUSY:         { label: 'Resource Busy',    color: 'text-orange-400', bg: 'bg-orange-500/12',  border: 'border-orange-500/30',  icon: Shield,    desc: 'Waiting for owning signal to resolve' },
   STABILIZING:           { label: 'Stabilizing',      color: 'text-blue-400',   bg: 'bg-blue-500/12',    border: 'border-blue-500/30',    icon: Activity,  desc: 'Waiting for stabilization window to expire' },
   BACKOFF:               { label: 'Backoff',           color: 'text-amber-400',  bg: 'bg-amber-500/12',   border: 'border-amber-500/30',   icon: RefreshCw, desc: 'Exponential retry backoff in progress' },

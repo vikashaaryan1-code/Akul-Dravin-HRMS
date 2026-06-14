@@ -52,7 +52,7 @@ const EDGES: GraphEdge[] = [
 
 // ── Styling ───────────────────────────────────────────────────────────────────
 
-const NODE_STYLE: Record<GraphNodeType, { icon: React.ElementType; color: string; bg: string; border: string }> = {
+const NODE_STYLE: Record<GraphNodeType, { icon: any; color: string; bg: string; border: string }> = {
   INCIDENT:     { icon: AlertTriangle, color: 'text-red-400',     bg: 'bg-red-500/15',     border: 'border-red-500/40' },
   MITIGATION:   { icon: Shield,        color: 'text-indigo-400',  bg: 'bg-indigo-500/15',  border: 'border-indigo-500/40' },
   PROJECTION:   { icon: Database,      color: 'text-amber-400',   bg: 'bg-amber-500/15',   border: 'border-amber-500/40' },

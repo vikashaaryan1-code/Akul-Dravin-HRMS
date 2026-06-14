@@ -22,37 +22,38 @@ export class PayrollCronService {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1; // 1-12
 
-    try {
-      // Simulate tenant context
-      TenantContext.setTenantId('00000000-0000-0000-0000-000000000001');
+    const tenantId = '00000000-0000-0000-0000-000000000001';
+    const mockSettings: any = { features: { enableAiRecruitment: true, enableCryptoPayroll: false } };
+    const mockGov = { epochHash: 'SYSTEM_CRON', confidence: 100, residualRisk: 'NONE' };
 
-      this.logger.log(`Generating payroll for month ${currentMonth}/${currentYear}`);
-      const batch = await this.payrollService.generateBatch(currentYear, currentMonth);
+    await TenantContext.runScoped(tenantId, mockSettings, mockGov, async () => {
+      try {
+        this.logger.log(`Generating payroll for month ${currentMonth}/${currentYear}`);
+        const batch = await this.payrollService.generateBatch(currentYear, currentMonth);
 
-      // Perform Anomaly Scan before locking
-      const isAnomalous = this.scanForAnomalies(batch);
-      
-      if (isAnomalous) {
-        this.logger.warn(`CRON: Anomalies detected in payroll batch ${batch.id}. Manual review required.`);
-        // Could trigger an alert/notification event here
-        return;
+        // Perform Anomaly Scan before locking
+        const isAnomalous = this.scanForAnomalies(batch);
+        
+        if (isAnomalous) {
+          this.logger.warn(`CRON: Anomalies detected in payroll batch ${batch.id}. Manual review required.`);
+          // Could trigger an alert/notification event here
+          return;
+        }
+
+        this.logger.log(`CRON: Batch ${batch.id} clean. Proceeding to lock and execute.`);
+        
+        // Lock batch (Transition Engine will handle rules and journaling)
+        const lockedBatch = await this.payrollService.lockBatch(batch.id);
+
+        // Trigger Execution
+        await this.payrollService.executeBatch(lockedBatch.id);
+        
+        this.logger.log(`CRON: Monthly payroll execution orchestrated successfully for batch ${batch.id}`);
+        
+      } catch (error: any) {
+        this.logger.error(`CRON: Monthly payroll failed - ${error.message}`, error.stack);
       }
-
-      this.logger.log(`CRON: Batch ${batch.id} clean. Proceeding to lock and execute.`);
-      
-      // Lock batch (Transition Engine will handle rules and journaling)
-      const lockedBatch = await this.payrollService.lockBatch(batch.id);
-
-      // Trigger Execution
-      await this.payrollService.executeBatch(lockedBatch.id);
-      
-      this.logger.log(`CRON: Monthly payroll execution orchestrated successfully for batch ${batch.id}`);
-      
-    } catch (error: any) {
-      this.logger.error(`CRON: Monthly payroll failed - ${error.message}`, error.stack);
-    } finally {
-      TenantContext.clear();
-    }
+    });
   }
 
   /**

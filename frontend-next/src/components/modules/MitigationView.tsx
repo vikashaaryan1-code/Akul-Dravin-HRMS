@@ -78,7 +78,7 @@ const SIGNALS: Signal[] = [
 
 // ── Static maps ───────────────────────────────────────────────────────────────
 
-const ACTION_META: Record<MitigationActionType, { icon: React.ElementType; label: string; color: string }> = {
+const ACTION_META: Record<MitigationActionType, { icon: any; label: string; color: string }> = {
   priority_rebuild:   { icon: RotateCcw,   label: 'Priority Rebuild',   color: 'text-indigo-400' },
   reduce_concurrency: { icon: Activity,    label: 'Reduce Concurrency',  color: 'text-amber-400'  },
   drain_dlq:          { icon: Trash2,      label: 'Drain DLQ',           color: 'text-red-400'    },

@@ -51,7 +51,9 @@ import { SettingsService } from './common/settings/settings.service';
 import { ControlCenterModule } from './modules/control-center/control-center.module';
 import { A2zEngineModule } from './modules/a2z-engine/a2z-engine.module';
 import { HealthModule } from './modules/health/health.module';
-
+import { LmsModule } from './modules/lms/lms.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
+import { PerformanceModule } from './modules/performance/performance.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bullmq';
@@ -137,6 +139,9 @@ import { UniversalCachingInterceptor } from './common/interceptors/caching.inter
     ControlCenterModule,
     A2zEngineModule,
     HealthModule,
+    LmsModule,
+    GamificationModule,
+    PerformanceModule,
     LoggerModule,
     ThrottlerModule.forRoot([
       {

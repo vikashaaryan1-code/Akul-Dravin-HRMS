@@ -22,7 +22,7 @@ import type { PlatformRole } from '@/types/platform';
 type NavItemDef = {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: any;
 };
 
 type NavGroup = {

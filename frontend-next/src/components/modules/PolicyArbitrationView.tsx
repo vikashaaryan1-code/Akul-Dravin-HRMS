@@ -83,7 +83,7 @@ const DEMO_RULES: ConflictRule[] = [
 
 // ── Styling ───────────────────────────────────────────────────────────────────
 
-const VERDICT_STYLE: Record<ArbitrationVerdict, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
+const VERDICT_STYLE: Record<ArbitrationVerdict, { label: string; color: string; bg: string; border: string; icon: any }> = {
   ALLOWED:    { label: 'Allowed',    color: 'text-emerald-400', bg: 'bg-emerald-500/12', border: 'border-emerald-500/30', icon: CheckCircle },
   BLOCKED:    { label: 'Blocked',    color: 'text-red-400',     bg: 'bg-red-500/12',     border: 'border-red-500/30',     icon: XCircle },
   DEFERRED:   { label: 'Deferred',   color: 'text-amber-400',  bg: 'bg-amber-500/12',   border: 'border-amber-500/30',   icon: Clock },

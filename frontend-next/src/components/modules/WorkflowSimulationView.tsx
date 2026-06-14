@@ -91,7 +91,7 @@ const RISK_STYLE: Record<SimRisk, { color: string; bg: string; border: string }>
   CRITICAL: { color: 'text-red-400',     bg: 'bg-red-500/10',     border: 'border-red-500/25'     },
 };
 
-const REC_STYLE: Record<Recommendation, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
+const REC_STYLE: Record<Recommendation, { label: string; color: string; bg: string; border: string; icon: any }> = {
   PROCEED:                  { label: 'Proceed',                   color: 'text-emerald-300', bg: 'bg-emerald-500/15', border: 'border-emerald-500/30', icon: CheckCircle },
   PROCEED_WITH_CAUTION:     { label: 'Proceed with Caution',      color: 'text-amber-300',   bg: 'bg-amber-500/12',   border: 'border-amber-500/30',   icon: AlertTriangle },
   REVIEW_BEFORE_PROCEEDING: { label: 'Review Before Proceeding',  color: 'text-orange-300',  bg: 'bg-orange-500/10',  border: 'border-orange-500/30',  icon: Shield },

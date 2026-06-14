@@ -52,7 +52,7 @@ const STATUS_STYLE: Record<PayStatus, string> = {
   pending:    'bg-gold/15  text-gold  border-gold/20',
   flagged:    'bg-ember/15 text-ember border-ember/20',
 };
-const STATUS_ICON: Record<PayStatus, React.ElementType> = {
+const STATUS_ICON: Record<PayStatus, any> = {
   disbursed: CheckCircle2, processing: RefreshCw, pending: Clock, flagged: AlertTriangle,
 };
 

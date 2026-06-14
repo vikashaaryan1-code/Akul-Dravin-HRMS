@@ -69,7 +69,7 @@ const DEMO_REPORTS: RcaReport[] = [
 
 // ── Styling ───────────────────────────────────────────────────────────────────
 
-const NODE_STYLE: Record<GraphNodeType, { icon: React.ElementType; color: string; bg: string }> = {
+const NODE_STYLE: Record<GraphNodeType, { icon: any; color: string; bg: string }> = {
   INCIDENT:     { icon: AlertTriangle, color: 'text-red-400',    bg: 'bg-red-500/15' },
   MITIGATION:   { icon: Shield,        color: 'text-indigo-400', bg: 'bg-indigo-500/15' },
   PROJECTION:   { icon: Database,      color: 'text-amber-400',  bg: 'bg-amber-500/15' },

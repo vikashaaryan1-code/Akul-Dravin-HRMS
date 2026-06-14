@@ -96,7 +96,7 @@ const URGENCY_STYLE: Record<string, { dot: string; label: string }> = {
   high:   { dot: 'bg-ember', label: 'text-ember' },
 };
 
-const SEVERITY_STYLE: Record<string, { icon: React.ElementType; color: string; border: string; bg: string }> = {
+const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string; bg: string }> = {
   warning: { icon: AlertTriangle, color: 'text-gold',  border: 'border-gold/20',  bg: 'bg-gold/5'  },
   info:    { icon: BrainCircuit,  color: 'text-aqua',  border: 'border-aqua/20',  bg: 'bg-aqua/5'  },
   success: { icon: CheckCircle2,  color: 'text-jade',  border: 'border-jade/20',  bg: 'bg-jade/5'  },
