@@ -16,6 +16,6 @@
     "lint": "npm --prefix frontend-next run lint"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^10.0.3"
   }
 }
