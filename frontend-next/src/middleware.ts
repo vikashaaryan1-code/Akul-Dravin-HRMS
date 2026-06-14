@@ -116,7 +116,16 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  return NextResponse.next();
+  // Add White Label routing headers
+  const hostname = request.headers.get('host') || '';
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-tenant-domain', hostname);
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {

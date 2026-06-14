@@ -54,13 +54,27 @@ import { Role } from '../../common/enums/role.enum';
  *   POST   /recruitment/offers/:id/send                   → send to candidate
  *   POST   /recruitment/offers/:id/accept                 → candidate accepted
  */
+import { ResumeParsingService } from './resume-parsing.service';
+
 @Controller('recruitment')
 @UseGuards(RolesGuard, PlanEnforcementGuard)
 export class RecruitmentAtsController {
   constructor(
     private readonly atsService:      RecruitmentAtsService,
     private readonly pipelineService: AtsPipelineService,
+    private readonly resumeParsing:   ResumeParsingService,
   ) {}
+
+  @Post('applications/upload-resume')
+  @HttpCode(HttpStatus.OK)
+  @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  uploadResume(
+    @Body() body: { tenantId: string; jobId: string; candidateId: string; fileName: string; fileContentBase64: string }
+  ) {
+    // In a real app we'd use FileInterceptor, but for JSON payload we simulate file buffer
+    const buffer = Buffer.from(body.fileContentBase64 || '', 'base64');
+    return this.resumeParsing.uploadAndParseResume(body.tenantId, body.jobId, body.candidateId, buffer, body.fileName);
+  }
 
   // ── Jobs ──────────────────────────────────────────────────────────────────
 

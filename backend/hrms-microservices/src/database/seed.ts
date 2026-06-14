@@ -37,6 +37,7 @@ import { PayrollBatchEntity, PayrollBatchStatus } from './entities/payroll-batch
 import { PayrollItemEntity, PayrollItemExecutionStatus } from './entities/payroll-item.entity';
 import { LedgerTransactionEntity } from './entities/ledger-transaction.entity';
 import { SubscriptionEntity } from './entities/subscription.entity';
+import { WhiteLabelConfigEntity } from './entities/white-label-config.entity';
 
 dotenv.config();
 
@@ -53,9 +54,9 @@ const AppDataSource = new DataSource({
     CompanyEntity, EmployeeEntity, AttendanceEntity, AnalyticsEventEntity,
     ProjectEntity, TaskEntity, WalletEntity, TransactionEntity,
     InvoiceEntity, LoanEntity, PerformanceEntity, PayrollBatchEntity, PayrollItemEntity,
-    LedgerTransactionEntity, SubscriptionEntity,
+    LedgerTransactionEntity, SubscriptionEntity, WhiteLabelConfigEntity
   ],
-  synchronize: false,
+  synchronize: true,
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -148,31 +149,85 @@ const TASK_TITLES: Record<string, string[]> = {
 
 const COMPANIES = [
   {
-    tenantCode: 'AKUL-TECH-IN',
-    legalName: 'Akul Dravin Technologies Pvt Ltd',
-    displayName: 'Akul Dravin Technologies',
-    industry: 'Technology & AI',
+    tenantCode: 'AKUL-FINANCE',
+    legalName: 'Akul Dravin Finance Pvt Ltd',
+    displayName: 'Akul Dravin Finance',
+    industry: 'Financial Services',
     country: 'India',
-    employeeCount: 18,
-    baseSalaryRange: [80000, 350000] as [number, number],
+    employeeCount: 20,
+    baseSalaryRange: [60000, 300000] as [number, number],
   },
   {
-    tenantCode: 'NEXASTAFF-IN',
-    legalName: 'NexaStaff Solutions Pvt Ltd',
-    displayName: 'NexaStaff Solutions',
-    industry: 'Staffing & Recruitment',
+    tenantCode: 'AKUL-SCHOOL',
+    legalName: 'Akul Dravin School',
+    displayName: 'Akul Dravin School',
+    industry: 'Education',
+    country: 'India',
+    employeeCount: 15,
+    baseSalaryRange: [30000, 150000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-AYURVEDA',
+    legalName: 'Akul Dravin Ayurveda',
+    displayName: 'Akul Dravin Ayurveda',
+    industry: 'Wellness & Healthcare',
+    country: 'India',
+    employeeCount: 15,
+    baseSalaryRange: [30000, 120000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-DIGITAL',
+    legalName: 'Akul Dravin Digital World',
+    displayName: 'Akul Dravin Digital World',
+    industry: 'Digital Marketing & IT',
+    country: 'India',
+    employeeCount: 18,
+    baseSalaryRange: [70000, 350000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-HRMS',
+    legalName: 'Akul Dravin HRMS',
+    displayName: 'Akul Dravin HRMS',
+    industry: 'HR Tech',
+    country: 'India',
+    employeeCount: 12,
+    baseSalaryRange: [80000, 400000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-LOGISTICS',
+    legalName: 'Akul Dravin Logistics',
+    displayName: 'Akul Dravin Logistics',
+    industry: 'Supply Chain & Transport',
+    country: 'India',
+    employeeCount: 25,
+    baseSalaryRange: [25000, 90000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-REALESTATE',
+    legalName: 'Akul Dravin Real Estate',
+    displayName: 'Akul Dravin Real Estate',
+    industry: 'Real Estate & Construction',
+    country: 'India',
+    employeeCount: 15,
+    baseSalaryRange: [50000, 250000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-HEALTHCARE',
+    legalName: 'Akul Dravin Healthcare',
+    displayName: 'Akul Dravin Healthcare',
+    industry: 'Clinics & Diagnostics',
+    country: 'India',
+    employeeCount: 20,
+    baseSalaryRange: [40000, 200000] as [number, number],
+  },
+  {
+    tenantCode: 'AKUL-FRANCHISE',
+    legalName: 'Akul Dravin Franchise Network',
+    displayName: 'Akul Dravin Franchise Network',
+    industry: 'Franchise Operations',
     country: 'India',
     employeeCount: 10,
     baseSalaryRange: [45000, 180000] as [number, number],
-  },
-  {
-    tenantCode: 'ORION-RETAIL',
-    legalName: 'Orion Retail & Commerce Ltd',
-    displayName: 'Orion Commerce',
-    industry: 'Retail & E-Commerce',
-    country: 'India',
-    employeeCount: 7,
-    baseSalaryRange: [35000, 130000] as [number, number],
   },
 ];
 
@@ -248,6 +303,7 @@ async function seed() {
     const payrollBatchRepo = AppDataSource.getRepository(PayrollBatchEntity);
     const payrollItemRepo  = AppDataSource.getRepository(PayrollItemEntity);
     const subscriptionRepo = AppDataSource.getRepository(SubscriptionEntity);
+    const whiteLabelRepo   = AppDataSource.getRepository(WhiteLabelConfigEntity);
 
     let totalEmployees = 0;
 
@@ -285,6 +341,20 @@ async function seed() {
         await subscriptionRepo.save(subscription);
       }
 
+      // ── White Label Config ───────────────────────────────────────────────────
+      let whiteLabel = await whiteLabelRepo.findOne({ where: { tenantId } });
+      if (!whiteLabel) {
+        whiteLabel = whiteLabelRepo.create({
+          tenantId,
+          brandName: companyDef.displayName,
+          primaryColor: '#FF6B35', // Akul Dravin Brand Color
+          secondaryColor: '#FFD700',
+          accentColor: '#00D4FF',
+          customDomain: `${companyDef.tenantCode.toLowerCase()}.akuldravin.com`,
+        });
+        await whiteLabelRepo.save(whiteLabel);
+      }
+
       // ── Projects ───────────────────────────────────────────────────────────
       console.log(`  📂 Seeding ${PROJECT_TEMPLATES.length} projects...`);
       const seededProjects: ProjectEntity[] = [];
@@ -303,7 +373,8 @@ async function seed() {
       const [salMin, salMax] = companyDef.baseSalaryRange;
 
       for (let i = 0; i < companyDef.employeeCount; i++) {
-        const code = `${companyDef.tenantCode.slice(0, 4)}-EMP${String(i + 1).padStart(3, '0')}`;
+        const prefix = companyDef.tenantCode.split('-')[1]?.substring(0, 3) || 'EMP';
+        const code = `${prefix}-EMP${String(i + 1).padStart(3, '0')}`;
         let emp = await employeeRepo.findOne({ where: { employeeCode: code, tenantId } });
         if (!emp) {
           const dept = DEPTS[i % DEPTS.length];
@@ -462,7 +533,8 @@ async function seed() {
       // ── Invoices ───────────────────────────────────────────────────────────
       console.log(`  📄 Seeding 5 invoices...`);
       for (let i = 0; i < 5; i++) {
-        const invoiceNum = `INV-${companyDef.tenantCode.slice(0, 3)}-2025-${String(i + 1).padStart(3, '0')}`;
+        const prefix = companyDef.tenantCode.split('-')[1]?.substring(0, 3) || 'COM';
+        const invoiceNum = `INV-${prefix}-2025-${String(i + 1).padStart(3, '0')}`;
         const exists = await invoiceRepo.findOne({ where: { invoiceNumber: invoiceNum, tenantId } });
         if (!exists) {
           const amount = rnd(50000, 500000);

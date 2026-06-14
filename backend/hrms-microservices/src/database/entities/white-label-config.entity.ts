@@ -16,7 +16,7 @@ export class WhiteLabelConfigEntity {
   @Column({ name: 'tenant_id' })
   tenantId: string;
 
-  @Column({ name: 'brand_name', nullable: true })
+  @Column({ name: 'brand_name', type: 'varchar', nullable: true })
   brandName: string | null;
 
   @Column({ name: 'logo_url', type: 'text', nullable: true })
@@ -34,34 +34,34 @@ export class WhiteLabelConfigEntity {
   @Column({ name: 'accent_color', length: 7, default: '#22d3ee' })
   accentColor: string;
 
-  @Column({ name: 'sidebar_bg', length: 7, nullable: true })
+  @Column({ name: 'sidebar_bg', type: 'varchar', length: 7, nullable: true })
   sidebarBg: string | null;
 
-  @Column({ name: 'custom_domain', nullable: true })
+  @Column({ name: 'custom_domain', type: 'varchar', nullable: true })
   customDomain: string | null;
 
-  @Column({ name: 'smtp_host', nullable: true })
+  @Column({ name: 'smtp_host', type: 'varchar', nullable: true })
   smtpHost: string | null;
 
   @Column({ name: 'smtp_port', type: 'int', nullable: true })
   smtpPort: number | null;
 
-  @Column({ name: 'smtp_user', nullable: true })
+  @Column({ name: 'smtp_user', type: 'varchar', nullable: true })
   smtpUser: string | null;
 
-  @Column({ name: 'smtp_password', nullable: true })
+  @Column({ name: 'smtp_password', type: 'varchar', nullable: true })
   smtpPassword: string | null;
 
-  @Column({ name: 'from_email', nullable: true })
+  @Column({ name: 'from_email', type: 'varchar', nullable: true })
   fromEmail: string | null;
 
-  @Column({ name: 'from_name', nullable: true })
+  @Column({ name: 'from_name', type: 'varchar', nullable: true })
   fromName: string | null;
 
   @Column({ name: 'login_bg_url', type: 'text', nullable: true })
   loginBgUrl: string | null;
 
-  @Column({ name: 'login_tagline', nullable: true })
+  @Column({ name: 'login_tagline', type: 'varchar', nullable: true })
   loginTagline: string | null;
 
   @Column({ name: 'feature_toggles', type: 'jsonb', default: '{}' })

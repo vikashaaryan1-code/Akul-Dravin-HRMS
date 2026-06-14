@@ -17,6 +17,7 @@ import { AutonomousExecutiveBrainService } from './autonomous-executive-brain.se
 import { AiAgentMarketplaceService } from './ai-agent-marketplace.service';
 import { EnterpriseDigitalTwinService } from './enterprise-digital-twin.service';
 import { AutonomousStrategyService } from './autonomous-strategy.service';
+import { CommandBridgeGateway } from './command-bridge.gateway';
 // AI Engine 8 Layers
 import { AiHrCoreService } from './layers/ai-hr-core.service';
 import { AiRecruitmentEngineService } from './layers/ai-recruitment-engine.service';
@@ -92,6 +93,7 @@ import { DocumentRecordEntity } from '../../database/entities/document-record.en
     AiAgentMarketplaceService,
     EnterpriseDigitalTwinService,
     AutonomousStrategyService,
+    CommandBridgeGateway,
     // 8-Layer AI Engine Services
     AiHrCoreService,
     AiRecruitmentEngineService,

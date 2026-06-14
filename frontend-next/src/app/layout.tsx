@@ -82,17 +82,24 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { BrandingProvider } from '@/providers/BrandingProvider';
+import { headers } from 'next/headers';
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const headersList = await headers();
+  const domain = headersList.get('x-tenant-domain') || 'localhost';
+
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
       <body className="antialiased font-sans">
-        <AuthProvider>
-          <QueryProvider>
-            {children}
-          </QueryProvider>
-        </AuthProvider>
-        <ToastContainer />
+        <BrandingProvider domain={domain}>
+          <AuthProvider>
+            <QueryProvider>
+              {children}
+            </QueryProvider>
+          </AuthProvider>
+          <ToastContainer />
+        </BrandingProvider>
       </body>
     </html>
   );

@@ -23,6 +23,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { QUEUE_PAYROLL } from '../../common/queues/queue-names';
 import { TransitionPolicyEngine } from '../../common/governance/transitions/transition-policy-engine';
 import { TaxEngineService } from './tax-engine.service';
+import { PayrollCronService } from './payroll.cron';
 
 /**
  * PayrollModule — Commit 5 (Governance Integration)
@@ -65,7 +66,7 @@ import { TaxEngineService } from './tax-engine.service';
     DomainEventModule,           // provides DomainEventBus to TransitionPolicyEngine
   ],
   controllers: [PayrollController],
-  providers:   [PayrollService, PayrollBatchProcessor, RolesGuard, TransitionPolicyEngine, TaxEngineService],
-  exports:     [PayrollService, TaxEngineService],
+  providers:   [PayrollService, PayrollBatchProcessor, RolesGuard, TransitionPolicyEngine, TaxEngineService, PayrollCronService],
+  exports:     [PayrollService, TaxEngineService, PayrollCronService],
 })
 export class PayrollModule {}
