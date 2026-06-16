@@ -160,7 +160,12 @@ export function LeaveModuleView() {
   });
 
   const allRequests = useMemo(
-    () => [...localRequests, ...data.requests],
+    () => {
+      // Avoid duplicates from local optimistic updates
+      const dataIds = new Set(data.requests.map(r => r.id));
+      const locals = localRequests.filter(lr => !dataIds.has(lr.id));
+      return [...locals, ...data.requests];
+    },
     [localRequests, data.requests],
   );
 
@@ -215,6 +220,24 @@ export function LeaveModuleView() {
     }
   };
 
+  // ── Action handlers ──────────────────────────────────────────────────────────
+  const handleApproveReject = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      await platformApi.updateLeaveRequestStatus(id, status);
+      // update local cache for immediate feedback
+      const idx = localRequests.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        const updated = [...localRequests];
+        updated[idx] = { ...updated[idx], status };
+        setLocalRequests(updated);
+      }
+      data.requests = data.requests.map(r => r.id === id ? { ...r, status } : r);
+    } catch (e) {
+      console.error(`Failed to ${status} request:`, e);
+      alert(e instanceof Error ? e.message : `Failed to ${status} request`);
+    }
+  };
+
   // ── Table rows ───────────────────────────────────────────────────────────────
   const tableRows = useMemo(
     () =>
@@ -226,6 +249,7 @@ export function LeaveModuleView() {
         reason:    r.reason ?? '—',
         status:    r.status,
         appliedAt: formatDateTime(r.createdAt),
+        raw:       r,
       })),
     [allRequests],
   );
@@ -335,6 +359,29 @@ export function LeaveModuleView() {
               render: (row) => (
                 <StatusPill label={row.status} tone={leaveTone(row.status)} />
               ),
+            },
+            {
+              key: 'actions',
+              label: 'Actions',
+              render: (row) => {
+                if (row.status !== 'pending' && row.status !== 'Pending') return <span className="text-xs text-slate-500">—</span>;
+                return (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleApproveReject(row.id as string, 'approved')}
+                      className="rounded bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-400 hover:bg-emerald-500/20"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleApproveReject(row.id as string, 'rejected')}
+                      className="rounded bg-rose-500/10 px-2 py-1 text-[10px] font-semibold text-rose-400 hover:bg-rose-500/20"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                );
+              },
             },
           ]}
         />

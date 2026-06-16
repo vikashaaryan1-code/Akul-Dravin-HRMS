@@ -572,7 +572,18 @@ export const platformApi = {
   },
 
   getRecruitmentJobs: () => apiRequest<RecruitmentJobApiRecord[]>('/recruitment/jobs'),
+  createRecruitmentJob: (payload: Partial<RecruitmentJobApiRecord>) => 
+    apiRequest<RecruitmentJobApiRecord>('/recruitment/jobs', { method: 'POST', body: payload }),
+    
   getRecruitmentApplications: () => apiRequest<RecruitmentApplicationApiRecord[]>('/recruitment/applications'),
+  updateRecruitmentApplicationStage: (id: string, stage: string) =>
+    apiRequest<any>(`/recruitment/applications/${id}/move`, { method: 'POST', body: { toStage: stage } }),
+    
+  scheduleInterview: (applicationId: string, payload: any) =>
+    apiRequest<any>(`/recruitment/applications/${applicationId}/interviews`, { method: 'POST', body: payload }),
+    
+  createOffer: (applicationId: string, payload: any) =>
+    apiRequest<any>(`/recruitment/applications/${applicationId}/offer`, { method: 'POST', body: payload }),
 
   getCrmLeads: () => apiRequest<CrmLeadApiRecord[]>('/crm/leads'),
   createCrmLead: (payload: { leadName: string; organization?: string; stage?: string; ownerName?: string; score?: number }) =>

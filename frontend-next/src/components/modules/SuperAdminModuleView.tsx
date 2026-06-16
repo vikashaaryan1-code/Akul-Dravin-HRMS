@@ -18,18 +18,14 @@ export function SuperAdminModuleView() {
   const [form, setForm] = useState({ companyName: '', ownerEmail: '', ownerName: '', plan: 'starter', seatLimit: '10' });
 
   const { data: tenants, loading, refresh } = useApiResource<Tenant[]>({
-    loader: () => fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'}/admin/tenants`, {
-      headers: { Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('hrms_token') : ''}` }
-    }).then(r => r.json()),
+    loader: () => platformApi.getAdminTenants(),
     fallback: [],
     label: 'Tenants',
     errorToast: false,
   });
 
   const { data: stats } = useApiResource({
-    loader: () => fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'}/admin/tenants/stats`, {
-      headers: { Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('hrms_token') : ''}` }
-    }).then(r => r.json()),
+    loader: () => platformApi.getAdminStats(),
     fallback: { total: 0, active: 0, trial: 0, suspended: 0, planBreakdown: [] },
     label: 'Stats',
     errorToast: false,
@@ -47,17 +43,15 @@ export function SuperAdminModuleView() {
     { key: 'createdAt', label: 'Created', sortable: true, render: (v) => new Date(v as string).toLocaleDateString('en-IN') },
   ];
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     setSaving(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'}/admin/tenants`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('hrms_token')}` },
-        body: JSON.stringify({ ...form, seatLimit: parseInt(form.seatLimit) }),
-      });
+      await platformApi.createAdminTenant({ ...form, seatLimit: parseInt(form.seatLimit) });
       refresh();
       setModalOpen(false);
       setForm({ companyName: '', ownerEmail: '', ownerName: '', plan: 'starter', seatLimit: '10' });
+    } catch (err: any) {
+      alert(err.message || 'Failed to create tenant');
     } finally {
       setSaving(false);
     }
@@ -106,7 +100,7 @@ export function SuperAdminModuleView() {
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Create New Tenant"
         subtitle="Provision a new organization on the platform"
         loading={saving} maxWidth="lg"
-        footer={<><SecondaryButton onClick={() => setModalOpen(false)}>Cancel</SecondaryButton><PrimaryButton loading={saving} onClick={handleCreate}>Create Tenant</PrimaryButton></>}>
+        footer={<><SecondaryButton onClick={() => setModalOpen(false)}>Cancel</SecondaryButton><PrimaryButton loading={saving} onClick={handleSave}>Create Tenant</PrimaryButton></>}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2"><FieldGroup label="Company Name" required><ModalInput placeholder="Acme Corp Ltd." value={form.companyName} onChange={e => setForm({...form, companyName: e.target.value})} /></FieldGroup></div>
           <FieldGroup label="Owner Email" required><ModalInput type="email" placeholder="admin@acme.com" value={form.ownerEmail} onChange={e => setForm({...form, ownerEmail: e.target.value})} /></FieldGroup>

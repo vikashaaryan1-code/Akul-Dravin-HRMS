@@ -19,6 +19,7 @@ export interface UpdateTenantDto {
   seatLimit?: number;
   featureFlags?: Record<string, boolean>;
   customDomain?: string;
+  metadata?: Record<string, unknown>;
 }
 
 @Injectable()

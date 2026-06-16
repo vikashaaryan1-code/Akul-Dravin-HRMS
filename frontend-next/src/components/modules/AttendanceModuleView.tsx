@@ -44,16 +44,42 @@ function CheckInWidget() {
   const [checkedInAt, setCheckedInAt] = useState<string | null>(null);
 
   const handleCheckIn = useCallback(async () => {
-    setStatus('checking-in');
-    await new Promise((r) => setTimeout(r, 900)); // simulate API call
-    setCheckedInAt(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
-    setStatus('checked-in');
+    try {
+      setStatus('checking-in');
+      // Request geolocation if available
+      let lat, lng;
+      if (navigator.geolocation) {
+        try {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+        } catch (e) {
+          console.warn('Geolocation failed or denied', e);
+        }
+      }
+
+      await platformApi.punchIn({ lat, lng });
+      setCheckedInAt(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
+      setStatus('checked-in');
+    } catch (e) {
+      console.error('Punch in failed:', e);
+      setStatus('idle');
+      alert(e instanceof Error ? e.message : 'Punch in failed');
+    }
   }, []);
 
   const handleCheckOut = useCallback(async () => {
-    setStatus('checking-out');
-    await new Promise((r) => setTimeout(r, 700));
-    setStatus('done');
+    try {
+      setStatus('checking-out');
+      await platformApi.punchOut();
+      setStatus('done');
+    } catch (e) {
+      console.error('Punch out failed:', e);
+      setStatus('checked-in');
+      alert(e instanceof Error ? e.message : 'Punch out failed');
+    }
   }, []);
 
   const now = new Date();

@@ -186,6 +186,73 @@ function RunPayrollPanel() {
   );
 }
 
+// ── CTC & Tax Calculator ──────────────────────────────────────────────────────
+function CTCCalculatorWidget() {
+  const [ctc, setCtc] = useState<number>(1200000);
+  
+  const basic = ctc * 0.50;
+  const hra = basic * 0.40; // Assuming non-metro
+  const specialAllowance = ctc - (basic + hra);
+  
+  // Simple Old Regime Tax Calc (just for demo purposes)
+  let tax = 0;
+  if (ctc > 1000000) tax = (ctc - 1000000) * 0.3 + 112500;
+  else if (ctc > 500000) tax = (ctc - 500000) * 0.2 + 12500;
+  
+  const monthlyTakeHome = (ctc - tax) / 12;
+
+  return (
+    <GlassCard className="p-5 border border-white/8 h-full">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-violet-600/10 flex items-center justify-center">
+          <DollarSign className="h-4 w-4 text-indigo-400" />
+        </div>
+        <p className="text-sm font-semibold text-white">CTC Breakdown & Tax Estimator</p>
+      </div>
+
+      <div className="mb-5">
+        <label className="text-[10px] uppercase tracking-[0.12em] text-slate-500 block mb-1.5">Annual CTC (₹)</label>
+        <input
+          type="range"
+          min="300000"
+          max="5000000"
+          step="50000"
+          value={ctc}
+          onChange={(e) => setCtc(Number(e.target.value))}
+          className="w-full accent-indigo-500 mb-2"
+        />
+        <div className="text-xl font-bold text-white text-center">
+          {formatCurrency(ctc)}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+        <div>
+          <p className="text-xs text-slate-500 mb-1">Basic (50%)</p>
+          <p className="font-medium text-slate-300">{formatCurrency(basic)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">HRA (40% of Basic)</p>
+          <p className="font-medium text-slate-300">{formatCurrency(hra)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">Special Allowance</p>
+          <p className="font-medium text-slate-300">{formatCurrency(specialAllowance)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-slate-500 mb-1">Est. Yearly Tax (Old Regime)</p>
+          <p className="font-medium text-rose-400">{formatCurrency(tax)}</p>
+        </div>
+      </div>
+
+      <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+        <span className="text-xs font-semibold text-slate-400">Est. Monthly Take-Home</span>
+        <span className="text-lg font-black text-emerald-400">{formatCurrency(monthlyTakeHome)}</span>
+      </div>
+    </GlassCard>
+  );
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export function PayrollModuleView() {
@@ -379,6 +446,13 @@ export function PayrollModuleView() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Calculator Section */}
+      <section className="grid gap-4 xl:grid-cols-3">
+        <div className="xl:col-span-1">
+          <CTCCalculatorWidget />
+        </div>
       </section>
 
       {/* Feature Cards */}

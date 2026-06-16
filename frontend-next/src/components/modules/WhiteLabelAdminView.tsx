@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { PageTitle } from '@/components/ui/PageTitle';
-import { Globe, Palette, Shield, CheckCircle, XCircle, Copy, RefreshCw } from 'lucide-react';
+import { Globe, Palette, Shield, CheckCircle, XCircle, Copy } from 'lucide-react';
+import { platformApi } from '@/services/api/platform-api';
 
 type Tab = 'branding' | 'domain' | 'entitlements';
 type Plan = 'starter' | 'professional' | 'enterprise' | 'white_label';
@@ -33,6 +34,7 @@ export function WhiteLabelAdminView() {
   const [faviconUrl, setFaviconUrl]       = useState('');
   const [loginTagline, setTagline]        = useState('Enterprise HR Intelligence Platform');
   const [customCss, setCustomCss]         = useState('');
+  const [saving, setSaving]               = useState(false);
   const [saved, setSaved]                 = useState(false);
 
   // Domain state
@@ -46,9 +48,47 @@ export function WhiteLabelAdminView() {
   const [apiAccess, setApiAccess]         = useState(false);
   const [allowedModules, setModules]      = useState<string[]>(['employees','attendance','leave','payroll','recruitment','performance','analytics']);
 
-  const handleSaveBranding = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  useEffect(() => {
+    platformApi.getTenantSettings().then((res) => {
+      const data = res.data;
+      if (data.metadata) {
+        if (data.metadata.brandName) setBrandName(data.metadata.brandName);
+        if (data.metadata.primaryColor) setPrimaryColor(data.metadata.primaryColor);
+        if (data.metadata.secondaryColor) setSecondary(data.metadata.secondaryColor);
+        if (data.metadata.accentColor) setAccent(data.metadata.accentColor);
+        if (data.metadata.logoUrl) setLogoUrl(data.metadata.logoUrl);
+        if (data.metadata.faviconUrl) setFaviconUrl(data.metadata.faviconUrl);
+        if (data.metadata.loginTagline) setTagline(data.metadata.loginTagline);
+        if (data.metadata.customCss) setCustomCss(data.metadata.customCss);
+        if (data.metadata.allowedModules) setModules(data.metadata.allowedModules);
+      }
+      if (data.customDomain) {
+        setCustomDomain(data.customDomain);
+        setDomVerified(true);
+      }
+      if (data.plan) {
+        setPlan(data.plan as Plan);
+      }
+    }).catch(err => console.error("Failed to fetch settings", err));
+  }, []);
+
+  const handleSaveSettings = async () => {
+    setSaving(true);
+    try {
+      await platformApi.updateTenantSettings({
+        customDomain,
+        allowedModules,
+        metadata: {
+          brandName, primaryColor, secondaryColor, accentColor, logoUrl, faviconUrl, loginTagline, customCss
+        }
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      alert('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleInitiateDomain = () => {
@@ -136,9 +176,9 @@ export function WhiteLabelAdminView() {
                   placeholder=":root { --font-sans: 'Inter'; }"
                   className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-slate-800 border border-slate-700 text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
               </div>
-              <button onClick={handleSaveBranding}
-                className={`px-5 py-2 rounded-xl text-sm font-semibold transition ${saved ? 'bg-emerald-600 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
-                {saved ? '✓ Saved' : 'Save Branding'}
+              <button onClick={handleSaveSettings} disabled={saving}
+                className={`px-5 py-2 rounded-xl text-sm font-semibold transition disabled:opacity-50 ${saved ? 'bg-emerald-600 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
+                {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save Branding'}
               </button>
             </div>
           </GlassCard>
@@ -189,8 +229,8 @@ export function WhiteLabelAdminView() {
                 className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">
                 Get DNS Instructions
               </button>
-              {dnsInstructions && (
-                <button onClick={() => setDomVerified(true)}
+              {dnsInstructions && !domainVerified && (
+                <button onClick={() => { setDomVerified(true); handleSaveSettings(); }}
                   className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1">
                   <CheckCircle className="h-3.5 w-3.5" /> Verify DNS
                 </button>
@@ -276,8 +316,8 @@ export function WhiteLabelAdminView() {
                 );
               })}
             </div>
-            <button className="mt-4 w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">
-              Save Entitlements
+            <button onClick={handleSaveSettings} disabled={saving} className="mt-4 w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition disabled:opacity-50">
+              {saving ? 'Saving...' : 'Save Entitlements'}
             </button>
           </GlassCard>
         </div>
