@@ -175,11 +175,10 @@ import { UniversalCachingInterceptor } from './common/interceptors/caching.inter
       connection: {
         host: process.env.REDIS_HOST || 'localhost',
         port: Number(process.env.REDIS_PORT || 6379),
-        // Prevent command queuing when Redis is down — stops log flooding + memory pressure.
-        // BullMQ requires maxRetriesPerRequest: null (not 0 or 3) for worker connections.
         enableOfflineQueue: false,
         maxRetriesPerRequest: null,
         retryStrategy: (times: number) => Math.min(times * 500, 10_000),
+        skipVersionCheck: true,
       },
     }),
     RedisModule,

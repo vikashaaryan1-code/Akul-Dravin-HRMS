@@ -7,6 +7,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { StatusPill } from '@/components/ui/StatusPill';
 import { SimpleTable } from '@/components/modules/SimpleTable';
 import { ModuleLinksBar } from '@/components/modules/ModuleLinksBar';
+import { EmployeeFormModal } from '@/components/modules/EmployeeFormModal';
 import { OMNIX_A2Z_ACTIVE_MODULES, OMNIX_A2Z_SERVICE_SUITES } from '@/lib/public-site';
 import { employeeRecords } from '@/services/platform-data';
 import { platformApi } from '@/services/api/platform-api';
@@ -113,6 +114,8 @@ export function EmployeesModuleView() {
   const [statusFilter, setStatusFilter] = useState<'All' | EmployeeRecord['status']>('All');
   const [selectedId, setSelectedId] = useState('EMP-1042');
   const [favoriteIds, setFavoriteIds] = useState<string[]>(['EMP-1042', 'EMP-1093', 'EMP-1215']);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<EmployeeRecord | null>(null);
   const search = useDeferredValue(query).trim().toLowerCase();
 
   const fallbackRows = useMemo(() => employeeRecords.map((employee) => buildEmployeeModel(employee)), []);
@@ -231,6 +234,22 @@ export function EmployeesModuleView() {
     URL.revokeObjectURL(url);
   };
 
+  const handleOpenCreateForm = () => {
+    setEditingEmployee(null);
+    setIsFormOpen(true);
+  };
+
+  const handleOpenEditForm = () => {
+    if (spotlight) {
+      setEditingEmployee(spotlight);
+      setIsFormOpen(true);
+    }
+  };
+
+  const handleFormSuccess = () => {
+    refresh();
+  };
+
   return (
     <div className="space-y-5">
       <section className="relative overflow-hidden rounded-[30px] border border-slate-200/70 bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.16),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.18),_transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.97),rgba(255,255,255,0.86))] p-5 shadow-panel backdrop-blur dark:border-slate-700/70 dark:bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.28),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.22),_transparent_32%),linear-gradient(135deg,rgba(15,23,42,0.94),rgba(15,23,42,0.86))] sm:p-6">
@@ -281,6 +300,13 @@ export function EmployeesModuleView() {
                     className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-45 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                   >
                     Export Roster
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenCreateForm}
+                    className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-md transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+                  >
+                    Add Employee
                   </button>
                   {canOpenDocuments ? (
                     <Link href={`/documents?role=${safeRole}`} className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
@@ -377,6 +403,9 @@ export function EmployeesModuleView() {
               <Link href={`${spotlight.lane}?role=${safeRole}`} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-900 transition hover:bg-slate-100">
                 Open lane <ArrowUpRight size={14} />
               </Link>
+              <button type="button" onClick={handleOpenEditForm} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/15">
+                Edit profile
+              </button>
               <button type="button" onClick={() => toggleFavorite(spotlight.id)} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/15">
                 <Star size={14} className={favoriteIds.includes(spotlight.id) ? 'fill-current' : ''} />
                 {favoriteIds.includes(spotlight.id) ? 'Pinned' : 'Pin profile'}
@@ -549,6 +578,13 @@ export function EmployeesModuleView() {
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Performance score and automation readiness are visible together so the page feels more premium and actionable.</p>
         </GlassCard>
       </section>
+
+      <EmployeeFormModal
+        open={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        employeeToEdit={editingEmployee}
+        onSuccess={handleFormSuccess}
+      />
     </div>
   );
 }

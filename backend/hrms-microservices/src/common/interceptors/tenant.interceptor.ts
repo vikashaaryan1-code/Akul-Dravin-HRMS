@@ -17,7 +17,7 @@ export class TenantInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
 
     // Check if we are on a public route (consistent with TenantMiddleware)
-    if (request.path.includes('/auth/') || request.path === '/') {
+    if (request.path.includes('/auth/') || request.path === '/' || request.path.includes('/health')) {
       return next.handle();
     }
 

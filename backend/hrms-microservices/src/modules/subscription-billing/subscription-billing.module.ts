@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionBillingController } from './subscription-billing.controller';
 import { SubscriptionBillingService } from './subscription-billing.service';
@@ -23,6 +23,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
  * Export PlanEnforcementService and PlanEnforcementGuard globally so any module
  * can inject them without circular dependencies.
  */
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([

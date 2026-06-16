@@ -33,10 +33,10 @@ export class VendorPurchaseOrderEntity {
   @Column({ name: 'po_number', unique: false })
   poNumber: string;
 
-  @Column({ name: 'vendor_id', nullable: true })
+  @Column({ type: 'uuid', name: 'vendor_id', nullable: true })
   vendorId: string | null;
 
-  @Column({ name: 'vendor_name', nullable: true })
+  @Column({ type: 'varchar', name: 'vendor_name', nullable: true })
   vendorName: string | null;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
@@ -48,7 +48,7 @@ export class VendorPurchaseOrderEntity {
   @Column({ default: 'Draft' })
   status: PurchaseOrderStatus;
 
-  @Column({ name: 'approved_by', nullable: true })
+  @Column({ type: 'uuid', name: 'approved_by', nullable: true })
   approvedBy: string | null;
 
   @Column({ name: 'expected_delivery_date', type: 'date', nullable: true })
@@ -60,7 +60,7 @@ export class VendorPurchaseOrderEntity {
   @Column({ type: 'text', nullable: true })
   notes: string | null;
 
-  @Column({ name: 'company_id', nullable: true })
+  @Column({ type: 'uuid', name: 'company_id', nullable: true })
   companyId: string | null;
 
   @ManyToOne(() => VendorEntity, (vendor) => vendor.purchaseOrders, { nullable: true, onDelete: 'SET NULL' })

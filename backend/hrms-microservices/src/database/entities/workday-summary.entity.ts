@@ -21,7 +21,7 @@ export class WorkdaySummaryEntity {
   @Column({ name: 'employee_id' })
   employeeId: string;
 
-  @Column({ name: 'employee_name', nullable: true })
+  @Column({ type: 'varchar', name: 'employee_name', nullable: true })
   employeeName: string | null;
 
   /** Month in YYYY-MM format */

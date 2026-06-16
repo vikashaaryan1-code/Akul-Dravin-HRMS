@@ -24,7 +24,7 @@ export class WorkActivityEntity {
   @Column({ name: 'employee_id' })
   employeeId: string;
 
-  @Column({ name: 'project_name', nullable: true })
+  @Column({ type: 'varchar', name: 'project_name', nullable: true })
   projectName: string | null;
 
   @Column({ type: 'date', default: () => 'CURRENT_DATE' })

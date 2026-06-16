@@ -69,6 +69,7 @@ import { DocumentRecordEntity } from '../../database/entities/document-record.en
     AiAgentMarketplaceService,
     EnterpriseDigitalTwinService,
     AutonomousStrategyService,
+    CommandBridgeGateway,
     RolesGuard,
     // 8-Layer AI Engine Services
     AiHrCoreService,

@@ -31,7 +31,19 @@ import { GovernanceSkepticismEngine } from '../alerts/governance-skepticism.engi
 import { ConstitutionalSunsetService } from '../alerts/constitutional-sunset.service';
 import { GovernancePostmortemService } from '../alerts/governance-postmortem.service';
 import { ConstitutionalRollbackService } from '../alerts/constitutional-rollback.service';
-
+import { MitigationPlanExecutor } from '../alerts/mitigation-plan-executor.service';
+import { MitigationSignalService } from '../alerts/mitigation-signal.service';
+import { MitigationScheduler } from '../alerts/mitigation-scheduler.service';
+import { MitigationCoordinationStore } from '../alerts/mitigation-coordination.store';
+import { MitigationPolicyEngine } from '../alerts/mitigation-policy-engine.service';
+import { PolicyArbitrationEngine } from '../alerts/mitigation-arbitration-engine.service';
+import { RemediationConfidenceService } from '../alerts/remediation-confidence.service';
+import { ArbitrationUtilityScorer } from '../alerts/arbitration-utility-scorer.service';
+import { MitigationOutcomeService } from '../alerts/mitigation-outcome.service';
+import { AutoRollbackDetector } from '../alerts/auto-rollback-detector.service';
+import { OperationalKnowledgeGraph } from '../alerts/operational-knowledge-graph.service';
+import { PersistentGraphService } from '../alerts/persistent-graph.service';
+import { AutoRcaService } from '../alerts/auto-rca.service';
 /**
  * GOVERNANCE ORCHESTRATION MODULE — Phase AT
  * 
@@ -76,6 +88,19 @@ import { ConstitutionalRollbackService } from '../alerts/constitutional-rollback
     ConstitutionalSunsetService,
     GovernancePostmortemService,
     ConstitutionalRollbackService,
+    MitigationPlanExecutor,
+    MitigationSignalService,
+    MitigationScheduler,
+    MitigationCoordinationStore,
+    MitigationPolicyEngine,
+    PolicyArbitrationEngine,
+    RemediationConfidenceService,
+    ArbitrationUtilityScorer,
+    MitigationOutcomeService,
+    AutoRollbackDetector,
+    OperationalKnowledgeGraph,
+    PersistentGraphService,
+    AutoRcaService,
     { provide: GovernanceClock, useClass: SystemGovernanceClock },
   ],
   exports: [
@@ -110,6 +135,19 @@ import { ConstitutionalRollbackService } from '../alerts/constitutional-rollback
     ConstitutionalSunsetService,
     GovernancePostmortemService,
     ConstitutionalRollbackService,
+    MitigationPlanExecutor,
+    MitigationSignalService,
+    MitigationScheduler,
+    MitigationCoordinationStore,
+    MitigationPolicyEngine,
+    PolicyArbitrationEngine,
+    RemediationConfidenceService,
+    ArbitrationUtilityScorer,
+    MitigationOutcomeService,
+    AutoRollbackDetector,
+    OperationalKnowledgeGraph,
+    PersistentGraphService,
+    AutoRcaService,
     GovernanceClock,
   ],
 })

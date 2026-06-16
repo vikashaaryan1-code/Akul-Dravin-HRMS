@@ -36,16 +36,16 @@ export class VendorEntity {
   @Column({ name: 'vendor_name' })
   vendorName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   category: VendorCategory;
 
-  @Column({ name: 'contact_email', nullable: true })
+  @Column({ type: 'varchar', name: 'contact_email', nullable: true })
   contactEmail: string | null;
 
-  @Column({ name: 'contact_phone', nullable: true })
+  @Column({ type: 'varchar', name: 'contact_phone', nullable: true })
   contactPhone: string | null;
 
-  @Column({ name: 'owner_name', nullable: true })
+  @Column({ type: 'varchar', name: 'owner_name', nullable: true })
   ownerName: string | null;
 
   @Column({ default: 'Active' })
@@ -54,7 +54,7 @@ export class VendorEntity {
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
   rating: number;
 
-  @Column({ name: 'tax_id', nullable: true })
+  @Column({ type: 'varchar', name: 'tax_id', nullable: true })
   taxId: string | null;
 
   @Column({ name: 'address', type: 'text', nullable: true })
@@ -63,7 +63,7 @@ export class VendorEntity {
   @Column({ name: 'bank_details', type: 'jsonb', nullable: true })
   bankDetails: Record<string, unknown> | null;
 
-  @Column({ name: 'company_id', nullable: true })
+  @Column({ type: 'uuid', name: 'company_id', nullable: true })
   companyId: string | null;
 
   @OneToMany(() => VendorPurchaseOrderEntity, (po) => po.vendor)

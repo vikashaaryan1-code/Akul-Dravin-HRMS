@@ -10,7 +10,7 @@ import { PayrollBatchEntity } from '../../database/entities/payroll-batch.entity
 import { PayrollItemEntity } from '../../database/entities/payroll-item.entity';
 import { RoiService } from './roi.service';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { GovernanceOrchestrationModule } from '../../common/governance/governance-orchestration.module';
+// import { GovernanceOrchestrationModule } from '../../common/governance/governance-orchestration.module';
 import { PerformanceManagementModule } from '../performance-management/performance-management.module';
 import { AnalyticsCacheService } from './analytics-cache.service';
 
@@ -22,7 +22,7 @@ import { AnalyticsCacheService } from './analytics-cache.service';
       PayrollItemEntity,
     ]),
     PerformanceManagementModule,
-    GovernanceOrchestrationModule,
+    // GovernanceOrchestrationModule,
   ],
   controllers: [AnalyticsController],
   providers: [

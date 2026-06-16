@@ -31,25 +31,25 @@ export class AuditLogEntity {
   id: string;
 
   @Index()
-  @Column({ name: 'tenant_id', nullable: true })
+  @Column({ type: 'uuid', name: 'tenant_id', nullable: true })
   tenantId: string | null;
 
-  @Column({ name: 'actor_id', nullable: true })
+  @Column({ type: 'uuid', name: 'actor_id', nullable: true })
   actorId: string | null;
 
-  @Column({ name: 'actor_email', nullable: true })
+  @Column({ type: 'varchar', name: 'actor_email', nullable: true })
   actorEmail: string | null;
 
-  @Column({ name: 'actor_role', nullable: true })
+  @Column({ type: 'varchar', name: 'actor_role', nullable: true })
   actorRole: string | null;
 
-  @Column()
+  @Column({ type: 'varchar' })
   action: AuditAction;
 
-  @Column({ name: 'entity_type', nullable: true })
+  @Column({ type: 'varchar', name: 'entity_type', nullable: true })
   entityType: string | null;
 
-  @Column({ name: 'entity_id', nullable: true })
+  @Column({ type: 'uuid', name: 'entity_id', nullable: true })
   entityId: string | null;
 
   @Column({ name: 'old_value', type: 'jsonb', nullable: true })
@@ -58,7 +58,7 @@ export class AuditLogEntity {
   @Column({ name: 'new_value', type: 'jsonb', nullable: true })
   newValue: Record<string, unknown> | null;
 
-  @Column({ name: 'ip_address', nullable: true })
+  @Column({ type: 'varchar', name: 'ip_address', nullable: true })
   ipAddress: string | null;
 
   @Column({ name: 'user_agent', type: 'text', nullable: true })

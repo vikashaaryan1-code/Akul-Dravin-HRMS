@@ -13,7 +13,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Role } from '../../common/enums/role.enum';
 import { TenantContext } from '../../common/context/tenant-context';
-import { GovernanceEconomicsService } from '../../common/alerts/governance-economics.service';
+// import { GovernanceEconomicsService } from '../../common/alerts/governance-economics.service';
 
 const ANALYTICS_ROLES = [
   Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN,
@@ -35,7 +35,7 @@ export class AnalyticsController {
     private readonly workforceAnalytics:    WorkforceAnalyticsService,
     private readonly recruitmentAnalytics:  RecruitmentAnalyticsService,
     private readonly revenueAnalytics:      RevenueAnalyticsService,
-    private readonly governanceEconomics:   GovernanceEconomicsService,
+    // private readonly governanceEconomics:   GovernanceEconomicsService,
   ) {}
 
   // ── Legacy Events ─────────────────────────────────────────────────────────
@@ -224,14 +224,5 @@ export class AnalyticsController {
   }
 
   // ── Governance Analytics ──────────────────────────────────────────────────
-
-  /**
-   * GET /analytics/governance
-   * Institutional Governance Metrics: Economics, Stability, and Metabolism.
-   */
-  @Get('governance')
-  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
-  async getGovernanceMetrics() {
-    return this.governanceEconomics.getEconomicsReport();
-  }
+  // Removed temporarily
 }
