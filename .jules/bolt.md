@@ -1,0 +1,3 @@
+## 2025-05-15 - [Database Aggregation for Stats]
+**Learning:** The `getStats` method in `AttendanceService` was fetching all monthly records into memory (O(N) data transfer) to calculate simple counts and sums. This pattern is inefficient for employees with many records or in multi-tenant environments.
+**Action:** Use `createQueryBuilder` with `SUM(CASE ...)` or `COUNT(*)` to perform aggregations at the database level. This reduces network overhead and application memory consumption. Ensure results from `getRawOne()` are parsed using `parseInt` or `parseFloat` as they are returned as strings by the driver.
