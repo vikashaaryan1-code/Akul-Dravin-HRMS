@@ -33,9 +33,18 @@ export class AppraisalService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.appraisalRepository.count();
-    const completed = await this.appraisalRepository.count({ where: { status: 'completed' } });
-    const draft = await this.appraisalRepository.count({ where: { status: 'draft' } });
-    return { total, completed, draft };
+    // Optimization: Use conditional aggregation to get all stats in a single database query.
+    // This reduces database roundtrips from 3 to 1.
+    const result = await this.appraisalRepository.createQueryBuilder('appraisal')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN appraisal.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .addSelect("SUM(CASE WHEN appraisal.status = 'draft' THEN 1 ELSE 0 END)", 'draft')
+      .getRawOne();
+
+    return {
+      total: parseInt(result.total, 10) || 0,
+      completed: parseInt(result.completed, 10) || 0,
+      draft: parseInt(result.draft, 10) || 0,
+    };
   }
 }
