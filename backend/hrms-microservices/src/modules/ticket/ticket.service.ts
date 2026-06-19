@@ -28,10 +28,20 @@ export class TicketService {
     await this.ticketRepository.delete(id);
   }
 
-  async getStats(): Promise<any> {
-    const total = await this.ticketRepository.count();
-    const open = await this.ticketRepository.count({ where: { status: 'open' } });
-    const closed = await this.ticketRepository.count({ where: { status: 'closed' } });
-    return { total, open, closed };
+  async getStats(): Promise<{ total: number; open: number; closed: number }> {
+    // Optimization: Use conditional aggregation to get all stats in a single database query.
+    // This reduces database round-trips from 3 to 1.
+    const result = await this.ticketRepository
+      .createQueryBuilder('ticket')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN ticket.status = 'open' THEN 1 ELSE 0 END)", 'open')
+      .addSelect("SUM(CASE WHEN ticket.status = 'closed' THEN 1 ELSE 0 END)", 'closed')
+      .getRawOne();
+
+    return {
+      total: parseInt(result.total, 10) || 0,
+      open: parseInt(result.open, 10) || 0,
+      closed: parseInt(result.closed, 10) || 0,
+    };
   }
 }
