@@ -1,0 +1,3 @@
+## 2025-05-15 - [Anti-pattern] Multiple Queries and In-Memory Aggregation for Stats
+**Learning:** Many service modules in this codebase implement `getStats` methods by either making multiple sequential `count()` calls or by fetching all records and filtering/reducing them in-memory. This leads to unnecessary database round-trips, high network overhead, and increased memory usage in the application layer.
+**Action:** Consolidate statistical aggregations into a single database query using TypeORM's `createQueryBuilder` with `COUNT` and `SUM(CASE WHEN ... END)` for conditional aggregates. Always parse the results from `getRawOne()` as they are typically returned as strings.

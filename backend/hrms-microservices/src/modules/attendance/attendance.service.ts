@@ -68,15 +68,22 @@ export class AttendanceService {
   async getStats(employeeId: string, month: string, year: number) {
     const startDate = new Date(`${year}-${month}-01`);
     const endDate = new Date(year, parseInt(month), 0);
-    
-    const records = await this.attendanceRepository.find({
-      where: { employeeId, date: Between(startDate, endDate) },
-    });
+
+    // BOLT OPTIMIZATION: Use database aggregation instead of in-memory processing
+    // Reduces memory usage and network overhead by only returning the final stats
+    const stats = await this.attendanceRepository
+      .createQueryBuilder('attendance')
+      .select('COUNT(*)', 'totalDays')
+      .addSelect("SUM(CASE WHEN attendance.status = 'present' THEN 1 ELSE 0 END)", 'presentDays')
+      .addSelect('SUM(attendance.totalHours)', 'totalHours')
+      .where('attendance.employeeId = :employeeId', { employeeId })
+      .andWhere('attendance.date BETWEEN :startDate AND :endDate', { startDate, endDate })
+      .getRawOne();
 
     return {
-      totalDays: records.length,
-      presentDays: records.filter(r => r.status === 'present').length,
-      totalHours: records.reduce((sum, r) => sum + (r.totalHours || 0), 0),
+      totalDays: parseInt(stats.totalDays, 10) || 0,
+      presentDays: parseInt(stats.presentDays, 10) || 0,
+      totalHours: parseFloat(stats.totalHours) || 0,
     };
   }
 }
