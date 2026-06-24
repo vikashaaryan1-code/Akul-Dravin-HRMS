@@ -29,9 +29,18 @@ export class MeetingService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.meetingRepository.count();
-    const scheduled = await this.meetingRepository.count({ where: { status: 'scheduled' } });
-    const completed = await this.meetingRepository.count({ where: { status: 'completed' } });
-    return { total, scheduled, completed };
+    // Optimization: Use conditional aggregation to fetch all stats in a single database round-trip
+    const stats = await this.meetingRepository
+      .createQueryBuilder('meeting')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN meeting.status = 'scheduled' THEN 1 ELSE 0 END)", 'scheduled')
+      .addSelect("SUM(CASE WHEN meeting.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      scheduled: parseInt(stats.scheduled, 10) || 0,
+      completed: parseInt(stats.completed, 10) || 0,
+    };
   }
 }
