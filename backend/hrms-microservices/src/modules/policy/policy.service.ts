@@ -33,9 +33,18 @@ export class PolicyService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.policyRepository.count();
-    const active = await this.policyRepository.count({ where: { status: 'active' } });
-    const requiresAck = await this.policyRepository.count({ where: { requiresAcknowledgment: true } });
-    return { total, active, requiresAck };
+    // Optimized: Using a single query with conditional aggregation to reduce database round-trips
+    const stats = await this.policyRepository
+      .createQueryBuilder('policy')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN policy.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect('SUM(CASE WHEN "requiresAcknowledgment" = true THEN 1 ELSE 0 END)', 'requiresAck')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      active: parseInt(stats.active, 10) || 0,
+      requiresAck: parseInt(stats.requiresAck, 10) || 0,
+    };
   }
 }

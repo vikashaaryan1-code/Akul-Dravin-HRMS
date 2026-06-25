@@ -12,8 +12,16 @@ export class PlacementService {
   async update(id: string, data: Partial<Placement>): Promise<Placement | null> { await this.repo.update(id, data); return this.findOne(id); }
   async remove(id: string): Promise<void> { await this.repo.delete(id); }
   async getStats(): Promise<any> {
-    const total = await this.repo.count();
-    const active = await this.repo.count({ where: { status: 'active' } });
-    return { total, active };
+    // Optimized: Using a single query with conditional aggregation to reduce database round-trips
+    const stats = await this.repo
+      .createQueryBuilder('placement')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN placement.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      active: parseInt(stats.active, 10) || 0,
+    };
   }
 }
