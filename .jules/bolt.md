@@ -1,0 +1,3 @@
+## 2025-05-15 - [Database Round-trip Optimization in getStats]
+**Learning:** Multiple sequential `count()` calls in NestJS service methods create unnecessary database round-trips. These can be consolidated into a single query using TypeORM's `createQueryBuilder` with conditional aggregation (e.g., `SUM(CASE WHEN ... THEN 1 ELSE 0 END)`). This is especially impactful for dashboard-style statistics.
+**Action:** Always check `getStats` methods for sequential queries and replace them with a single optimized aggregation query. Ensure `parseInt` is used on raw results as they are often returned as strings from the database driver.
