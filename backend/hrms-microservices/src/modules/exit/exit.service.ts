@@ -29,9 +29,18 @@ export class ExitService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.exitRepository.count();
-    const pending = await this.exitRepository.count({ where: { status: 'pending' } });
-    const completed = await this.exitRepository.count({ where: { status: 'completed' } });
-    return { total, pending, completed };
+    // Optimized: Using a single query with conditional aggregation to reduce database round-trips from 3 to 1.
+    const stats = await this.exitRepository
+      .createQueryBuilder('exit')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN exit.status = 'pending' THEN 1 ELSE 0 END)", 'pending')
+      .addSelect("SUM(CASE WHEN exit.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      pending: parseInt(stats.pending, 10) || 0,
+      completed: parseInt(stats.completed, 10) || 0,
+    };
   }
 }
