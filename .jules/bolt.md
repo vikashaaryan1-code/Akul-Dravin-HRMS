@@ -1,0 +1,3 @@
+## 2025-05-14 - [Database Query Consolidation]
+**Learning:** Multiple sequential `count()` or `find()` calls for statistics endpoints are a common performance anti-pattern in this codebase. They increase database round-trips and connection overhead. TypeORM's `createQueryBuilder` with conditional aggregation (`SUM(CASE WHEN ... THEN 1 ELSE 0 END)`) successfully reduces these to a single query.
+**Action:** Always audit `getStats` methods for sequential queries and consolidate them using conditional aggregation. Ensure results from `getRawOne()` are parsed with `parseInt()` as aggregate results are typically returned as strings.
