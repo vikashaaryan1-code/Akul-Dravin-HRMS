@@ -33,9 +33,18 @@ export class ClientService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.clientRepository.count();
-    const active = await this.clientRepository.count({ where: { status: 'active' } });
-    const inactive = await this.clientRepository.count({ where: { status: 'inactive' } });
-    return { total, active, inactive };
+    // Optimization: Use a single query with conditional aggregation to reduce database round-trips from 3 to 1.
+    const stats = await this.clientRepository
+      .createQueryBuilder('client')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN client.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN client.status = 'inactive' THEN 1 ELSE 0 END)", 'inactive')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      active: parseInt(stats.active, 10) || 0,
+      inactive: parseInt(stats.inactive, 10) || 0,
+    };
   }
 }
