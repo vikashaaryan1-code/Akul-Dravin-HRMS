@@ -33,9 +33,20 @@ export class AnnouncementService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.announcementRepository.count();
-    const published = await this.announcementRepository.count({ where: { status: 'published' } });
-    const draft = await this.announcementRepository.count({ where: { status: 'draft' } });
-    return { total, published, draft };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.announcementRepository
+      .createQueryBuilder('announcement')
+      .select('COUNT(announcement.id)', 'total')
+      .addSelect("SUM(CASE WHEN announcement.status = 'published' THEN 1 ELSE 0 END)", 'published')
+      .addSelect("SUM(CASE WHEN announcement.status = 'draft' THEN 1 ELSE 0 END)", 'draft')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      published: parseInt(stats.published, 10) || 0,
+      draft: parseInt(stats.draft, 10) || 0,
+    };
   }
 }

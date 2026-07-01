@@ -33,9 +33,20 @@ export class HolidayService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.holidayRepository.count();
-    const mandatory = await this.holidayRepository.count({ where: { isOptional: false } });
-    const optional = await this.holidayRepository.count({ where: { isOptional: true } });
-    return { total, mandatory, optional };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.holidayRepository
+      .createQueryBuilder('holiday')
+      .select('COUNT(holiday.id)', 'total')
+      .addSelect('SUM(CASE WHEN holiday.isOptional = false THEN 1 ELSE 0 END)', 'mandatory')
+      .addSelect('SUM(CASE WHEN holiday.isOptional = true THEN 1 ELSE 0 END)', 'optional')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      mandatory: parseInt(stats.mandatory, 10) || 0,
+      optional: parseInt(stats.optional, 10) || 0,
+    };
   }
 }

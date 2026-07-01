@@ -29,9 +29,20 @@ export class FeedbackService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.feedbackRepository.count();
-    const pending = await this.feedbackRepository.count({ where: { status: 'pending' } });
-    const reviewed = await this.feedbackRepository.count({ where: { status: 'reviewed' } });
-    return { total, pending, reviewed };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.feedbackRepository
+      .createQueryBuilder('feedback')
+      .select('COUNT(feedback.id)', 'total')
+      .addSelect("SUM(CASE WHEN feedback.status = 'pending' THEN 1 ELSE 0 END)", 'pending')
+      .addSelect("SUM(CASE WHEN feedback.status = 'reviewed' THEN 1 ELSE 0 END)", 'reviewed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      pending: parseInt(stats.pending, 10) || 0,
+      reviewed: parseInt(stats.reviewed, 10) || 0,
+    };
   }
 }

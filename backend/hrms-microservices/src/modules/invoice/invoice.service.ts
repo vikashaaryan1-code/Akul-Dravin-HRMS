@@ -29,9 +29,20 @@ export class InvoiceService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.invoiceRepository.count();
-    const pending = await this.invoiceRepository.count({ where: { status: 'pending' } });
-    const paid = await this.invoiceRepository.count({ where: { status: 'paid' } });
-    return { total, pending, paid };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .select('COUNT(invoice.id)', 'total')
+      .addSelect("SUM(CASE WHEN invoice.status = 'pending' THEN 1 ELSE 0 END)", 'pending')
+      .addSelect("SUM(CASE WHEN invoice.status = 'paid' THEN 1 ELSE 0 END)", 'paid')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      pending: parseInt(stats.pending, 10) || 0,
+      paid: parseInt(stats.paid, 10) || 0,
+    };
   }
 }

@@ -1,0 +1,3 @@
+## 2025-05-15 - [Database Round-trip Optimization in NestJS Stats]
+**Learning:** Multiple sequential `count()` calls on a Repository in TypeORM result in multiple database round-trips. These can be consolidated into a single query using `createQueryBuilder` with conditional aggregation (`SUM(CASE WHEN condition THEN 1 ELSE 0 END)`). This significantly reduces latency, especially in high-latency network environments or with complex datasets.
+**Action:** Always check `getStats` methods for sequential count operations and consolidate them into a single raw query using `createQueryBuilder` and `getRawOne()`. Remember to `parseInt` the raw results as they are typically returned as strings by the database driver.

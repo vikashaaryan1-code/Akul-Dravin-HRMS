@@ -42,9 +42,20 @@ export class TimesheetService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.timesheetRepository.count();
-    const pending = await this.timesheetRepository.count({ where: { status: 'pending' } });
-    const approved = await this.timesheetRepository.count({ where: { status: 'approved' } });
-    return { total, pending, approved };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.timesheetRepository
+      .createQueryBuilder('timesheet')
+      .select('COUNT(timesheet.id)', 'total')
+      .addSelect("SUM(CASE WHEN timesheet.status = 'pending' THEN 1 ELSE 0 END)", 'pending')
+      .addSelect("SUM(CASE WHEN timesheet.status = 'approved' THEN 1 ELSE 0 END)", 'approved')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      pending: parseInt(stats.pending, 10) || 0,
+      approved: parseInt(stats.approved, 10) || 0,
+    };
   }
 }
