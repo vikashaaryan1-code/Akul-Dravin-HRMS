@@ -29,9 +29,20 @@ export class OnboardingService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.onboardingRepository.count();
-    const inProgress = await this.onboardingRepository.count({ where: { status: 'in_progress' } });
-    const completed = await this.onboardingRepository.count({ where: { status: 'completed' } });
-    return { total, inProgress, completed };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.onboardingRepository
+      .createQueryBuilder('onboarding')
+      .select('COUNT(onboarding.id)', 'total')
+      .addSelect("SUM(CASE WHEN onboarding.status = 'in_progress' THEN 1 ELSE 0 END)", 'inProgress')
+      .addSelect("SUM(CASE WHEN onboarding.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      inProgress: parseInt(stats.inProgress, 10) || 0,
+      completed: parseInt(stats.completed, 10) || 0,
+    };
   }
 }

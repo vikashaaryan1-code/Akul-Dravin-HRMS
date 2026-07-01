@@ -33,9 +33,20 @@ export class GoalService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.goalRepository.count();
-    const inProgress = await this.goalRepository.count({ where: { status: 'in_progress' } });
-    const completed = await this.goalRepository.count({ where: { status: 'completed' } });
-    return { total, inProgress, completed };
+    // ⚡ Bolt: Performance Optimization
+    // Consolidating 3 sequential count queries into 1 query using conditional aggregation.
+    // Impact: Reduces database round-trips from 3 to 1, significantly lowering latency for stats calculation.
+    const stats = await this.goalRepository
+      .createQueryBuilder('goal')
+      .select('COUNT(goal.id)', 'total')
+      .addSelect("SUM(CASE WHEN goal.status = 'in_progress' THEN 1 ELSE 0 END)", 'inProgress')
+      .addSelect("SUM(CASE WHEN goal.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      inProgress: parseInt(stats.inProgress, 10) || 0,
+      completed: parseInt(stats.completed, 10) || 0,
+    };
   }
 }
