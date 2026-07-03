@@ -35,11 +35,26 @@ export class EmployeeService {
   }
 
   async getStats(tenantId?: string): Promise<any> {
-    const base: any = tenantId ? { tenantId } : {};
-    const total = await this.employeeRepository.count({ where: base });
-    const active = await this.employeeRepository.count({ where: { ...base, status: 'active' } });
-    const inactive = await this.employeeRepository.count({ where: { ...base, status: 'inactive' } });
-    const onLeave = await this.employeeRepository.count({ where: { ...base, status: 'on_leave' } });
-    return { total, active, inactive, onLeave };
+    // Optimization: Use a single query with conditional aggregation to reduce database round-trips
+    const query = this.employeeRepository.createQueryBuilder('employee');
+
+    if (tenantId) {
+      // In the entity, tenantId is mapped to companyId
+      query.where('employee.companyId = :tenantId', { tenantId });
+    }
+
+    const stats = await query
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN employee.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN employee.status = 'inactive' THEN 1 ELSE 0 END)", 'inactive')
+      .addSelect("SUM(CASE WHEN employee.status = 'on_leave' THEN 1 ELSE 0 END)", 'onLeave')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      active: parseInt(stats.active, 10) || 0,
+      inactive: parseInt(stats.inactive, 10) || 0,
+      onLeave: parseInt(stats.onLeave, 10) || 0,
+    };
   }
 }
