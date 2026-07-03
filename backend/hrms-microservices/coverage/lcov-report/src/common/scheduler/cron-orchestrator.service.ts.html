@@ -1,0 +1,622 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/common/scheduler/cron-orchestrator.service.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/scheduler</a> cron-orchestrator.service.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/71</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/12</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/68</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Injectable, Logger } from '@nestjs/common';</span>
+<span class="cstat-no" title="statement not covered" >import { Cron, CronExpression } from '@nestjs/schedule';</span>
+<span class="cstat-no" title="statement not covered" >import { InjectQueue } from '@nestjs/bullmq';</span>
+<span class="cstat-no" title="statement not covered" >import { Queue } from 'bullmq';</span>
+<span class="cstat-no" title="statement not covered" >import { QUEUE_EMAILS, QUEUE_AI_JOBS, QUEUE_REPORTS, QUEUE_PAYROLL } from '../../common/queues/queue-names';</span>
+<span class="cstat-no" title="statement not covered" >import { TokenService } from '../../auth/token.service';</span>
+<span class="cstat-no" title="statement not covered" >import { SloService } from '../../common/alerts/slo.service';</span>
+<span class="cstat-no" title="statement not covered" >import { ErrorBudgetService } from '../../common/alerts/error-budget.service';</span>
+<span class="cstat-no" title="statement not covered" >import { MitigationSignalService } from '../../common/alerts/mitigation-signal.service';</span>
+<span class="cstat-no" title="statement not covered" >import { MitigationLeaderService } from '../../common/alerts/mitigation-leader.service';</span>
+<span class="cstat-no" title="statement not covered" >import { MitigationOutcomeService } from '../../common/alerts/mitigation-outcome.service';</span>
+<span class="cstat-no" title="statement not covered" >import { MitigationState } from '../../common/alerts/slo.types';</span>
+&nbsp;
+/**
+ * CronOrchestratorService — centralized scheduler for all platform cron tasks.
+ *
+ * Separation of concerns: schedulers ADD jobs to queues.
+ * Workers PROCESS those jobs.
+ * This prevents tight coupling and ensures each cron task is retryable.
+ *
+ * Schedule documentation:
+ * - Token cleanup:          Daily @ 2:00 AM
+ * - Weekly reports:         Every Monday @ 6:00 AM
+ * - Payroll reminders:      1st of month @ 8:00 AM
+ * - Platform health eval:   Every 5 minutes
+ *   └── Leader-gated:       Only the elected leader evaluates mitigations
+ */
+@Injectable()
+export class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >CronOrchestratorService<span class="cstat-no" title="statement not covered" > </span>{</span></span>
+  private readonly <span class="cstat-no" title="statement not covered" >logger = new Logger(CronOrchestratorService.name);</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >  constructor(</span>
+    @InjectQueue(QUEUE_EMAILS)  private readonly <span class="cstat-no" title="statement not covered" >emailQueue: Q</span>ueue,
+    @InjectQueue(QUEUE_AI_JOBS) private readonly <span class="cstat-no" title="statement not covered" >aiQueue: Q</span>ueue,
+    @InjectQueue(QUEUE_REPORTS) private readonly <span class="cstat-no" title="statement not covered" >reportQueue: Q</span>ueue,
+    @InjectQueue(QUEUE_PAYROLL) private readonly <span class="cstat-no" title="statement not covered" >payrollQueue: Q</span>ueue,
+    private readonly <span class="cstat-no" title="statement not covered" >tokenService:       T</span>okenService,
+    private readonly <span class="cstat-no" title="statement not covered" >sloService:         S</span>loService,
+    private readonly <span class="cstat-no" title="statement not covered" >errorBudgetService: E</span>rrorBudgetService,
+    private readonly <span class="cstat-no" title="statement not covered" >mitigationService:  M</span>itigationSignalService,
+    private readonly <span class="cstat-no" title="statement not covered" >leaderService:      M</span>itigationLeaderService,
+    private readonly <span class="cstat-no" title="statement not covered" >outcomeService:     M</span>itigationOutcomeService,
+  ) {}
+&nbsp;
+  // ── Scheduled tasks ───────────────────────────────────────────────────────
+&nbsp;
+  /** Prune expired refresh tokens from DB daily at 2 AM */
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+<span class="fstat-no" title="function not covered" >  async <span class="cstat-no" title="statement not covered" ></span>pruneExpiredTokens() {</span>
+<span class="cstat-no" title="statement not covered" >    this.logger.log('CRON: pruneExpiredTokens start');</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const deleted = <span class="cstat-no" title="statement not covered" >await this.tokenService.pruneExpiredTokens();</span>
+<span class="cstat-no" title="statement not covered" >      this.logger.log(`CRON: pruneExpiredTokens done — deleted ${deleted} records`);</span>
+    } catch (err) {
+<span class="cstat-no" title="statement not covered" >      this.logger.error(`CRON: pruneExpiredTokens failed: ${String(err)}`);</span>
+    }
+  }
+&nbsp;
+  /** Weekly HR digest email — Monday 6 AM */
+  @Cron('0 6 * * 1')
+<span class="fstat-no" title="function not covered" >  async <span class="cstat-no" title="statement not covered" ></span>scheduleWeeklyDigest() {</span>
+<span class="cstat-no" title="statement not covered" >    this.logger.log('CRON: scheduleWeeklyDigest');</span>
+<span class="cstat-no" title="statement not covered" >    await this.reportQueue.add(</span>
+      'weekly-digest',
+      { type: 'weekly_hr_digest', scheduledAt: new Date().toISOString() },
+      { attempts: 2, backoff: { type: 'fixed', delay: 60_000 } },
+    );
+  }
+&nbsp;
+  /** Payroll reminder — 1st of month 8 AM */
+  @Cron('0 8 1 * *')
+<span class="fstat-no" title="function not covered" >  async <span class="cstat-no" title="statement not covered" ></span>schedulePayrollReminder() {</span>
+<span class="cstat-no" title="statement not covered" >    this.logger.log('CRON: schedulePayrollReminder');</span>
+<span class="cstat-no" title="statement not covered" >    await this.payrollQueue.add(</span>
+      'payroll-reminder',
+      { reminderType: 'monthly_payroll', scheduledAt: new Date().toISOString() },
+      { attempts: 1 },
+    );
+  }
+&nbsp;
+  /** AI insight generation — weekdays 7 AM */
+  @Cron('0 7 * * 1-5')
+<span class="fstat-no" title="function not covered" >  async <span class="cstat-no" title="statement not covered" ></span>scheduleAiInsights() {</span>
+<span class="cstat-no" title="statement not covered" >    this.logger.log('CRON: scheduleAiInsights');</span>
+<span class="cstat-no" title="statement not covered" >    await this.aiQueue.add(</span>
+      'scheduled-insight',
+      { type: 'general', scheduledAt: new Date().toISOString() },
+      { attempts: 1 },
+    );
+  }
+&nbsp;
+  /**
+   * Platform health evaluation — every 5 minutes.
+   *
+   * ── Standard evaluation (all nodes) ─────────────────────────────────────
+   *  All workers evaluate SLO health and fire point-in-time breach alerts.
+   *  This is stateless and idempotent — safe to run on every node.
+   *
+   * ── Leader-gated evaluation (one elected node only) ──────────────────────
+   *  Error budget computation, burn rate analysis, and mitigation signal
+   *  generation are stateful operations that must run on exactly ONE evaluator.
+   *  The elected leader acquires the `hrms:mitigation:evaluator:leader` Redis
+   *  lease before proceeding. If leadership cannot be acquired, these steps
+   *  are skipped for this tick — the next tick will try again.
+   *
+   * ── Outcome analysis (leader only, async) ────────────────────────────────
+   *  After each tick, check for signals that just transitioned to RESOLVED
+   *  or ROLLED_BACK and trigger pre/post outcome analysis.
+   */
+  @Cron(CronExpression.EVERY_5_MINUTES)
+<span class="fstat-no" title="function not covered" >  async <span class="cstat-no" title="statement not covered" ></span>evaluatePlatformHealth(): Promise&lt;void&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    this.logger.debug('CRON: evaluatePlatformHealth — running SLO evaluation cycle');</span>
+&nbsp;
+    // ── Step 1: SLO evaluation (all nodes — stateless, idempotent) ───────
+    const results    = <span class="cstat-no" title="statement not covered" >await this.sloService.evaluateAll();</span>
+    const sloDefns   = <span class="cstat-no" title="statement not covered" >this.sloService.getSloDefinitions();</span>
+    const breaching  = <span class="cstat-no" title="statement not covered" >results.filter(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >r.status === 'BREACHING')</span>;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (breaching.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >      this.logger.warn(</span>
+        `CRON: SLO breaches detected: ${breaching.map(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >`${r.sloId}(${r.currentValue}${r.unit})`)</span>.join(', ')}`,
+      );
+    }
+&nbsp;
+    // ── Step 2: Leader-gated stateful evaluation ──────────────────────────
+    const isLeader = <span class="cstat-no" title="statement not covered" >await this.leaderService.tryAcquireLease();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (isLeader) {</span>
+<span class="cstat-no" title="statement not covered" >      this.logger.debug('[Leader] Running leader-gated evaluation cycle');</span>
+&nbsp;
+      // Error budget + burn rates (includes dual-window alert dispatch)
+      const { burnRates } = <span class="cstat-no" title="statement not covered" >await this.errorBudgetService.computeAllBudgets(</span>
+        Object.fromEntries(sloDefns.map(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >[d.id, d])</span>) as any
+      );
+&nbsp;
+      // Mitigation signal evaluation — oscillation-protected, Redis-coordinated
+      const newSignals = <span class="cstat-no" title="statement not covered" >await this.mitigationService.evaluate(burnRates);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (newSignals.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >        this.logger.log(`[Leader] ${newSignals.length} mitigation signal(s) proposed this tick`);</span>
+      }
+&nbsp;
+      // ── Step 3: Outcome analysis for just-resolved / rolled-back signals ─
+      const closeableSignals = <span class="cstat-no" title="statement not covered" >this.mitigationService</span>
+        .getSignals(200)
+        .filter(<span class="fstat-no" title="function not covered" >s </span>=&gt;
+<span class="cstat-no" title="statement not covered" >          s.state === MitigationState.RESOLVED ||</span>
+          s.state === MitigationState.ROLLED_BACK,
+        )
+        // Only analyze signals that resolved in the last 10 minutes
+        .filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >Date.now() - new Date(s.lastTransitionAt).getTime() &lt; 10 * 60 * 1000)</span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      for (const sig of closeableSignals) {</span>
+        // Fire and forget — outcome analysis is non-blocking
+<span class="cstat-no" title="statement not covered" >        this.outcomeService.analyzeOutcome(sig).catch(<span class="fstat-no" title="function not covered" >err </span>=&gt;</span>
+<span class="cstat-no" title="statement not covered" >          this.logger.warn(`[Leader] Outcome analysis failed for ${sig.id}: ${String(err)}`),</span>
+        );
+      }
+    } else {
+<span class="cstat-no" title="statement not covered" >      this.logger.debug('[Follower] Skipping leader-gated evaluation — not leader this tick');</span>
+    }
+&nbsp;
+    // ── Step 4: Queue saturation guard (all nodes — supplemental) ─────────
+    const queues = <span class="cstat-no" title="statement not covered" >[</span>
+      { name: 'emails',   q: this.emailQueue  },
+      { name: 'ai-jobs',  q: this.aiQueue     },
+      { name: 'reports',  q: this.reportQueue },
+      { name: 'payroll',  q: this.payrollQueue },
+    ];
+<span class="cstat-no" title="statement not covered" >    for (const { name, q } of queues) {</span>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        const waiting = <span class="cstat-no" title="statement not covered" >await q.getWaitingCount();</span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (waiting &gt; 500) {</span>
+<span class="cstat-no" title="statement not covered" >          this.logger.warn(`QUEUE_SATURATION: ${name} has ${waiting} waiting jobs — potential backpressure`);</span>
+        }
+      } catch { /* BullMQ queue unavailable */ }
+    }
+  }
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-07-02T14:33:05.040Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

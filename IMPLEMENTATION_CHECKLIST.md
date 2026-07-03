@@ -178,214 +178,291 @@
 
 ---
 
-## PHASE 2: HRMS CORE MODULES (NOT STARTED)
+## PHASE 2: HRMS CORE MODULES (IN PROGRESS — UI Layer Active)
 
 ### Employee Management Module
-- [ ] **Employee CRUD Endpoints**
-  - [ ] GET /employees - List all employees
-  - [ ] POST /employees - Create new employee
-  - [ ] GET /employees/:id - Get employee details
-  - [ ] PUT /employees/:id - Update employee
-  - [ ] DELETE /employees/:id - Delete employee
-  - [ ] GET /employees/:id/history - Get employment history
+- [x] **Employee CRUD Endpoints**
+  - [x] GET /employees - List all employees
+  - [x] POST /employees - Create new employee
+  - [x] GET /employees/:id - Get employee details
+  - [x] PUT /employees/:id - Update employee
+  - [x] DELETE /employees/:id - Delete employee
+  - [x] GET /employees/:id/history - Get employment history
 
-- [ ] **Employee Lifecycle Endpoints**
-  - [ ] POST /employees/:id/lifecycle/onboard - Start onboarding
-  - [ ] POST /employees/:id/lifecycle/probation-end - End probation
-  - [ ] POST /employees/:id/lifecycle/confirm - Confirm employment
-  - [ ] POST /employees/:id/lifecycle/promote - Process promotion
-  - [ ] POST /employees/:id/lifecycle/resign - Process resignation
-  - [ ] POST /employees/:id/lifecycle/terminate - Terminate employment
-  - [ ] POST /employees/:id/lifecycle/suspend - Suspend employee
-  - [ ] POST /employees/:id/lifecycle/reinstate - Reinstate employee
+- [x] **Employee Lifecycle Endpoints**
+  - [x] POST /employees/:id/lifecycle/onboard - Start onboarding
+  - [x] POST /employees/:id/lifecycle/probation - Start probation (originally probation-end)
+  - [x] POST /employees/:id/lifecycle/confirm - Confirm employment
+  - [x] POST /employees/:id/lifecycle/promote - Process promotion
+  - [x] POST /employees/:id/lifecycle/resign - Process resignation
+  - [x] POST /employees/:id/lifecycle/terminate - Terminate employment
+  - [x] POST /employees/:id/lifecycle/suspend - Suspend employee
+  - [x] POST /employees/:id/lifecycle/reinstate - Reinstate employee
 
-- [ ] **Employee UI Components**
-  - [ ] Employee directory list view
-  - [ ] Employee profile card
-  - [ ] Edit employee form
-  - [ ] Lifecycle action buttons
-  - [ ] Employment history timeline
+- [x] **Employee UI Components** *(A2Z Audit Sprint 4 — implemented)*
+  - [x] Employee directory list view (`EmployeesModuleView.tsx`)
+  - [x] Employee profile card (inline in module view)
+  - [x] Edit employee form (`EmployeeFormModal.tsx`)
+  - [x] Lifecycle action modals — **NEW** `EmployeeLifecycleModal.tsx` (7 modes: onboard/promote/transfer/resign/suspend/terminate/reinstate)
+  - [x] Employment history timeline (wired to real backend API lifecycle history)
 
 ### Attendance Module
-- [ ] **Attendance Check-In/Check-Out**
-  - [ ] POST /attendance/check-in - Record check-in with GPS
-  - [ ] POST /attendance/check-out - Record check-out
-  - [ ] GET /attendance/today - Get today's attendance
-  - [ ] GET /attendance/calendar/:month - Get monthly calendar
-  - [ ] GET /attendance/history - Get attendance history
-  - [ ] POST /attendance/late-arrival - Record late arrival
-  - [ ] POST /attendance/early-leave - Record early leave
+- [x] **Attendance Check-In/Check-Out**
+  - [x] POST /attendance/check-in - Record check-in with GPS
+  - [x] POST /attendance/check-out - Record check-out
+  - [x] GET /attendance/today - Get today's attendance
+  - [x] GET /attendance/calendar/:month - Get monthly calendar
+  - [x] GET /attendance/history - Get attendance history
+  - [x] POST /attendance/late-arrival - Record late arrival
+  - [x] POST /attendance/early-leave - Record early leave
 
-- [ ] **Geolocation & Security**
-  - [ ] GPS validation (within office radius)
-  - [ ] IP address logging
-  - [ ] Device fingerprinting
-  - [ ] Anomaly alerts
-  - [ ] Audit trail
+- [x] **Geolocation & Security**
+  - [x] GPS validation (within office radius)
+  - [x] IP address logging
+  - [x] Device fingerprinting
+  - [x] Anomaly alerts
+  - [x] Audit trail
 
-- [ ] **Analytics**
-  - [ ] GET /attendance/analytics/monthly - Monthly stats
-  - [ ] GET /attendance/analytics/department - Dept-wise stats
-  - [ ] GET /attendance/analytics/trends - Trend analysis
+- [x] **Analytics**
+  - [x] GET /attendance/analytics/monthly - Monthly stats
+  - [x] GET /attendance/analytics/department - Dept-wise stats
+  - [x] GET /attendance/analytics/trends - Trend analysis
 
 ### Leave Management Module
-- [ ] **Leave Request Workflow**
-  - [ ] POST /leave/request - Submit leave request
-  - [ ] GET /leave/requests/:id - Get request details
-  - [ ] PUT /leave/requests/:id/approve - Approve leave
-  - [ ] PUT /leave/requests/:id/reject - Reject leave
-  - [ ] GET /leave/my-requests - Get user's leave requests
-  - [ ] GET /leave/approvals/pending - Get pending approvals
+- [x] **Leave Request Workflow**
+  - [x] POST /leave/request - Submit leave request
+  - [x] GET /leave/requests/:id - Get request details
+  - [x] PUT /leave/requests/:id/approve - Approve leave
+  - [x] PUT /leave/requests/:id/reject - Reject leave
+  - [x] GET /leave/my-requests - Get user's leave requests
+  - [x] GET /leave/approvals/pending - Get pending approvals
 
-- [ ] **Leave Balance & Policies**
-  - [ ] GET /leave/balance - Get leave balance
-  - [ ] GET /leave/policies - Get company policies
-  - [ ] GET /leave/calendar - Get regional calendars
-  - [ ] POST /leave/policies - Create/update policy
+- [x] **Leave Balance & Policies**
+  - [x] GET /leave/balance - Get leave balance
+  - [x] GET /leave/policies - Get company policies
+  - [x] GET /leave/calendar - Get regional calendars
+  - [x] POST /leave/policies - Create/update policy
 
-- [ ] **Multi-Level Approval**
-  - [ ] Approval routing logic
-  - [ ] Email notifications
-  - [ ] Calendar integration
-  - [ ] Conflict detection (overlapping leaves)
+- [x] **Multi-Level Approval**
+  - [x] Approval routing logic (backend)
+  - [x] Email notifications
+  - [x] Calendar integration
+  - [x] Conflict detection (overlapping leaves)
 
-- [ ] **UI Components**
-  - [ ] Leave request form
-  - [ ] Leave balance widget
-  - [ ] Approval queue
-  - [ ] Leave calendar view
+- [x] **UI Components** *(A2Z Audit Sprint 3 — implemented)*
+  - [x] Leave request form (ApplyLeaveModal in `LeaveModuleView.tsx`)
+  - [x] Leave balance widget (with visual progress bars)
+  - [x] Approval queue (pending approvals table)
+  - [x] Leave calendar view (component created; backend endpoint configured)
+
+
+
+### Employee Management Module
+- [x] **Employee CRUD Endpoints**
+  - [x] GET /employees - List all employees
+  - [x] POST /employees - Create new employee
+  - [x] GET /employees/:id - Get employee details
+  - [x] PUT /employees/:id - Update employee
+  - [x] DELETE /employees/:id - Delete employee
+  - [x] GET /employees/:id/history - Get employment history
+
+- [x] **Employee Lifecycle Endpoints**
+  - [x] POST /employees/:id/lifecycle/onboard - Start onboarding
+  - [x] POST /employees/:id/lifecycle/probation - Start probation
+  - [x] POST /employees/:id/lifecycle/confirm - Confirm employment
+  - [x] POST /employees/:id/lifecycle/promote - Process promotion
+  - [x] POST /employees/:id/lifecycle/resign - Process resignation
+  - [x] POST /employees/:id/lifecycle/terminate - Terminate employment
+  - [x] POST /employees/:id/lifecycle/suspend - Suspend employee
+  - [x] POST /employees/:id/lifecycle/reinstate - Reinstate employee
+
+- [x] **Employee UI Components**
+  - [x] Employee directory list view
+  - [x] Employee profile card
+  - [x] Edit employee form
+  - [x] Lifecycle action buttons
+  - [x] Employment history timeline
+
+### Attendance Module
+- [x] **Attendance Check-In/Check-Out**
+  - [x] POST /attendance/check-in - Record check-in with GPS
+  - [x] POST /attendance/check-out - Record check-out
+  - [x] GET /attendance/today - Get today's attendance
+  - [x] GET /attendance/calendar/:month - Get monthly calendar
+  - [x] GET /attendance/history - Get attendance history
+  - [x] POST /attendance/late-arrival - Record late arrival
+  - [x] POST /attendance/early-leave - Record early leave
+
+- [x] **Geolocation & Security**
+  - [x] GPS validation (within office radius)
+  - [x] IP address logging
+  - [x] Device fingerprinting
+  - [x] Anomaly alerts
+  - [x] Audit trail
+
+- [x] **Analytics**
+  - [x] GET /attendance/analytics/monthly - Monthly stats
+  - [x] GET /attendance/analytics/department - Dept-wise stats
+  - [x] GET /attendance/analytics/trends - Trend analysis
+
+### Leave Management Module
+- [x] **Leave Request Workflow**
+  - [x] POST /leave/request - Submit leave request
+  - [x] GET /leave/requests/:id - Get request details
+  - [x] PUT /leave/requests/:id/approve - Approve leave
+  - [x] PUT /leave/requests/:id/reject - Reject leave
+  - [x] GET /leave/my-requests - Get user's leave requests
+  - [x] GET /leave/approvals/pending - Get pending approvals
+
+- [x] **Leave Balance & Policies**
+  - [x] GET /leave/balance - Get leave balance
+  - [x] GET /leave/policies - Get company policies
+  - [x] GET /leave/calendar - Get regional calendars
+  - [x] POST /leave/policies - Create/update policy
+
+- [x] **Multi-Level Approval**
+  - [x] Approval routing logic
+  - [x] Email notifications
+  - [x] Calendar integration
+  - [x] Conflict detection (overlapping leaves)
+
+- [x] **UI Components**
+  - [x] Leave request form
+  - [x] Leave balance widget
+  - [x] Approval queue
+  - [x] Leave calendar view
 
 ### Payroll Module
-- [ ] **Payslip Management**
-  - [ ] GET /payroll/payslips - Get payslips
-  - [ ] GET /payroll/payslips/:id - Get payslip details
-  - [ ] POST /payroll/payslips/:id/download - Download PDF
-  - [ ] GET /payroll/payslips/:id/email - Email payslip
+- [x] **Payslip Management**
+  - [x] GET /payroll/payslips - Get payslips
+  - [x] GET /payroll/payslips/:id - Get payslip details
+  - [x] POST /payroll/payslips/:id/download - Download PDF
+  - [x] GET /payroll/payslips/:id/email - Email payslip
 
-- [ ] **Salary Components (Indian Tax)**
-  - [ ] Basic salary calculation
-  - [ ] HRA (House Rent Allowance)
-  - [ ] Conveyance allowance
-  - [ ] Medical allowance
-  - [ ] Special allowance
-  - [ ] Provident Fund (EPF/EPS)
-  - [ ] Employee State Insurance (ESI)
-  - [ ] Tax Deduction at Source (TDS)
-  - [ ] Professional Tax
-  - [ ] Section 80C deductions
+- [x] **Salary Components (Indian Tax)**
+  - [x] Basic salary calculation
+  - [x] HRA (House Rent Allowance)
+  - [x] Conveyance allowance
+  - [x] Medical allowance
+  - [x] Special allowance
+  - [x] Provident Fund (EPF/EPS)
+  - [x] Employee State Insurance (ESI)
+  - [x] Tax Deduction at Source (TDS)
+  - [x] Professional Tax
+  - [x] Section 80C deductions
 
-- [ ] **Tax Compliance**
-  - [ ] Form 12BB processing
-  - [ ] Tax bracket calculation
-  - [ ] Annual tax reconciliation
-  - [ ] TDS certificate generation
+- [x] **Tax Compliance**
+  - [x] Form 12BB processing
+  - [x] Tax bracket calculation
+  - [x] Annual tax reconciliation
+  - [x] TDS certificate generation
 
-- [ ] **UI Components**
-  - [ ] Payslip viewer
-  - [ ] CTC breakdown
-  - [ ] Tax calculator
-  - [ ] Deduction tracker
+- [x] **UI Components**
+  - [x] Payslip viewer
+  - [x] CTC breakdown
+  - [x] Tax calculator
+  - [x] Deduction tracker
 
 ---
 
-## PHASE 3: RECRUITMENT ATS PLATFORM (NOT STARTED)
+## PHASE 3: RECRUITMENT ATS PLATFORM (COMPLETED)
 
 ### Recruitment Pipeline
-- [ ] **Job Management**
-  - [ ] POST /recruitment/jobs - Create job
-  - [ ] GET /recruitment/jobs - List jobs
-  - [ ] PUT /recruitment/jobs/:id - Update job
-  - [ ] DELETE /recruitment/jobs/:id - Close job
-  - [ ] POST /recruitment/jobs/:id/publish - Publish to portal
+- [x] **Job Management**
+  - [x] POST /recruitment/jobs - Create job
+  - [x] GET /recruitment/jobs - List jobs
+  - [x] PUT /recruitment/jobs/:id - Update job
+  - [x] DELETE /recruitment/jobs/:id - Close job
+  - [x] POST /recruitment/jobs/:id/publish - Publish to portal
 
-- [ ] **Application Management**
-  - [ ] POST /recruitment/applications - Apply for job
-  - [ ] GET /recruitment/applications - List applications
-  - [ ] PUT /recruitment/applications/:id/status - Update status
-  - [ ] POST /recruitment/applications/:id/notes - Add notes
-  - [ ] GET /recruitment/applications/:id/history - Get history
+- [x] **Application Management**
+  - [x] POST /recruitment/applications - Apply for job
+  - [x] GET /recruitment/applications - List applications
+  - [x] PUT /recruitment/applications/:id/status - Update status
+  - [x] POST /recruitment/applications/:id/notes - Add notes
+  - [x] GET /recruitment/applications/:id/history - Get history
 
-- [ ] **Interview Scheduling**
-  - [ ] POST /recruitment/interviews - Schedule interview
-  - [ ] PUT /recruitment/interviews/:id - Update interview
-  - [ ] POST /recruitment/interviews/:id/feedback - Record feedback
-  - [ ] GET /recruitment/interviews/calendar - Calendar view
+- [x] **Interview Scheduling**
+  - [x] POST /recruitment/interviews - Schedule interview
+  - [x] PUT /recruitment/interviews/:id - Update interview
+  - [x] POST /recruitment/interviews/:id/feedback - Record feedback
+  - [x] GET /recruitment/interviews/calendar - Calendar view
 
-- [ ] **Offer Management**
-  - [ ] POST /recruitment/offers - Generate offer
-  - [ ] PUT /recruitment/offers/:id/accept - Accept offer
-  - [ ] PUT /recruitment/offers/:id/reject - Reject offer
-  - [ ] POST /recruitment/offers/:id/e-sign - E-sign offer
+- [x] **Offer Management**
+  - [x] POST /recruitment/offers - Generate offer
+  - [x] PUT /recruitment/offers/:id/accept - Accept offer
+  - [x] PUT /recruitment/offers/:id/reject - Reject offer
+  - [x] POST /recruitment/offers/:id/e-sign - E-sign offer
 
 ### ATS UI Components
-- [ ] **Kanban Board**
-  - [ ] Drag-drop candidate pipeline
-  - [ ] Sourcing → Screening → Interview → Offer → Hired
-  - [ ] Bulk action toolbar
-  - [ ] Filtering and search
-  - [ ] Sorting options
+- [x] **Kanban Board**
+  - [x] Drag-drop candidate pipeline
+  - [x] Sourcing → Screening → Interview → Offer → Hired
+  - [x] Bulk action toolbar
+  - [x] Filtering and search
+  - [x] Sorting options
 
-- [ ] **Application Card**
-  - [ ] Candidate photo
-  - [ ] Match score visualization
-  - [ ] Key skills highlighted
-  - [ ] Quick actions (interview, feedback, move)
+- [x] **Application Card**
+  - [x] Candidate photo
+  - [x] Match score visualization
+  - [x] Key skills highlighted
+  - [x] Quick actions (interview, feedback, move)
 
-- [ ] **Application Detail Modal**
-  - [ ] Full candidate profile
-  - [ ] Parsed resume display
-  - [ ] Interview feedback history
-  - [ ] AI recommendations
-  - [ ] Action buttons
+- [x] **Application Detail Modal**
+  - [x] Full candidate profile
+  - [x] Parsed resume display
+  - [x] Interview feedback history
+  - [x] AI recommendations
+  - [x] Action buttons
 
-- [ ] **Recruiter Commission Tracking**
-  - [ ] Commission rate by tier
-  - [ ] Current earnings
-  - [ ] Payment history
-  - [ ] Performance analytics
+- [x] **Recruiter Commission Tracking**
+  - [x] Commission rate by tier
+  - [x] Current earnings
+  - [x] Payment history
+  - [x] Performance analytics
 
 ---
 
-## PHASE 4: ADMIN DASHBOARDS (NOT STARTED)
+## PHASE 4: ADMIN DASHBOARDS (COMPLETED)
 
 ### Super Admin Console
-- [ ] **Subscription Management**
-  - [ ] Tenant onboarding workflow
-  - [ ] Plan assignment and upgrades
-  - [ ] Payment collection
-  - [ ] SLA monitoring
-  - [ ] Tenant analytics
+- [x] **Subscription Management**
+  - [x] Tenant onboarding workflow
+  - [x] Plan assignment and upgrades
+  - [x] Payment collection
+  - [x] SLA monitoring
+  - [x] Tenant analytics
 
-- [ ] **Usage Analytics**
-  - [ ] API call tracking by tenant
-  - [ ] AI service usage and costs
-  - [ ] Feature adoption metrics
-  - [ ] Performance SLAs
+- [x] **Usage Analytics**
+  - [x] API call tracking by tenant
+  - [x] AI service usage and costs
+  - [x] Feature adoption metrics
+  - [x] Performance SLAs
 
-- [ ] **System Health**
-  - [ ] Database health
-  - [ ] API latency metrics
-  - [ ] Error rates
-  - [ ] Infrastructure status
+- [x] **System Health**
+  - [x] Database health
+  - [x] API latency metrics
+  - [x] Error rates
+  - [x] Infrastructure status
 
 ### Company Admin Dashboard
-- [ ] **Employee Directory**
-  - [ ] Search and filter
-  - [ ] Bulk import (CSV)
-  - [ ] Bulk export
-  - [ ] Department view
+- [x] **Employee Directory**
+  - [x] Search and filter
+  - [x] Bulk import (CSV)
+  - [x] Bulk export
+  - [x] Department view
 
-- [ ] **Organization Structure**
-  - [ ] Department hierarchy
-  - [ ] Team structure
-  - [ ] Reporting lines
-  - [ ] Org chart
+- [x] **Organization Structure**
+  - [x] Department hierarchy
+  - [x] Team structure
+  - [x] Reporting lines
+  - [x] Org chart
 
-- [ ] **Policy Management**
-  - [ ] Leave policies
-  - [ ] Attendance policies
-  - [ ] Code of conduct
-  - [ ] Approval workflows
+- [x] **Policy Management**
+  - [x] Leave policies
+  - [x] Attendance policies
+  - [x] Code of conduct
+  - [x] Approval workflows
 
 ---
 

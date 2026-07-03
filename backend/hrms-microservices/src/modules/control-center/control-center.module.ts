@@ -4,6 +4,8 @@ import { ControlCenterController } from './control-center.controller';
 import { ControlCenterGateway } from './control-center.gateway';
 import { QueueDepthService } from './queue-depth.service';
 import { QueueMonitorController } from './queue-monitor.controller';
+import { PlatformOpsController } from './platform-ops.controller';
+import { SloController } from './slo.controller';
 import { PolicyEngineModule } from '../policy-engine/policy-engine.module';
 import { CareerGrowthModule } from '../career-growth/career-growth.module';
 import { QUEUE_PAYROLL, QUEUE_AUTOMATION, QUEUE_NOTIFICATIONS } from '../../common/queues/queue-names';
@@ -19,9 +21,8 @@ import { QUEUE_PAYROLL, QUEUE_AUTOMATION, QUEUE_NOTIFICATIONS } from '../../comm
       { name: QUEUE_NOTIFICATIONS },
     ),
   ],
-  controllers: [ControlCenterController, QueueMonitorController],
+  controllers: [ControlCenterController, QueueMonitorController, PlatformOpsController, SloController],
   providers:   [ControlCenterGateway, QueueDepthService],
   exports:     [QueueDepthService],
 })
 export class ControlCenterModule {}
-

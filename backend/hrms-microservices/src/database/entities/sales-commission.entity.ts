@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
 
 @Entity({ name: 'sales_commissions' })
@@ -10,6 +10,10 @@ export class SalesCommissionEntity extends TenantScopedEntity {
   @Index()
   @Column({ name: 'employee_id', type: 'uuid' })
   employeeId!: string;
+
+  @ManyToOne('EmployeeEntity')
+  @JoinColumn({ name: 'employee_id' })
+  employee?: any;
 
   @Index()
   @Column({ name: 'sales_target_id', type: 'uuid', nullable: true })

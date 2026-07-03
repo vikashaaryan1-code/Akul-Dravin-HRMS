@@ -14,26 +14,29 @@ export class RecruitmentAtsService {
   }
 
   findAllJobs(): Promise<RecruitmentJobEntity[]> {
-    return this.jobRepo.find({ order: { createdAt: 'DESC' } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    return this.jobRepo.find({ where: { tenantId }, order: { createdAt: 'DESC' } });
   }
 
   createJob(payload: Partial<RecruitmentJobEntity>): Promise<RecruitmentJobEntity> {
-    const tenantId = payload.tenantId || TenantContext.getRequiredTenantId();
+    const tenantId = TenantContext.getRequiredTenantId();
     const entity = this.jobRepo.create({ ...payload, tenantId });
     return this.jobRepo.save(entity);
   }
 
   async updateJob(id: string, payload: Partial<RecruitmentJobEntity>): Promise<RecruitmentJobEntity | null> {
-    await this.jobRepo.update(id, payload);
-    return this.jobRepo.findOne({ where: { id } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    await this.jobRepo.update({ id, tenantId }, payload);
+    return this.jobRepo.findOne({ where: { id, tenantId } });
   }
 
   findAllApplications(): Promise<RecruitmentApplicationEntity[]> {
-    return this.applicationRepo.find({ order: { createdAt: 'DESC' } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    return this.applicationRepo.find({ where: { tenantId }, order: { createdAt: 'DESC' } });
   }
 
   createApplication(payload: Partial<RecruitmentApplicationEntity>): Promise<RecruitmentApplicationEntity> {
-    const tenantId = payload.tenantId || TenantContext.getRequiredTenantId();
+    const tenantId = TenantContext.getRequiredTenantId();
     const entity = this.applicationRepo.create({ ...payload, tenantId });
     return this.applicationRepo.save(entity);
   }
@@ -42,8 +45,9 @@ export class RecruitmentAtsService {
     id: string,
     payload: Partial<RecruitmentApplicationEntity>,
   ): Promise<RecruitmentApplicationEntity | null> {
-    await this.applicationRepo.update(id, payload);
-    return this.applicationRepo.findOne({ where: { id } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    await this.applicationRepo.update({ id, tenantId }, payload);
+    return this.applicationRepo.findOne({ where: { id, tenantId } });
   }
 }
 

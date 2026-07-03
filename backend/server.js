@@ -2382,7 +2382,69 @@ async function handleRequest(req, res) {
     return;
   }
 
-  // ── Reports ─────────────────────────────────────────────────────────────────
+  // ── Reports & Documents ─────────────────────────────────────────────────────
+
+  // GET /api/documents/template
+  if (req.method === "GET" && pathname === "/api/documents/template") {
+    const docType = requestUrl.searchParams.get("type") || "offer_letter";
+    const empName = requestUrl.searchParams.get("name") || "John Doe";
+    
+    // Premium Cinematic Document HTML Template
+    const htmlTemplate = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #1a2d5a; margin: 0; padding: 40px; }
+          .document-wrapper { border: 2px solid #C9A84C; padding: 40px; border-radius: 12px; position: relative; overflow: hidden; }
+          .document-wrapper::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(75,184,212,0.05), rgba(42,157,143,0.05)); z-index: -1; }
+          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(26,45,90,0.1); padding-bottom: 20px; mb-10; }
+          .logo { font-size: 24px; font-weight: 900; color: #1a2d5a; letter-spacing: 2px; }
+          .logo-accent { color: #C9A84C; }
+          .title { font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 4px; color: #1a2d5a; margin-top: 40px; text-align: center; }
+          .content { margin-top: 40px; line-height: 1.8; font-size: 14px; color: #4a5a7a; }
+          .signature-block { margin-top: 80px; display: flex; justify-content: space-between; }
+          .sig-line { width: 200px; border-top: 1px solid #1a2d5a; margin-top: 40px; padding-top: 10px; font-weight: bold; font-size: 12px; color: #1a2d5a; }
+          .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 120px; font-weight: 900; color: rgba(201,168,76,0.03); z-index: -1; pointer-events: none; }
+        </style>
+      </head>
+      <body>
+        <div class="document-wrapper">
+          <div class="watermark">AKUL DRAVIN</div>
+          <div class="header">
+            <div class="logo">AKUL DRAVIN <span class="logo-accent">AI</span></div>
+            <div style="text-align: right; font-size: 12px; color: #6b7a99;">
+              Date: ${new Date().toLocaleDateString()}<br/>
+              Ref: AD-HR-${Math.floor(Math.random() * 10000)}
+            </div>
+          </div>
+          <div class="title">${docType.replace('_', ' ')}</div>
+          <div class="content">
+            <p>Dear <strong>${empName}</strong>,</p>
+            <p>We are thrilled to extend this official document to you as part of the AKUL DRAVIN global enterprise ecosystem. Our platform is dedicated to orchestrating excellence, and you have been identified as a key asset to our strategic vision.</p>
+            <p>This document is cryptographically verified and generated via the AKUL DRAVIN HRMS AI Engine.</p>
+            <p>Please retain this for your official records.</p>
+          </div>
+          <div class="signature-block">
+            <div>
+              <div class="sig-line">Authorized Signatory</div>
+              <div style="font-size: 10px; color: #6b7a99; margin-top: 4px;">Akul Dravin HRMS Board</div>
+            </div>
+            <div>
+              <div class="sig-line">Employee Signature</div>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    ok(res, {
+      html: htmlTemplate,
+      metadata: { docType, empName, generatedAt: nowIso() }
+    });
+    return;
+  }
 
   // GET /api/reports/headcount
   if (req.method === "GET" && pathname === "/api/reports/headcount") {

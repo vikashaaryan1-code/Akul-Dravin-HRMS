@@ -22,6 +22,7 @@
 
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import * as crypto from 'crypto';
 import { CompanyEntity } from './entities/company.entity';
 import { EmployeeEntity } from './entities/employee.entity';
 import { AttendanceEntity } from './entities/attendance.entity';
@@ -38,6 +39,12 @@ import { PayrollItemEntity, PayrollItemExecutionStatus } from './entities/payrol
 import { LedgerTransactionEntity } from './entities/ledger-transaction.entity';
 import { SubscriptionEntity } from './entities/subscription.entity';
 import { WhiteLabelConfigEntity } from './entities/white-label-config.entity';
+import { LeaveTypeEntity } from './entities/leave-type.entity';
+import { LeaveRequestEntity } from './entities/leave-request.entity';
+import { SalesCommissionEntity } from './entities/sales-commission.entity';
+import { SalesTargetEntity } from './entities/sales-target.entity';
+import { SalesLeadEntity } from './entities/sales-lead.entity';
+import { SalesDealEntity } from './entities/sales-deal.entity';
 
 dotenv.config();
 
@@ -54,7 +61,8 @@ const AppDataSource = new DataSource({
     CompanyEntity, EmployeeEntity, AttendanceEntity, AnalyticsEventEntity,
     ProjectEntity, TaskEntity, WalletEntity, TransactionEntity,
     InvoiceEntity, LoanEntity, PerformanceEntity, PayrollBatchEntity, PayrollItemEntity,
-    LedgerTransactionEntity, SubscriptionEntity, WhiteLabelConfigEntity
+    LedgerTransactionEntity, SubscriptionEntity, WhiteLabelConfigEntity, LeaveTypeEntity, LeaveRequestEntity,
+    SalesCommissionEntity, SalesTargetEntity, SalesLeadEntity, SalesDealEntity
   ],
   synchronize: true,
 });
@@ -304,6 +312,12 @@ async function seed() {
     const payrollItemRepo  = AppDataSource.getRepository(PayrollItemEntity);
     const subscriptionRepo = AppDataSource.getRepository(SubscriptionEntity);
     const whiteLabelRepo   = AppDataSource.getRepository(WhiteLabelConfigEntity);
+    const leaveTypeRepo    = AppDataSource.getRepository(LeaveTypeEntity);
+    const leaveRequestRepo = AppDataSource.getRepository(LeaveRequestEntity);
+    const salesCommissionRepo = AppDataSource.getRepository(SalesCommissionEntity);
+    const salesTargetRepo = AppDataSource.getRepository(SalesTargetEntity);
+    const salesLeadRepo = AppDataSource.getRepository(SalesLeadEntity);
+    const salesDealRepo = AppDataSource.getRepository(SalesDealEntity);
 
     let totalEmployees = 0;
 
@@ -313,7 +327,10 @@ async function seed() {
       // ── Company ────────────────────────────────────────────────────────────
       let company = await companyRepo.findOne({ where: { tenantCode: companyDef.tenantCode } });
       if (!company) {
+        const newId = crypto.randomUUID();
         company = companyRepo.create({
+          id: newId,
+          tenantId: newId,
           tenantCode: companyDef.tenantCode,
           legalName: companyDef.legalName,
           displayName: companyDef.displayName,
@@ -418,6 +435,62 @@ async function seed() {
             await attendanceRepo.save(attendanceRepo.create({
               employeeId: emp.id, attendanceDate: dateStr,
               checkInAt: checkIn, checkOutAt: checkOut, status, tenantId,
+            }));
+          }
+        }
+      }
+
+      // ── Leave Types ────────────────────────────────────────────────────────
+      console.log(`  🌴 Seeding 3 leave types...`);
+      const leaveTypes = [
+        { code: 'CL', name: 'Casual Leave', days: '12.00', carry: '0.00', paid: true },
+        { code: 'SL', name: 'Sick Leave', days: '8.00', carry: '0.00', paid: true },
+        { code: 'EL', name: 'Earned Leave', days: '18.00', carry: '18.00', paid: true },
+      ];
+      const seededLeaveTypes: LeaveTypeEntity[] = [];
+      for (const lt of leaveTypes) {
+        let type = await leaveTypeRepo.findOne({ where: { leaveCode: lt.code, tenantId } });
+        if (!type) {
+          type = leaveTypeRepo.create({
+            tenantId,
+            companyId: tenantId,
+            leaveCode: lt.code,
+            leaveName: lt.name,
+            daysPerYear: lt.days,
+            carryForwardLimit: lt.carry,
+            encashable: lt.code === 'EL',
+            isActive: true,
+          });
+          await leaveTypeRepo.save(type);
+        }
+        seededLeaveTypes.push(type);
+      }
+
+      // ── Leave Requests ─────────────────────────────────────────────────────
+      console.log(`  📝 Seeding leave requests...`);
+      for (const emp of seededEmployees) {
+        const hasLeave = Math.random() > 0.5;
+        if (hasLeave) {
+          const lType = pick(seededLeaveTypes);
+          const status = pick(['approved', 'pending', 'rejected']);
+          const days = rnd(1, 4);
+          const start = daysAgo(rnd(5, 60));
+          const end = new Date(start);
+          end.setDate(end.getDate() + days - 1);
+
+          const exists = await leaveRequestRepo.findOne({ where: { employeeId: emp.id, startDate: start.toISOString().split('T')[0] } });
+          if (!exists) {
+            await leaveRequestRepo.save(leaveRequestRepo.create({
+              tenantId,
+              employeeId: emp.id,
+              leaveTypeId: lType.id,
+              startDate: start.toISOString().split('T')[0],
+              endDate: end.toISOString().split('T')[0],
+              totalDays: days.toString(),
+              status,
+              reason: 'Personal reasons',
+              approvedBy: status !== 'pending' ? emp.id : null,
+              approvedAt: status !== 'pending' ? new Date() : null,
             }));
           }
         }
@@ -610,6 +683,7 @@ async function seed() {
     console.log(`║  Employees:    ${totalEmployees} across ${COMPANIES.length} tenants            ║`);
     console.log(`║  Projects:     ${PROJECT_TEMPLATES.length} per company                    ║`);
     console.log(`║  Attendance:   90 days per employee (weekdays) ║`);
+    console.log(`║  Leaves:       3 types & mock requests         ║`);
     console.log(`║  Payroll:      5 batches per company           ║`);
     console.log(`║  Transactions: 8 per employee wallet           ║`);
     console.log('╚════════════════════════════════════════════════╝\n');

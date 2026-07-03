@@ -9,9 +9,9 @@
  * - SSR-safe: client is created on first call to getQueryClient()
  *
  * Usage (root layout):
- *   <QueryProvider>
- *     <PlatformShell>{children}</PlatformShell>
- *   </QueryProvider>
+ * <QueryProvider>
+ * <PlatformShell>{children}</PlatformShell>
+ * </QueryProvider>
  */
 
 import React, { type ReactNode } from 'react';
@@ -20,30 +20,30 @@ import { getQueryClient } from '@/lib/query/client';
 
 // Lazily import devtools so they are stripped from production bundle
 const ReactQueryDevtools =
-  process.env.NODE_ENV === 'development'
-    ? React.lazy(() =>
-        import('@tanstack/react-query-devtools').then((m) => ({
-          default: m.ReactQueryDevtools,
-        })),
-      )
-    : null;
+ process.env.NODE_ENV === 'development'
+ ? React.lazy(() =>
+ import('@tanstack/react-query-devtools').then((m) => ({
+ default: m.ReactQueryDevtools,
+ })),
+ )
+ : null;
 
 interface QueryProviderProps {
-  children: ReactNode;
+ children: ReactNode;
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
-  // getQueryClient() returns the singleton — safe to call here
-  const client = getQueryClient();
+ // getQueryClient() returns the singleton — safe to call here
+ const client = getQueryClient();
 
-  return (
-    <QueryClientProvider client={client}>
-      {children}
-      {ReactQueryDevtools && (
-        <React.Suspense fallback={null}>
-          <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
-        </React.Suspense>
-      )}
-    </QueryClientProvider>
-  );
+ return (
+ <QueryClientProvider client={client}>
+ {children}
+ {ReactQueryDevtools && (
+ <React.Suspense fallback={null}>
+ <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+ </React.Suspense>
+ )}
+ </QueryClientProvider>
+ );
 }

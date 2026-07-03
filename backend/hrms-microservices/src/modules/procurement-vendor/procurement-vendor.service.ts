@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TenantContext } from '../../common/context/tenant-context';
 import { VendorEntity } from '../../database/entities/vendor.entity';
 import { VendorPurchaseOrderEntity } from '../../database/entities/vendor-purchase-order.entity';
+import { AuditLogService, AuditAction } from '../../common/audit/audit-log.service';
 
 export interface CreateVendorDto {
   vendorName: string;
@@ -29,6 +30,8 @@ export interface CreatePurchaseOrderDto {
 
 @Injectable()
 export class ProcurementVendorService {
+  constructor(private readonly auditLog: AuditLogService) {}
+
   private get vendorRepo() {
     return TenantContext.getRepository(VendorEntity);
   }
@@ -69,18 +72,38 @@ export class ProcurementVendorService {
       address: payload.address?.trim() ?? null,
       bankDetails: payload.bankDetails ?? null,
     });
-    return this.vendorRepo.save(vendor);
+    const saved = await this.vendorRepo.save(vendor);
+    this.auditLog.log(AuditAction.VENDOR_CREATED, {
+      tenantId,
+      resourceType: 'vendor',
+      resourceId: saved.id,
+      metadata: { vendorName: saved.vendorName, category: saved.category },
+    }).catch(() => {});
+    return saved;
   }
 
   async updateVendor(id: string, payload: Partial<CreateVendorDto>): Promise<VendorEntity> {
     const vendor = await this.getVendorById(id);
     const merged = this.vendorRepo.merge(vendor, payload as Partial<VendorEntity>);
-    return this.vendorRepo.save(merged);
+    const saved = await this.vendorRepo.save(merged);
+    this.auditLog.log(AuditAction.VENDOR_UPDATED, {
+      tenantId: saved.tenantId,
+      resourceType: 'vendor',
+      resourceId: saved.id,
+      metadata: { vendorName: saved.vendorName, changes: payload },
+    }).catch(() => {});
+    return saved;
   }
 
   async deleteVendor(id: string): Promise<void> {
     const vendor = await this.getVendorById(id);
     await this.vendorRepo.remove(vendor);
+    this.auditLog.log(AuditAction.VENDOR_DELETED, {
+      tenantId: vendor.tenantId,
+      resourceType: 'vendor',
+      resourceId: id,
+      metadata: { vendorName: vendor.vendorName },
+    }).catch(() => {});
   }
 
   // ── Purchase Orders ──────────────────────────────────────────────────────────
@@ -113,7 +136,14 @@ export class ProcurementVendorService {
       items: payload.items ?? null,
       notes: payload.notes?.trim() ?? null,
     });
-    return this.poRepo.save(po);
+    const saved = await this.poRepo.save(po);
+    this.auditLog.log(AuditAction.PURCHASE_ORDER_CREATED, {
+      tenantId,
+      resourceType: 'purchase_order',
+      resourceId: saved.id,
+      metadata: { poNumber: saved.poNumber, amount: saved.amount, vendorName: saved.vendorName },
+    }).catch(() => {});
+    return saved;
   }
 
   async updatePurchaseOrder(
@@ -122,15 +152,36 @@ export class ProcurementVendorService {
   ): Promise<VendorPurchaseOrderEntity> {
     const po = await this.getPurchaseOrderById(id);
     const merged = this.poRepo.merge(po, payload as Partial<VendorPurchaseOrderEntity>);
-    return this.poRepo.save(merged);
+    const saved = await this.poRepo.save(merged);
+    this.auditLog.log(AuditAction.PURCHASE_ORDER_UPDATED, {
+      tenantId: saved.tenantId,
+      resourceType: 'purchase_order',
+      resourceId: saved.id,
+      metadata: { poNumber: saved.poNumber, changes: payload },
+    }).catch(() => {});
+    return saved;
   }
 
   async approvePurchaseOrder(id: string, approvedBy: string): Promise<VendorPurchaseOrderEntity> {
-    return this.updatePurchaseOrder(id, { status: 'Approved' });
+    const po = await this.updatePurchaseOrder(id, { status: 'Approved' });
+    this.auditLog.log(AuditAction.PURCHASE_ORDER_APPROVED, {
+      tenantId: po.tenantId,
+      resourceType: 'purchase_order',
+      resourceId: po.id,
+      metadata: { poNumber: po.poNumber, approvedBy },
+    }).catch(() => {});
+    return po;
   }
 
   async rejectPurchaseOrder(id: string): Promise<VendorPurchaseOrderEntity> {
-    return this.updatePurchaseOrder(id, { status: 'Rejected' });
+    const po = await this.updatePurchaseOrder(id, { status: 'Rejected' });
+    this.auditLog.log(AuditAction.PURCHASE_ORDER_REJECTED, {
+      tenantId: po.tenantId,
+      resourceType: 'purchase_order',
+      resourceId: po.id,
+      metadata: { poNumber: po.poNumber },
+    }).catch(() => {});
+    return po;
   }
 
   // ── Summary ──────────────────────────────────────────────────────────────────

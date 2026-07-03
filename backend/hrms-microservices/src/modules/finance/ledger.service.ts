@@ -14,7 +14,7 @@ export class LedgerService {
   constructor(private readonly dataSource: DataSource) {}
 
   /**
-   * THE TRUTH LAYER: OMNIX Atomic Transaction Executor.
+   * THE TRUTH LAYER: AKUL DRAVIN Atomic Transaction Executor.
    * Responsibilities:
    * 1. Deterministic Settings Resolution.
    * 2. Pessimistic Row-Level Locking (Accounts + Chain Head).

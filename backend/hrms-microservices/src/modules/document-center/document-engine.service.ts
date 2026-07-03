@@ -27,7 +27,7 @@ export interface DocumentRenderResult {
 }
 
 /**
- * OMNIX Document Engine v1
+ * AKUL DRAVIN Document Engine v1
  *
  * Orchestrates:
  *  1. Payload hashing (SHA-256 integrity guarantee)
@@ -52,7 +52,7 @@ export class DocumentEngineService {
     const hash = this.generateHash(dto);
 
     // Step 2: Generate QR code data URL (base64 PNG of verification URL)
-    const verifyUrl = `https://omnix.akuldravin.com/verify/${hash.substring(0, 16)}`;
+    const verifyUrl = `https://verify.akuldravin.com/verify/${hash.substring(0, 16)}`;
     const qrDataUrl = await this.generateQr(verifyUrl);
 
     // Step 3: Render HTML from template engine
@@ -153,7 +153,7 @@ export class DocumentEngineService {
 
 
     const isCard = type === DocumentType.ID_CARD || type === DocumentType.VISITING_CARD;
-    const tmpPath = path.join(os.tmpdir(), `omnix-doc-${Date.now()}.html`);
+    const tmpPath = path.join(os.tmpdir(), `akuldravin-doc-${Date.now()}.html`);
     fs.writeFileSync(tmpPath, html, 'utf-8');
 
     const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
@@ -181,6 +181,6 @@ export class DocumentEngineService {
     const safeName = dto.employee.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const typeSlug = dto.type.replace(/_/g, '-');
     const date = new Date().toISOString().slice(0, 10);
-    return `omnix-${typeSlug}-${safeName}-${date}.pdf`;
+    return `akuldravin-${typeSlug}-${safeName}-${date}.pdf`;
   }
 }

@@ -9,53 +9,32 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
-  Query,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { RecruitmentAtsService } from './recruitment-ats.service';
-import { AtsPipelineService, ApplicationStage } from './ats-pipeline.service';
+import { AtsPipelineService } from './ats-pipeline.service';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { PlanEnforcementGuard, RequireFeature } from '../subscription-billing/plan-enforcement.guard';
 import { PlanFeature } from '../subscription-billing/plan-catalog';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/enums/role.enum';
-
-/**
- * RECRUITMENT ATS CONTROLLER
- *
- * REST surface for the full ATS pipeline (PRD §6–§8).
- *
- * Route map:
- *
- *   ── Jobs ─────────────────────────────────────────────────────────
- *   GET    /recruitment/jobs                  → list all jobs (tenant)
- *   POST   /recruitment/jobs                  → create job requisition
- *   PATCH  /recruitment/jobs/:id              → update job details
- *   PATCH  /recruitment/jobs/:id/publish      → publish job to portal
- *   PATCH  /recruitment/jobs/:id/close        → close job
- *
- *   ── Applications ──────────────────────────────────────────────────
- *   GET    /recruitment/applications          → list all applications
- *   GET    /recruitment/applications/:id      → single application
- *   POST   /recruitment/applications          → submit application (candidate)
- *
- *   ── Pipeline (Kanban) ─────────────────────────────────────────────
- *   GET    /recruitment/jobs/:id/kanban       → Kanban board per job
- *   GET    /recruitment/jobs/:id/metrics      → funnel metrics per job
- *   POST   /recruitment/applications/:id/move → advance stage
- *   POST   /recruitment/applications/:id/reject → reject
- *   POST   /recruitment/applications/:id/hire  → process hire
- *
- *   ── Interviews ────────────────────────────────────────────────────
- *   POST   /recruitment/applications/:id/interviews       → schedule
- *   POST   /recruitment/interviews/:id/complete           → complete + scorecard
- *
- *   ── Offers ────────────────────────────────────────────────────────
- *   POST   /recruitment/applications/:id/offer            → create offer
- *   POST   /recruitment/offers/:id/send                   → send to candidate
- *   POST   /recruitment/offers/:id/accept                 → candidate accepted
- */
 import { ResumeParsingService } from './resume-parsing.service';
+import { TenantContext } from '../../common/context/tenant-context';
+import {
+  UploadResumeDto,
+  CreateJobDto,
+  CreateApplicationDto,
+  MoveStageDto,
+  RejectApplicationDto,
+  HireApplicationDto,
+  ScheduleInterviewDto,
+  CompleteInterviewDto,
+  CreateOfferDto,
+  OfferActionDto
+} from './dto/recruitment-ats.dto';
 
+@ApiTags('Recruitment ATS')
+@ApiBearerAuth()
 @Controller('recruitment')
 @UseGuards(RolesGuard, PlanEnforcementGuard)
 export class RecruitmentAtsController {
@@ -68,17 +47,19 @@ export class RecruitmentAtsController {
   @Post('applications/upload-resume')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
-  uploadResume(
-    @Body() body: { tenantId: string; jobId: string; candidateId: string; fileName: string; fileContentBase64: string }
-  ) {
-    // In a real app we'd use FileInterceptor, but for JSON payload we simulate file buffer
+  @ApiOperation({ summary: 'Upload and parse resume' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Resume successfully uploaded and parsed' })
+  uploadResume(@Body() body: UploadResumeDto) {
+    const tenantId = TenantContext.getRequiredTenantId();
     const buffer = Buffer.from(body.fileContentBase64 || '', 'base64');
-    return this.resumeParsing.uploadAndParseResume(body.tenantId, body.jobId, body.candidateId, buffer, body.fileName);
+    return this.resumeParsing.uploadAndParseResume(tenantId, body.jobId, body.candidateId, buffer, body.fileName);
   }
 
   // ── Jobs ──────────────────────────────────────────────────────────────────
 
   @Get('jobs')
+  @ApiOperation({ summary: 'Find all ATS jobs' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'List of all jobs returned successfully' })
   findAllJobs() {
     return this.atsService.findAllJobs();
   }
@@ -87,15 +68,19 @@ export class RecruitmentAtsController {
   @HttpCode(HttpStatus.CREATED)
   @RequireFeature(PlanFeature.ATS_BASIC)
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
-  createJob(@Body() body: Record<string, unknown>) {
+  @ApiOperation({ summary: 'Create a new ATS job' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Job created successfully' })
+  createJob(@Body() body: CreateJobDto) {
     return this.atsService.createJob(body);
   }
 
   @Patch('jobs/:id')
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Update an existing ATS job' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Job updated successfully' })
   updateJob(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: Record<string, unknown>,
+    @Body() body: Partial<CreateJobDto>,
   ) {
     return this.atsService.updateJob(id, body);
   }
@@ -103,6 +88,8 @@ export class RecruitmentAtsController {
   @Patch('jobs/:id/publish')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Publish a job to marketplace' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Job published successfully' })
   publishJob(@Param('id', ParseUUIDPipe) id: string) {
     return this.atsService.updateJob(id, { status: 'open', isMarketplaceVisible: true });
   }
@@ -110,6 +97,8 @@ export class RecruitmentAtsController {
   @Patch('jobs/:id/close')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Close a job' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Job closed successfully' })
   closeJob(@Param('id', ParseUUIDPipe) id: string) {
     return this.atsService.updateJob(id, { status: 'closed', isMarketplaceVisible: false });
   }
@@ -118,12 +107,16 @@ export class RecruitmentAtsController {
 
   @Get('jobs/:id/kanban')
   @RequireFeature(PlanFeature.ATS_PIPELINE)
+  @ApiOperation({ summary: 'Get Kanban board for a job' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Kanban board retrieved successfully' })
   getKanban(@Param('id', ParseUUIDPipe) id: string) {
     return this.pipelineService.getKanbanBoard(id);
   }
 
   @Get('jobs/:id/metrics')
   @RequireFeature(PlanFeature.ATS_PIPELINE)
+  @ApiOperation({ summary: 'Get pipeline metrics for a job' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Pipeline metrics retrieved successfully' })
   getMetrics(@Param('id', ParseUUIDPipe) id: string) {
     return this.pipelineService.getPipelineMetrics(id);
   }
@@ -131,11 +124,15 @@ export class RecruitmentAtsController {
   // ── Applications ──────────────────────────────────────────────────────────
 
   @Get('applications')
+  @ApiOperation({ summary: 'Find all applications' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'List of all applications returned successfully' })
   findAllApplications() {
     return this.atsService.findAllApplications();
   }
 
   @Get('applications/:id')
+  @ApiOperation({ summary: 'Find a specific application' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Application returned successfully' })
   findApplication(@Param('id', ParseUUIDPipe) id: string) {
     return this.atsService.findAllApplications().then(apps =>
       apps.find(a => a.id === id) ?? null,
@@ -144,7 +141,9 @@ export class RecruitmentAtsController {
 
   @Post('applications')
   @HttpCode(HttpStatus.CREATED)
-  createApplication(@Body() body: Record<string, unknown>) {
+  @ApiOperation({ summary: 'Submit an application' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Application submitted successfully' })
+  createApplication(@Body() body: CreateApplicationDto) {
     return this.atsService.createApplication(body);
   }
 
@@ -153,25 +152,26 @@ export class RecruitmentAtsController {
   @Post('applications/:id/move')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Move application to another stage' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Application moved successfully' })
   moveStage(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { toStage: ApplicationStage; note?: string; actorId?: string; forceMove?: boolean },
+    @Body() body: MoveStageDto,
   ) {
     return this.pipelineService.moveStage({
       applicationId: id,
-      toStage:       body.toStage,
-      note:          body.note,
-      actorId:       body.actorId,
-      forceMove:     body.forceMove,
+      ...body
     });
   }
 
   @Post('applications/:id/reject')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Reject an application' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Application rejected successfully' })
   rejectApplication(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { reason: string; actorId?: string },
+    @Body() body: RejectApplicationDto,
   ) {
     return this.pipelineService.rejectApplication(id, body.reason, body.actorId);
   }
@@ -179,9 +179,11 @@ export class RecruitmentAtsController {
   @Post('applications/:id/hire')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Process hire for an application' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Application marked as hired' })
   processHire(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { actorId?: string },
+    @Body() body: HireApplicationDto,
   ) {
     return this.pipelineService.processHire(id, body.actorId);
   }
@@ -192,22 +194,11 @@ export class RecruitmentAtsController {
   @HttpCode(HttpStatus.CREATED)
   @RequireFeature(PlanFeature.ATS_PIPELINE)
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Schedule an interview' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Interview scheduled successfully' })
   scheduleInterview(
     @Param('id', ParseUUIDPipe) applicationId: string,
-    @Body() body: {
-      jobId:          string;
-      candidateId:    string;
-      roundNumber:    number;
-      interviewType:  string;
-      scheduledAt:    string;
-      durationMinutes?: number;
-      mode:           string;
-      meetingLink?:   string;
-      location?:      string;
-      interviewerIds: string[];
-      tenantId:       string;
-      actorId?:       string;
-    },
+    @Body() body: ScheduleInterviewDto,
   ) {
     return this.pipelineService.scheduleInterview({ ...body, applicationId });
   }
@@ -215,19 +206,13 @@ export class RecruitmentAtsController {
   @Post('interviews/:id/complete')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.RECRUITER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Complete an interview' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Interview completed successfully' })
   completeInterview(
     @Param('id', ParseUUIDPipe) interviewId: string,
-    @Body() body: {
-      tenantId:      string;
-      overallRating: number;
-      recommendation: 'proceed' | 'hold' | 'reject';
-      scorecard:     Record<string, number>;
-      feedback?:     string;
-      actorId?:      string;
-    },
+    @Body() body: CompleteInterviewDto,
   ) {
-    const { tenantId, ...params } = body;
-    return this.pipelineService.completeInterview(interviewId, tenantId, params);
+    return this.pipelineService.completeInterview(interviewId, body);
   }
 
   // ── Offer management ──────────────────────────────────────────────────────
@@ -236,20 +221,11 @@ export class RecruitmentAtsController {
   @HttpCode(HttpStatus.CREATED)
   @RequireFeature(PlanFeature.ATS_OFFERS)
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Create an offer for a candidate' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Offer created successfully' })
   createOffer(
     @Param('id', ParseUUIDPipe) applicationId: string,
-    @Body() body: {
-      jobId:               string;
-      candidateId:         string;
-      offeredDesignation:  string;
-      offeredCtc:          number;
-      joiningDate:         string;
-      offerExpiryDate?:    string;
-      salaryBreakdown?:    Record<string, number>;
-      benefits?:           string[];
-      tenantId:            string;
-      createdBy?:          string;
-    },
+    @Body() body: CreateOfferDto,
   ) {
     return this.pipelineService.createOffer({ ...body, applicationId });
   }
@@ -257,19 +233,22 @@ export class RecruitmentAtsController {
   @Post('offers/:id/send')
   @HttpCode(HttpStatus.OK)
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Send offer to candidate' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Offer sent successfully' })
   sendOffer(
     @Param('id', ParseUUIDPipe) offerId: string,
-    @Body() body: { tenantId: string; actorId?: string },
+    @Body() body: OfferActionDto,
   ) {
-    return this.pipelineService.sendOffer(offerId, body.tenantId, body.actorId);
+    return this.pipelineService.sendOffer(offerId, body.actorId);
   }
 
   @Post('offers/:id/accept')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Accept an offer' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Offer accepted successfully' })
   acceptOffer(
     @Param('id', ParseUUIDPipe) offerId: string,
-    @Body() body: { tenantId: string },
   ) {
-    return this.pipelineService.acceptOffer(offerId, body.tenantId);
+    return this.pipelineService.acceptOffer(offerId);
   }
 }

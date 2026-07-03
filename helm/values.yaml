@@ -8,6 +8,7 @@ replicaCount:
   api: 2          # NestJS API pods (stateless, scale freely)
   worker: 1       # BullMQ worker pods (scale per queue load)
   frontend: 2     # Next.js frontend pods
+  mobileApp: 2    # Expo React Native mobile web export
 
 # ── Container images ─────────────────────────────────────────
 image:
@@ -20,6 +21,8 @@ image:
   worker:
     tag: "latest"
   frontend:
+    tag: "latest"
+  mobileApp:
     tag: "latest"
 
 imagePullSecrets: []
@@ -38,6 +41,9 @@ service:
   frontend:
     type: ClusterIP
     port: 3000
+  mobileApp:
+    type: ClusterIP
+    port: 8081
 
 ingress:
   enabled: true
@@ -52,6 +58,9 @@ ingress:
         - path: /api
           pathType: Prefix
           service: api
+        - path: /mobile
+          pathType: Prefix
+          service: mobileApp
         - path: /
           pathType: Prefix
           service: frontend
@@ -86,6 +95,14 @@ resources:
       cpu: "500m"
       memory: "512Mi"
 
+  mobileApp:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
 # ── Autoscaling ──────────────────────────────────────────────
 autoscaling:
   api:
@@ -102,6 +119,12 @@ autoscaling:
     targetCPUUtilizationPercentage: 80
 
   frontend:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+
+  mobileApp:
     enabled: true
     minReplicas: 2
     maxReplicas: 6

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoleEntity } from '../../database/entities/role.entity';
 import { PermissionEntity } from '../../database/entities/permission.entity';
+import { AuditLogEntity } from '../../database/entities/audit-log.entity';
 
 @Injectable()
 export class PermissionControlService {
@@ -11,6 +12,8 @@ export class PermissionControlService {
     private readonly roleRepository: Repository<RoleEntity>,
     @InjectRepository(PermissionEntity)
     private readonly permissionRepository: Repository<PermissionEntity>,
+    @InjectRepository(AuditLogEntity)
+    private readonly auditRepository: Repository<AuditLogEntity>,
   ) {}
 
   async getRoles(tenantId?: string) {
@@ -46,10 +49,10 @@ export class PermissionControlService {
     return this.roleRepository.save(role);
   }
 
-  /** Get permission-change audit log (stub — replace with AuditEntity when wired) */
-  async getAudits(tenantId?: string): Promise<unknown[]> {
-    // TODO: wire to a dedicated AuditLogEntity when audit persistence is implemented
-    return [];
+  /** Get permission-change audit log */
+  async getAudits(tenantId?: string): Promise<AuditLogEntity[]> {
+    const whereClause = tenantId ? { tenantId } : {};
+    return this.auditRepository.find({ where: whereClause, order: { createdAt: 'DESC' } });
   }
 
   /** Update a role's metadata (name, isSystemRole) */

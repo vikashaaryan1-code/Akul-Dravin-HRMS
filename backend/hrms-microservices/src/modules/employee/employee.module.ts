@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { EmployeeController } from './employee.controller';
+import { EmployeeImportExportController } from './employee-import-export.controller';
 import { EmployeeService } from './employee.service';
 import { EmployeeLifecycleService } from './employee-lifecycle.service';
+import { EmployeeImportExportService } from './employee-import-export.service';
+import { LifecycleOrchestratorService } from './lifecycle-orchestrator.service';
 import { RolesGuard } from '../../common/guards/roles.guard';
 
 /**
@@ -18,8 +21,8 @@ import { RolesGuard } from '../../common/guards/roles.guard';
  */
 @Module({
   imports: [TypeOrmModule.forFeature([EmployeeEntity])],
-  controllers: [EmployeeController],
-  providers:   [EmployeeService, EmployeeLifecycleService, RolesGuard],
+  controllers: [EmployeeController, EmployeeImportExportController],
+  providers:   [EmployeeService, EmployeeLifecycleService, EmployeeImportExportService, LifecycleOrchestratorService, RolesGuard],
   exports:     [EmployeeService, EmployeeLifecycleService],
 })
 export class EmployeeModule {}

@@ -1,0 +1,4 @@
+import React from 'react';
+import { EnpsScoreWidget } from '../../../components/surveys/EnpsScoreWidget';
+import { ActivePollsWidget } from '../../../components/surveys/ActivePollsWidget'; export default function SurveysPage() { return ( <div className="p-8 max-w-[1400px] mx-auto min-h-screen"> {/* Header section */} <div className="mb-10"> <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-md"> Surveys & eNPS </h1> <p className="text-white/60 text-lg"> Track employee engagement, run polls, and monitor company sentiment. </p> </div> {/* Grid Layout */} <div className="grid grid-cols-1 xl:grid-cols-3 gap-8"> {/* Left Column (eNPS takes 1 column) */} <div className="xl:col-span-1 h-[500px]"> <EnpsScoreWidget /> </div> {/* Right Column (Polls take 2 columns) */} <div className="xl:col-span-2 h-full"> <ActivePollsWidget /> </div> </div> </div> );
+}

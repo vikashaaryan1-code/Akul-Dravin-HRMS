@@ -9,6 +9,7 @@ import { Repository, DataSource } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { EmployeeLifecycleTransitionedEvent } from '../../common/domain-events/employee-lifecycle-transitioned.event';
+import { TenantContext } from '../../common/context/tenant-context';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lifecycle Stage Enum
@@ -597,8 +598,9 @@ export class EmployeeLifecycleService {
   // ── Private Helpers ───────────────────────────────────────────────────────
 
   private async findOrThrow(id: string): Promise<EmployeeEntity> {
-    const emp = await this.repo.findOne({ where: { id } });
-    if (!emp) throw new NotFoundException(`Employee ${id} not found`);
+    const tenantId = TenantContext.getRequiredTenantId();
+    const emp = await this.repo.findOne({ where: { id, tenantId } });
+    if (!emp) throw new NotFoundException(`Employee ${id} not found in current tenant`);
     return emp;
   }
 

@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -55,7 +55,7 @@ import { LmsModule } from './modules/lms/lms.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
 import { PerformanceModule } from './modules/performance/performance.module';
 import { LoggerModule } from './common/logger/logger.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bullmq';
 import { RedisModule } from './common/redis/redis.module';
 import { AppRedisModule } from './redis/redis.module';
@@ -74,6 +74,10 @@ import { QueueInfrastructureModule } from './common/queues/queue-infrastructure.
 import { DataOpsModule } from './modules/data-ops/data-ops.module';
 import { AutonomousAuditInterceptor } from './common/interceptors/autonomous-audit.interceptor';
 import { UniversalCachingInterceptor } from './common/interceptors/caching.interceptor';
+import { BenefitsModule } from './modules/benefits/benefits.module';
+import { TimesheetsModule } from './modules/timesheets/timesheets.module';
+import { SurveysModule } from './modules/surveys/surveys.module';
+import { MockApiModule } from './modules/mock-api/mock-api.module';
 
 @Module({
   imports: [
@@ -196,6 +200,10 @@ import { UniversalCachingInterceptor } from './common/interceptors/caching.inter
     QueueInfrastructureModule,
     DataOpsModule,
     AdminModule,
+    BenefitsModule,
+    TimesheetsModule,
+    SurveysModule,
+    MockApiModule,
   ],
   providers: [
     SettingsService,
@@ -210,6 +218,10 @@ import { UniversalCachingInterceptor } from './common/interceptors/caching.inter
     {
       provide: APP_INTERCEPTOR,
       useClass: AutonomousAuditInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })

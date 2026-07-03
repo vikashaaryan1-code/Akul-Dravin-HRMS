@@ -61,6 +61,15 @@ export class NotificationController {
     return this.notificationService.create(payload);
   }
 
+  @Post('push')
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
+  push(@Req() req: Request, @Body() payload: Partial<NotificationEntity>) {
+    const user = (req as any).user;
+    // Inject the tenant from the requesting admin
+    const entityPayload = { ...payload, tenantId: user?.tenantId };
+    return this.notificationService.createAndPush(entityPayload);
+  }
+
   @Patch(':id')
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER, Role.RECRUITER)
   update(@Param('id') id: string, @Body() payload: Partial<NotificationEntity>) {

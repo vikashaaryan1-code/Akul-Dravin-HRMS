@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
 
 @Entity({ name: 'sales_targets' })
@@ -11,7 +11,11 @@ export class SalesTargetEntity extends TenantScopedEntity {
   @Column({ name: 'employee_id', type: 'uuid', nullable: true })
   employeeId!: string | null;
 
-  @Column({ name: 'target_period', type: 'varchar', length: 24 })
+  @ManyToOne('EmployeeEntity')
+  @JoinColumn({ name: 'employee_id' })
+  employee?: any;
+
+  @Column({ name: 'target_period', type: 'varchar', length: 24, default: 'monthly' })
   targetPeriod!: string;
 
   @Column({ name: 'period_key', type: 'varchar', length: 20 })

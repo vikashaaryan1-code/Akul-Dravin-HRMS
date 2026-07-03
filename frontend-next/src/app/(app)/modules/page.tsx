@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function LegacymodulesPage() {
-  redirect('/#features');
+ redirect('/#features');
 }

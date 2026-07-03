@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Header, HttpCode, Logger, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PayrollService } from './payroll.service';
 import { PayrollBatchEntity } from '../../database/entities/payroll-batch.entity';
 import { PayrollItemEntity } from '../../database/entities/payroll-item.entity';
@@ -12,9 +13,13 @@ import { Role } from '../../common/enums/role.enum';
 import { CalculateTargetBasedSalaryDto } from './dto/calculate-target-based-salary.dto';
 import { CalculateDaysWiseSalaryDto } from './dto/calculate-days-wise-salary.dto';
 import { CalculateBonusSlaDto } from './dto/calculate-bonus-sla.dto';
+import { GeneratePayrollBatchDto } from './dto/generate-payroll-batch.dto';
+import { ReversePayrollBatchDto } from './dto/reverse-payroll-batch.dto';
 import { DocumentEngineService } from '../document-center/document-engine.service';
 import { AuditLogService, AuditAction } from '../../common/audit/audit-log.service';
 
+@ApiTags('Payroll')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('payroll')
 export class PayrollController {
@@ -25,7 +30,17 @@ export class PayrollController {
     private readonly auditLog: AuditLogService,
   ) {}
 
+  @Get()
+  @ApiOperation({ summary: 'Get all payroll items' })
+  @ApiResponse({ status: 200, description: 'List of all payroll items returned successfully.' })
+  @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
+  findAllItems() {
+    return this.payrollService.findAllItems();
+  }
+
   @Get('batches')
+  @ApiOperation({ summary: 'Get all payroll batches' })
+  @ApiResponse({ status: 200, description: 'List of all payroll batches returned successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   findAllBatches() {
     return this.payrollService.findAll();
@@ -40,12 +55,11 @@ export class PayrollController {
    */
   @Post('batch')
   @HttpCode(202)
+  @ApiOperation({ summary: 'Generate a new payroll batch' })
+  @ApiResponse({ status: 202, description: 'Batch generation queued successfully.' })
   @Throttle({ payroll: { ttl: 60000, limit: 10 } })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
-  async generateBatch(@Body() payload: { year: number; month: number }) {
-    if (!payload.year || !payload.month) {
-      throw new Error('year and month are required');
-    }
+  async generateBatch(@Body() payload: GeneratePayrollBatchDto) {
     const { jobId } = await this.payrollService.enqueueBatch(payload.year, payload.month);
     return { jobId, status: 'QUEUED' };
   }
@@ -55,6 +69,8 @@ export class PayrollController {
    * Returns BullMQ job state: waiting | active | completed | failed | delayed | unknown
    */
   @Get('batch/job/:jobId/status')
+  @ApiOperation({ summary: 'Get status of a payroll batch generation job' })
+  @ApiResponse({ status: 200, description: 'Job status retrieved successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   getJobStatus(@Param('jobId') jobId: string) {
     return this.payrollService.getBatchJobStatus(jobId);
@@ -62,6 +78,8 @@ export class PayrollController {
 
   /** Payroll-tier throttle: locks are irreversible financial mutations. */
   @Post('batch/:id/lock')
+  @ApiOperation({ summary: 'Lock a payroll batch' })
+  @ApiResponse({ status: 200, description: 'Payroll batch locked successfully.' })
   @Throttle({ payroll: { ttl: 60000, limit: 10 } })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   lockBatch(
@@ -75,12 +93,16 @@ export class PayrollController {
   }
 
   @Post('batch/:id/execute')
+  @ApiOperation({ summary: 'Execute a payroll batch' })
+  @ApiResponse({ status: 200, description: 'Payroll batch executed successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   executeBatch(@Param('id') id: string) {
     return this.payrollService.executeBatch(id);
   }
 
   @Post('batch/:id/bank-file')
+  @ApiOperation({ summary: 'Generate bank file for a payroll batch' })
+  @ApiResponse({ status: 200, description: 'Bank file generated successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   generateBankFile(@Param('id') id: string) {
     return this.payrollService.generateBankFile(id);
@@ -98,16 +120,15 @@ export class PayrollController {
    */
   @Post('batch/:id/reverse')
   @HttpCode(204)
+  @ApiOperation({ summary: 'Reverse a completed payroll batch' })
+  @ApiResponse({ status: 204, description: 'Batch reversed successfully.' })
   @Throttle({ payroll: { ttl: 60000, limit: 3 } })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN)
   reverseBatch(
     @Param('id') id: string,
-    @Body() body: { justification: string },
+    @Body() body: ReversePayrollBatchDto,
     @CurrentUser() user: { sub: string; roles?: string[]; role?: string },
   ) {
-    if (!body?.justification?.trim()) {
-      throw new Error('justification is required for batch reversal');
-    }
     return this.payrollService.reverseBatch(id, {
       actorId:    user.sub,
       actorRoles: user.roles ?? (user.role ? [user.role] : []),
@@ -115,24 +136,32 @@ export class PayrollController {
   }
 
   @Get('batch/:id/register')
+  @ApiOperation({ summary: 'Get payroll register for a batch' })
+  @ApiResponse({ status: 200, description: 'Payroll register retrieved successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   getPayrollRegister(@Param('id') id: string) {
     return this.payrollService.getPayrollRegister(id);
   }
 
   @Get('batch/:id/finalize')
+  @ApiOperation({ summary: 'Finalize a payroll batch' })
+  @ApiResponse({ status: 200, description: 'Batch finalized successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   finalizeBatch(@Param('id') id: string) {
     return this.payrollService.finalizeBatch(id);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a specific payroll batch by ID' })
+  @ApiResponse({ status: 200, description: 'Batch retrieved successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER, Role.EMPLOYEE)
   findOne(@Param('id') id: string) {
     return this.payrollService.findOne(id);
   }
 
   @Post('item/create')
+  @ApiOperation({ summary: 'Manual payroll item creation (unsupported)' })
+  @ApiResponse({ status: 500, description: 'Not implemented.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   createItem() {
     // Manual item creation is not supported in v1 — items are auto-generated during batch generation.
@@ -141,6 +170,8 @@ export class PayrollController {
   }
 
   @Patch('item/:id')
+  @ApiOperation({ summary: 'Update a specific payroll item' })
+  @ApiResponse({ status: 200, description: 'Item updated successfully.' })
   @Roles(Role.ROOT_OWNER, Role.PLATFORM_ADMIN, Role.SUPER_ADMIN, Role.COMPANY_ADMIN, Role.HR_MANAGER)
   updateItem() {
     // Manual item update is not supported in v1 — items are locked once the batch is sealed.

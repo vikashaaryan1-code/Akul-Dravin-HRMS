@@ -3,13 +3,13 @@ import { A2zPageExperience } from '@/components/landing/A2zPageExperience';
 import { getPublicA2zData } from '@/lib/public-site';
 
 export const metadata: Metadata = {
-  title: 'AKUL DRAVIN | A2Z Workflow Page',
-  description:
-    'Dedicated A2Z page with A2Z workflow form for complete HRMS, CRM, finance, and operations rollout planning.',
+ title: 'AKUL DRAVIN | A2Z Workflow Page',
+ description:
+ 'Dedicated A2Z page with A2Z workflow form for complete HRMS, CRM, finance, and operations rollout planning.',
 };
 
 export const revalidate = 120;
 
 export default async function A2zPage() {
-  return <A2zPageExperience />;
+ return <A2zPageExperience />;
 }

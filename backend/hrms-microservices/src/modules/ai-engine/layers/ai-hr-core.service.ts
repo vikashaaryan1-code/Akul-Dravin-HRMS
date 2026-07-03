@@ -51,7 +51,7 @@ export class AiHrCoreService {
     const prompt = `
 Analyze this leave request:
 - Employee: ${leaveRequest.employee!.firstName}
-- Leave Type: ${leaveRequest.leaveType.firstName}
+- Leave Type: ${leaveRequest.leaveType.leaveName}
 - Duration: ${leaveRequest.startDate} to ${leaveRequest.endDate}
 - Reason: ${leaveRequest.reason}
 - Employee Performance: ${leaveRequest.employee!.epistemicConfidence}
@@ -188,8 +188,8 @@ Respond in JSON format with: tasks (array), timeline (string description), custo
       });
     }
 
-    // Pattern 2: Excessive unplanned leaves
-    const unplanned = sortedLeaves.filter((l) => l.leaveType?.name === 'Casual Leave');
+    const approvedLeaves = sortedLeaves.filter((l) => l.status === 'APPROVED');
+    const unplanned = sortedLeaves.filter((l) => l.leaveType?.leaveName === 'Casual Leave');
     if (unplanned.length > 12) {
       patterns.push({
         pattern: 'EXCESSIVE_CASUAL_LEAVES',

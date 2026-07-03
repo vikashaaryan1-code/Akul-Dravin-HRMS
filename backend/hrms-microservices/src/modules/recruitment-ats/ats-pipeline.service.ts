@@ -81,7 +81,6 @@ export interface ScheduleInterviewParams {
   meetingLink?:  string;
   location?:     string;
   interviewerIds: string[];
-  tenantId:      string;
   actorId?:      string;
 }
 
@@ -102,7 +101,6 @@ export interface CreateOfferParams {
   offerExpiryDate?:     string;
   salaryBreakdown?:     Record<string, number>;
   benefits?:            string[];
-  tenantId:             string;
   createdBy?:           string;
 }
 
@@ -187,7 +185,8 @@ export class AtsPipelineService {
    * Appends an immutable event to pipeline_history JSONB.
    */
   async moveStage(params: MoveStageParams): Promise<RecruitmentApplicationEntity> {
-    const application = await this.appRepo.findOne({ where: { id: params.applicationId } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    const application = await this.appRepo.findOne({ where: { id: params.applicationId, tenantId } });
     if (!application) {
       throw new NotFoundException(`Application ${params.applicationId} not found`);
     }
@@ -262,6 +261,7 @@ export class AtsPipelineService {
    */
   async scheduleInterview(params: ScheduleInterviewParams): Promise<ScheduleInterviewResult> {
     const interviewId = crypto.randomUUID();
+    const tenantId = TenantContext.getRequiredTenantId();
 
     await this.dataSource.query(`
       INSERT INTO recruitment_interviews (
@@ -273,7 +273,7 @@ export class AtsPipelineService {
       )
     `, [
       interviewId,
-      params.tenantId,
+      tenantId,
       params.applicationId,
       params.jobId,
       params.candidateId,
@@ -313,7 +313,6 @@ export class AtsPipelineService {
 
   async completeInterview(
     interviewId: string,
-    tenantId: string,
     params: {
       overallRating:   number;      // 1–5
       recommendation:  'proceed' | 'hold' | 'reject';
@@ -322,6 +321,7 @@ export class AtsPipelineService {
       actorId?:        string;
     },
   ): Promise<void> {
+    const tenantId = TenantContext.getRequiredTenantId();
     const [interview] = await this.dataSource.query(
       `SELECT * FROM recruitment_interviews WHERE id = $1 AND tenant_id = $2`,
       [interviewId, tenantId],
@@ -364,6 +364,7 @@ export class AtsPipelineService {
   async createOffer(params: CreateOfferParams): Promise<string> {
     const offerId   = crypto.randomUUID();
     const offerCode = `OFR-${Date.now().toString(36).toUpperCase()}`;
+    const tenantId = TenantContext.getRequiredTenantId();
 
     await this.dataSource.query(`
       INSERT INTO recruitment_offers (
@@ -375,7 +376,7 @@ export class AtsPipelineService {
       )
     `, [
       offerId,
-      params.tenantId,
+      tenantId,
       params.applicationId,
       params.jobId,
       params.candidateId,
@@ -403,7 +404,8 @@ export class AtsPipelineService {
 
   // ── 5. Send Offer ─────────────────────────────────────────────────────────
 
-  async sendOffer(offerId: string, tenantId: string, actorId?: string): Promise<void> {
+  async sendOffer(offerId: string, actorId?: string): Promise<void> {
+    const tenantId = TenantContext.getRequiredTenantId();
     await this.dataSource.query(
       `UPDATE recruitment_offers SET status='sent', sent_at=NOW(), updated_at=NOW()
        WHERE id=$1 AND tenant_id=$2`,
@@ -429,7 +431,8 @@ export class AtsPipelineService {
 
   // ── 6. Accept / Reject Offer ──────────────────────────────────────────────
 
-  async acceptOffer(offerId: string, tenantId: string): Promise<void> {
+  async acceptOffer(offerId: string): Promise<void> {
+    const tenantId = TenantContext.getRequiredTenantId();
     await this.dataSource.query(
       `UPDATE recruitment_offers SET status='accepted', accepted_at=NOW(), updated_at=NOW()
        WHERE id=$1 AND tenant_id=$2`,
@@ -491,11 +494,12 @@ export class AtsPipelineService {
    * Return Kanban board data for a job — grouped by pipeline columns.
    */
   async getKanbanBoard(jobId: string): Promise<KanbanBoard> {
-    const job = await this.jobRepo.findOne({ where: { id: jobId } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    const job = await this.jobRepo.findOne({ where: { id: jobId, tenantId } });
     if (!job) throw new NotFoundException(`Job ${jobId} not found`);
 
     const applications = await this.appRepo.find({
-      where: { jobId },
+      where: { jobId, tenantId },
       order: { createdAt: 'DESC' },
     });
 
@@ -526,7 +530,8 @@ export class AtsPipelineService {
   // ── 10. Pipeline Metrics ──────────────────────────────────────────────────
 
   async getPipelineMetrics(jobId: string): Promise<PipelineMetrics> {
-    const applications = await this.appRepo.find({ where: { jobId } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    const applications = await this.appRepo.find({ where: { jobId, tenantId } });
     return this.calculateMetrics(applications);
   }
 

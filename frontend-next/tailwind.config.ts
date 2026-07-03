@@ -2,9 +2,8 @@ import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 
 /**
- * AKUL DRAVIN — Tailwind Configuration v2.0
- * Phase 1: Brand Identity + Global Design System
- * CyberGlass 2.0 Token Integration
+ * AKUL DRAVIN — Tailwind Configuration v3.0
+ * Phase 2: Premium Light Theme + 3D Glass Finishing
  */
 const config: Config = {
   darkMode: 'class',
@@ -20,20 +19,22 @@ const config: Config = {
 
       // ── Colors ──────────────────────────────────────────────────────────
       colors: {
-        // Depth Scale
-        void:    '#02060f',
+        // Light Theme Surface Scale
+        void:    '#F8FAFC', // soft slate-50 background
         depth: {
-          1: '#070f1e',
-          2: '#0d1a30',
-          3: '#142138',
-          4: '#1e2d47',
+          1: '#F1F5F9', // slate-100
+          2: '#E2E8F0', // slate-200
+          3: '#CBD5E1', // slate-300
+          4: '#94A3B8', // slate-400
         },
 
-        // Brand Accents
+        // Brand Accents (Based on Logo)
         gold:    '#F2AA3B',
-        'gold-dim': '#b07a1a',
-        ember:   '#E85A2A',
+        'gold-dim': '#C48A30',
+        navy:    '#111B2A',
         aqua:    '#0F8B8D',
+        cyan:    '#22D3EE',
+        ember:   '#E85A2A',
         jade:    '#10B981',
 
         // Legacy compat tokens
@@ -62,25 +63,18 @@ const config: Config = {
       },
 
       fontSize: {
-        // Display scale (fluid)
         'display-xl': ['clamp(4rem, 10vw, 10rem)', { lineHeight: '0.9',  letterSpacing: '-0.06em', fontWeight: '900' }],
         'display-lg': ['clamp(3rem, 7vw, 7rem)',   { lineHeight: '0.95', letterSpacing: '-0.05em', fontWeight: '900' }],
         'display-md': ['clamp(2.5rem, 5vw, 5rem)', { lineHeight: '1',    letterSpacing: '-0.04em', fontWeight: '800' }],
-
-        // Heading scale
         'heading-xl': ['3rem',    { lineHeight: '1.1', letterSpacing: '-0.03em', fontWeight: '800' }],
         'heading-lg': ['2rem',    { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }],
         'heading-md': ['1.5rem',  { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
         'heading-sm': ['1.25rem', { lineHeight: '1.25', fontWeight: '700' }],
-
-        // Body scale
         'body-xl': ['1.25rem',   { lineHeight: '1.6' }],
         'body-lg': ['1.125rem',  { lineHeight: '1.65' }],
         'body-md': ['1rem',      { lineHeight: '1.65' }],
         'body-sm': ['0.875rem',  { lineHeight: '1.6' }],
         'body-xs': ['0.75rem',   { lineHeight: '1.5' }],
-
-        // Label scale (tracked uppercase)
         'label-lg': ['0.75rem',   { lineHeight: '1', letterSpacing: '0.15em', fontWeight: '700' }],
         'label-sm': ['0.625rem',  { lineHeight: '1', letterSpacing: '0.35em', fontWeight: '800' }],
         'label-xs': ['0.5625rem', { lineHeight: '1', letterSpacing: '0.4em',  fontWeight: '900' }],
@@ -118,31 +112,25 @@ const config: Config = {
         'full': '9999px',
       },
 
-      // ── Shadows ──────────────────────────────────────────────────────────
+      // ── Shadows (Light Theme 3D Glass) ───────────────────────────────────
       boxShadow: {
         'none':     'none',
-        'sm':       '0 1px 3px rgba(0,0,0,0.3)',
-        DEFAULT:    '0 4px 16px rgba(0,0,0,0.4)',
-        'md':       '0 4px 16px rgba(0,0,0,0.4)',
-        'lg':       '0 8px 32px rgba(0,0,0,0.5)',
-        'xl':       '0 16px 64px rgba(0,0,0,0.6)',
-        '2xl':      '0 32px 128px rgba(0,0,0,0.7)',
-        'panel':    '0 10px 30px rgba(17,27,42,0.08)',
-        'glass':    '0 8px 32px rgba(0,0,0,0.37), inset 0 1px 0 rgba(255,255,255,0.05)',
+        'sm':       '0 1px 3px rgba(17,27,42,0.05)',
+        DEFAULT:    '0 4px 16px rgba(17,27,42,0.06)',
+        'md':       '0 4px 16px rgba(17,27,42,0.06)',
+        'lg':       '0 12px 32px rgba(15, 139, 141, 0.08)',
+        'xl':       '0 20px 64px rgba(15, 139, 141, 0.1)',
+        '2xl':      '0 32px 128px rgba(15, 139, 141, 0.12)',
+        'panel':    '0 10px 40px rgba(17,27,42,0.04)',
+        'glass':    '0 12px 40px rgba(15, 139, 141, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
 
-        // Accent glows
+        // Light Theme Accent Glows
         'gold-sm':  '0 0 20px rgba(242,170,59,0.15)',
-        'gold-md':  '0 10px 40px rgba(242,170,59,0.25)',
-        'gold-lg':  '0 20px 80px rgba(242,170,59,0.35)',
-        'aqua-sm':  '0 0 20px rgba(15,139,141,0.2)',
-        'aqua-md':  '0 10px 40px rgba(15,139,141,0.3)',
-        'ember-sm': '0 0 20px rgba(232,90,42,0.2)',
-        'ember-md': '0 10px 40px rgba(232,90,42,0.3)',
-        'ember-lg': '0 20px 80px rgba(232,90,42,0.4)',
-
-        // Legacy compat
-        'holo-sm':  '0 0 10px rgba(59, 130, 246, 0.2)',
-        'holo-lg':  '0 0 25px rgba(139, 92, 246, 0.4)',
+        'gold-md':  '0 10px 40px rgba(242,170,59,0.2)',
+        'gold-lg':  '0 20px 80px rgba(242,170,59,0.25)',
+        'aqua-sm':  '0 0 20px rgba(15,139,141,0.1)',
+        'aqua-md':  '0 10px 40px rgba(15,139,141,0.15)',
+        'aqua-lg':  '0 20px 80px rgba(15,139,141,0.2)',
       },
 
       // ── Max Width ────────────────────────────────────────────────────────
@@ -159,11 +147,6 @@ const config: Config = {
         '22':  '88px',
         '26':  '104px',
         '30':  '120px',
-        '34':  '136px',
-        '38':  '152px',
-        '42':  '168px',
-        '46':  '184px',
-        '50':  '200px',
         '72':  '288px',
         '80':  '320px',
         '96':  '384px',
@@ -234,22 +217,9 @@ const config: Config = {
           '0%, 100%': { transform: 'scale(1)',    opacity: '0.4' },
           '50%':       { transform: 'scale(1.05)', opacity: '0.6' },
         },
-        'hologram-flicker': {
-          '0%, 100%': { opacity: '1', filter: 'brightness(1)' },
-          '50%':       { opacity: '0.8', filter: 'brightness(1.2)' },
-          '95%':       { opacity: '1', filter: 'brightness(1.5)' },
-        },
         'spin-slow': {
           from: { transform: 'rotate(0deg)' },
           to:   { transform: 'rotate(360deg)' },
-        },
-        glitch: {
-          '0%':   { transform: 'translate(0)' },
-          '20%':  { transform: 'translate(-2px, 2px)' },
-          '40%':  { transform: 'translate(-2px, -2px)' },
-          '60%':  { transform: 'translate(2px, 2px)' },
-          '80%':  { transform: 'translate(2px, -2px)' },
-          '100%': { transform: 'translate(0)' },
         },
         'bounce-subtle': {
           '0%, 100%': { transform: 'translateY(0)' },
@@ -268,9 +238,7 @@ const config: Config = {
         'ticker':        'ticker 30s linear infinite',
         'pulse-live':    'pulse-live 2s ease-in-out infinite',
         'pulse-slow':    'mesh-pulse 8s ease-in-out infinite',
-        'hologram':      'hologram-flicker 4s linear infinite',
         'spin-slow':     'spin-slow 20s linear infinite',
-        'glitch-fast':   'glitch 0.2s linear infinite',
         'bounce-subtle': 'bounce-subtle 3s ease-in-out infinite',
       },
 
@@ -296,19 +264,19 @@ const config: Config = {
   plugins: [
     plugin(function({ addUtilities, addComponents, theme }) {
 
-      // ── CyberGlass 2.0 Utilities ───────────────────────────────────────
+      // ── 3D Light Glass Utilities ───────────────────────────────────────
       addUtilities({
-        // Surface Scale
+        // Surface Scale for Light Theme
         '.surface-void':    { background: 'transparent' },
-        '.surface-base':    { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' },
-        '.surface-raised':  { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)' },
-        '.surface-high':    { background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', boxShadow: '0 16px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)' },
-        '.surface-overlay': { background: 'rgba(2,6,15,0.85)',      border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(32px)' },
+        '.surface-base':    { background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', boxShadow: '0 4px 16px rgba(17,27,42,0.04)' },
+        '.surface-raised':  { background: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,1)', backdropFilter: 'blur(24px)', boxShadow: '0 12px 32px rgba(15,139,141,0.06), inset 0 1px 0 rgba(255,255,255,1)' },
+        '.surface-high':    { background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(255,255,255,1)', backdropFilter: 'blur(32px)', boxShadow: '0 20px 64px rgba(15,139,141,0.1), inset 0 1px 0 rgba(255,255,255,1)' },
+        '.surface-overlay': { background: 'rgba(255,255,255,0.95)', border: '1px solid rgba(255,255,255,1)', backdropFilter: 'blur(40px)', boxShadow: '0 32px 128px rgba(15,139,141,0.15)' },
 
-        // Glass (Legacy CyberGlass 1.0 — maintained for backwards compat)
-        '.bg-glass-base':     { backgroundColor: 'rgba(255, 255, 255, 0.05)' },
-        '.bg-glass-elevated': { backgroundColor: 'rgba(255, 255, 255, 0.15)' },
-        '.bg-glass-high':     { backgroundColor: 'rgba(255, 255, 255, 0.25)' },
+        // Glass (Legacy compat overrides to match light theme)
+        '.bg-glass-base':     { backgroundColor: 'rgba(255, 255, 255, 0.4)' },
+        '.bg-glass-elevated': { backgroundColor: 'rgba(255, 255, 255, 0.6)' },
+        '.bg-glass-high':     { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
         '.blur-glass-sm':     { backdropFilter: 'blur(4px)' },
         '.blur-glass-md':     { backdropFilter: 'blur(8px)' },
         '.blur-glass-lg':     { backdropFilter: 'blur(16px)' },
@@ -329,7 +297,7 @@ const config: Config = {
 
         // Text Gradients
         '.text-gradient-gold': {
-          background: 'linear-gradient(135deg, #F2AA3B 0%, #E8D5A0 50%, #F2AA3B 100%)',
+          background: 'linear-gradient(135deg, #F2AA3B 0%, #C48A30 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -341,7 +309,7 @@ const config: Config = {
           backgroundClip: 'text',
         },
         '.text-gradient-brand': {
-          background: 'linear-gradient(135deg, #F2AA3B 0%, #E85A2A 50%, #0F8B8D 100%)',
+          background: 'linear-gradient(135deg, #0F8B8D 0%, #F2AA3B 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -360,18 +328,18 @@ const config: Config = {
         // Noise
         '.noise-overlay': {
           backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-          opacity: '0.02',
+          opacity: '0.04',
           pointerEvents: 'none',
-          mixBlendMode: 'overlay',
+          mixBlendMode: 'multiply',
         },
 
         // Deterministic noise (legacy)
         '.deterministic-noise': {
           backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
           maskImage: 'radial-gradient(circle at center, black, transparent 80%)',
-          opacity: '0.03',
+          opacity: '0.05',
           pointerEvents: 'none',
-          mixBlendMode: 'overlay',
+          mixBlendMode: 'multiply',
         },
 
         // Status
@@ -384,20 +352,19 @@ const config: Config = {
           animation: 'pulse-live 2s infinite',
         },
 
-        // ── CyberGlass 2.0 Component Tokens ────────────────────────────────
-        // Section label — small caps, wide tracking
+        // Component Tokens
         '.section-label': {
           fontSize: '0.625rem',
           fontWeight: '800',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
           lineHeight: '1',
+          color: '#0F8B8D',
         },
 
-        // Subtle border — consistent 1px border across components
         '.border-subtle': {
           borderWidth: '1px',
-          borderColor: 'rgba(255,255,255,0.07)',
+          borderColor: 'rgba(15, 139, 141, 0.1)',
         },
 
         // Primary button
@@ -407,8 +374,8 @@ const config: Config = {
           gap: '8px',
           padding: '12px 28px',
           borderRadius: '9999px',
-          background: 'linear-gradient(135deg, #F2AA3B 0%, #E85A2A 100%)',
-          color: '#02060f',
+          background: 'linear-gradient(135deg, #0F8B8D 0%, #17A2B8 100%)',
+          color: '#ffffff',
           fontSize: '0.75rem',
           fontWeight: '900',
           letterSpacing: '0.08em',
@@ -416,6 +383,7 @@ const config: Config = {
           transition: 'all 250ms cubic-bezier(0.16, 1, 0.3, 1)',
           cursor: 'pointer',
           border: 'none',
+          boxShadow: '0 8px 24px rgba(15, 139, 141, 0.3), inset 0 2px 4px rgba(255,255,255,0.2)',
         },
 
         // Secondary button
@@ -425,16 +393,17 @@ const config: Config = {
           gap: '8px',
           padding: '12px 28px',
           borderRadius: '9999px',
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.7)',
+          border: '1px solid rgba(15, 139, 141, 0.2)',
           backdropFilter: 'blur(16px)',
-          color: '#ffffff',
+          color: '#111B2A',
           fontSize: '0.75rem',
           fontWeight: '700',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
           transition: 'all 250ms cubic-bezier(0.16, 1, 0.3, 1)',
           cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(17,27,42,0.03)',
         },
       });
     }),

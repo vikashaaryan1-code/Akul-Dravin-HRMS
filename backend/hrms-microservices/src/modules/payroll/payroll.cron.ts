@@ -2,12 +2,17 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PayrollService } from './payroll.service';
 import { TenantContext } from '../../common/context/tenant-context';
+import { DataSource } from 'typeorm';
+import { EmployeeEntity } from '../../database/entities/employee.entity';
 
 @Injectable()
 export class PayrollCronService {
   private readonly logger = new Logger(PayrollCronService.name);
 
-  constructor(private readonly payrollService: PayrollService) {}
+  constructor(
+    private readonly payrollService: PayrollService,
+    private readonly dataSource: DataSource,
+  ) {}
 
   /**
    * Monthly Payroll Trigger: Runs on the 25th of every month at midnight.
@@ -17,16 +22,20 @@ export class PayrollCronService {
   async handleMonthlyPayroll() {
     this.logger.log('CRON: Triggering monthly payroll generation');
     
-    // In a real multi-tenant system, we would iterate over all active tenants.
-    // For this demonstration, we'll assume a global context or use a system tenant.
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1; // 1-12
 
-    const tenantId = '00000000-0000-0000-0000-000000000001';
+    const activeTenants = await this.dataSource.getRepository(EmployeeEntity)
+      .createQueryBuilder('e')
+      .select('DISTINCT e.tenantId', 'tenantId')
+      .getRawMany();
+
     const mockSettings: any = { features: { enableAiRecruitment: true, enableCryptoPayroll: false } };
     const mockGov = { epochHash: 'SYSTEM_CRON', confidence: 100, residualRisk: 'NONE' };
 
-    await TenantContext.runScoped(tenantId, mockSettings, mockGov, async () => {
+    for (const { tenantId } of activeTenants) {
+      if (!tenantId) continue;
+      await TenantContext.runScoped(tenantId, mockSettings, mockGov, async () => {
       try {
         this.logger.log(`Generating payroll for month ${currentMonth}/${currentYear}`);
         const batch = await this.payrollService.generateBatch(currentYear, currentMonth);
@@ -54,6 +63,7 @@ export class PayrollCronService {
         this.logger.error(`CRON: Monthly payroll failed - ${error.message}`, error.stack);
       }
     });
+    }
   }
 
   /**

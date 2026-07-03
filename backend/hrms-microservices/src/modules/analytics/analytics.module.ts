@@ -13,6 +13,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 // import { GovernanceOrchestrationModule } from '../../common/governance/governance-orchestration.module';
 import { PerformanceManagementModule } from '../performance-management/performance-management.module';
 import { AnalyticsCacheService } from './analytics-cache.service';
+import { DashboardController } from './dashboard.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { AnalyticsCacheService } from './analytics-cache.service';
     PerformanceManagementModule,
     // GovernanceOrchestrationModule,
   ],
-  controllers: [AnalyticsController],
+  controllers: [AnalyticsController, DashboardController],
   providers: [
     AnalyticsService,
     RoiService,

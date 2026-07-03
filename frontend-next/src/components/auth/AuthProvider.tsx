@@ -10,8 +10,8 @@ import { useTokenRefresh } from '@/hooks/useTokenRefresh';
  * like auto-refresh and session sync.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialize the token refresh loop and cookie sync
-  useTokenRefresh();
+ // Initialize the token refresh loop and cookie sync
+ useTokenRefresh();
 
-  return <>{children}</>;
+ return <>{children}</>;
 }

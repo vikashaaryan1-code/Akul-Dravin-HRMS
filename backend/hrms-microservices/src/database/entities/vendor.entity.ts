@@ -1,12 +1,10 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   Index,
   OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
+import { TenantScopedEntity } from './tenant-scoped.entity';
 import { VendorPurchaseOrderEntity } from './vendor-purchase-order.entity';
 
 export type VendorStatus = 'Active' | 'Inactive' | 'Under Review' | 'Blacklisted';
@@ -25,14 +23,7 @@ export type VendorCategory =
 @Entity('vendors')
 @Index(['tenantId', 'status'])
 @Index(['tenantId', 'category'])
-export class VendorEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Index()
-  @Column({ name: 'tenant_id' })
-  tenantId: string;
-
+export class VendorEntity extends TenantScopedEntity {
   @Column({ name: 'vendor_name' })
   vendorName: string;
 
@@ -68,10 +59,4 @@ export class VendorEntity {
 
   @OneToMany(() => VendorPurchaseOrderEntity, (po) => po.vendor)
   purchaseOrders: VendorPurchaseOrderEntity[];
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
 }

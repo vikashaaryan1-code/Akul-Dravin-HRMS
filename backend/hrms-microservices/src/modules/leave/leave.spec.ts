@@ -125,7 +125,7 @@ describe('LeaveService', () => {
       })).rejects.toThrow(BadRequestException);
     });
 
-    it('should create a leave request with status=pending', async () => {
+    it('should create a leave request with status=pending_manager', async () => {
       const result = await service.createLeaveRequest({
         employeeId:  'emp-1',
         startDate:   '2026-05-20',
@@ -134,7 +134,7 @@ describe('LeaveService', () => {
         reason:      'Vacation',
         totalDays:   '3',
       });
-      expect(result.status).toBe('pending');
+      expect(result.status).toBe('pending_manager');
       expect(requestRepoMock.save).toHaveBeenCalled();
     });
   });

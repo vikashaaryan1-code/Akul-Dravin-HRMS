@@ -16,7 +16,9 @@ export type CrmLeadStage =
   | 'Proposal Sent'
   | 'Negotiation'
   | 'Closed Won'
-  | 'Closed Lost';
+  | 'Closed Lost'
+  | 'Discovery Requested'
+  | 'A2Z Workflow Requested';
 
 export type CrmLeadSource =
   | 'Website'

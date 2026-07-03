@@ -1,0 +1,4 @@
+import React from 'react';
+import { CompensationOptimizerWidget } from '../../../components/decision/CompensationOptimizerWidget';
+import { PromotionReadinessWidget } from '../../../components/decision/PromotionReadinessWidget'; export default function DecisionEnginePage() { return ( <div className="p-8 max-w-[1400px] mx-auto min-h-screen"> {/* Header section */} <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end"> <div> <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-md"> AI Decision Engine </h1> <p className="text-white/60 text-lg"> Layer 5: Predictive modeling for compensation, promotions, and restructuring. </p> </div> </div> {/* Grid Layout */} <div className="grid grid-cols-1 xl:grid-cols-2 gap-8"> {/* Left Column */} <div className="h-full"> <CompensationOptimizerWidget /> </div> {/* Right Column */} <div className="h-full"> <PromotionReadinessWidget /> </div> </div> </div> );
+}

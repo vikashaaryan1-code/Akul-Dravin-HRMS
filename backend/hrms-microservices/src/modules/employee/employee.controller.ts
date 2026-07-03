@@ -11,6 +11,7 @@ import {
   HttpStatus,
   ParseUUIDPipe,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { EmployeeService } from './employee.service';
 import { EmployeeLifecycleService } from './employee-lifecycle.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -18,38 +19,22 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/enums/role.enum';
+import {
+  OnboardEmployeeDto,
+  StartProbationDto,
+  ConfirmEmployeeDto,
+  PromoteEmployeeDto,
+  TransferEmployeeDto,
+  InitiateResignationDto,
+  ProcessExitDto,
+  TerminateEmployeeDto,
+  SuspendEmployeeDto,
+  ReinstateEmployeeDto,
+  MarkAbscondedDto,
+} from './dto/lifecycle.dto';
 
-/**
- * EMPLOYEE CONTROLLER
- *
- * REST surface for the Employee domain. Split into two concerns:
- *   1. CRUD          — create/read/update/delete employee records
- *   2. Lifecycle     — state-machine transitions per PRD §5.1.1
- *
- * Lifecycle endpoints are POST to make the intent explicit and auditable.
- * Each transition is idempotent at the DB level (validated by the
- * state machine guard in EmployeeLifecycleService).
- *
- * Route map:
- *   GET    /employees               → list all (tenant-scoped)
- *   GET    /employees/:id           → single employee
- *   POST   /employees               → create
- *   PATCH  /employees/:id           → update profile fields
- *   DELETE /employees/:id           → soft/hard remove
- *
- *   POST /employees/:id/lifecycle/onboard       → ONBOARDING
- *   POST /employees/:id/lifecycle/probation     → PROBATION
- *   POST /employees/:id/lifecycle/confirm       → CONFIRMED
- *   POST /employees/:id/lifecycle/promote       → PROMOTED
- *   POST /employees/:id/lifecycle/transfer      → TRANSFERRED
- *   POST /employees/:id/lifecycle/resign        → NOTICE_PERIOD
- *   POST /employees/:id/lifecycle/exit          → RESIGNED
- *   POST /employees/:id/lifecycle/terminate     → TERMINATED
- *   POST /employees/:id/lifecycle/suspend       → SUSPENDED
- *   POST /employees/:id/lifecycle/reinstate     → CONFIRMED (from SUSPENDED)
- *   POST /employees/:id/lifecycle/abscond       → ABSCONDED
- *   GET  /employees/:id/lifecycle               → lifecycle history
- */
+@ApiTags('Employees')
+@ApiBearerAuth()
 @Controller('employees')
 @UseGuards(RolesGuard)
 export class EmployeeController {
@@ -61,22 +46,31 @@ export class EmployeeController {
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
   @Get()
+  @ApiOperation({ summary: 'Get all employees for the current tenant' })
+  @ApiResponse({ status: 200, description: 'List of employees' })
   findAll() {
     return this.employeeService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a specific employee by ID' })
+  @ApiResponse({ status: 200, description: 'Employee details' })
+  @ApiResponse({ status: 404, description: 'Employee not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.employeeService.findOne(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new employee' })
+  @ApiResponse({ status: 201, description: 'Employee successfully created' })
   create(@Body() dto: CreateEmployeeDto) {
     return this.employeeService.create(dto);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update an existing employee' })
+  @ApiResponse({ status: 200, description: 'Employee successfully updated' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateEmployeeDto,
@@ -86,6 +80,8 @@ export class EmployeeController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an employee' })
+  @ApiResponse({ status: 204, description: 'Employee successfully deleted' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.employeeService.remove(id);
   }
@@ -93,6 +89,8 @@ export class EmployeeController {
   // ── Lifecycle — read ──────────────────────────────────────────────────────
 
   @Get(':id/lifecycle')
+  @ApiOperation({ summary: 'Get lifecycle history of an employee' })
+  @ApiResponse({ status: 200, description: 'Lifecycle state and history' })
   async getLifecycle(@Param('id', ParseUUIDPipe) id: string) {
     const employee = await this.employeeService.findOne(id);
     return {
@@ -105,164 +103,132 @@ export class EmployeeController {
 
   // ── Lifecycle — transitions ───────────────────────────────────────────────
 
-  /** ONBOARDING — offer accepted, join date set, not yet joined. */
   @Post(':id/lifecycle/onboard')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Initiate onboarding for a new hire' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to ONBOARDING' })
   initiateOnboarding(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { expectedJoinDate: string; probationDays?: number; actorId?: string },
+    @Body() dto: OnboardEmployeeDto,
   ) {
-    return this.lifecycleService.initiateOnboarding(id, body);
+    return this.lifecycleService.initiateOnboarding(id, dto);
   }
 
-  /** PROBATION — employee physically joined. */
   @Post(':id/lifecycle/probation')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Start probation period' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to PROBATION' })
   startProbation(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { actualJoinDate: string; probationEndDate?: string; probationDays?: number; actorId?: string },
+    @Body() dto: StartProbationDto,
   ) {
-    return this.lifecycleService.startProbation(id, body);
+    return this.lifecycleService.startProbation(id, dto);
   }
 
-  /** CONFIRMED — probation passed, employee confirmed. Generates Confirmation Letter. */
   @Post(':id/lifecycle/confirm')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Confirm an employee after probation' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to CONFIRMED' })
   confirm(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      confirmationDate: string;
-      revisedMonthlyCtc?: number;
-      performanceRating?: string;
-      note?: string;
-      actorId?: string;
-    },
+    @Body() dto: ConfirmEmployeeDto,
   ) {
-    return this.lifecycleService.confirm(id, body);
+    return this.lifecycleService.confirm(id, dto);
   }
 
-  /** PROMOTED — designation/CTC change. Generates Promotion Letter. */
   @Post(':id/lifecycle/promote')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Promote an employee' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to PROMOTED' })
   promote(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      newDesignation: string;
-      effectiveDate: string;
-      revisedMonthlyCtc?: number;
-      newDepartmentId?: string;
-      newManagerId?: string;
-      note?: string;
-      actorId?: string;
-    },
+    @Body() dto: PromoteEmployeeDto,
   ) {
-    return this.lifecycleService.promote(id, body);
+    return this.lifecycleService.promote(id, dto);
   }
 
-  /** TRANSFERRED — branch/department/manager change. Generates Transfer Letter. */
   @Post(':id/lifecycle/transfer')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Transfer an employee' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to TRANSFERRED' })
   transfer(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      newBranchId?: string;
-      newDepartmentId?: string;
-      newManagerId?: string;
-      effectiveDate: string;
-      reason?: string;
-      actorId?: string;
-    },
+    @Body() dto: TransferEmployeeDto,
   ) {
-    return this.lifecycleService.transfer(id, body);
+    return this.lifecycleService.transfer(id, dto);
   }
 
-  /** NOTICE_PERIOD — resignation accepted, serving notice. */
   @Post(':id/lifecycle/resign')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Initiate resignation process' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to NOTICE_PERIOD' })
   initiateResignation(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      resignationDate: string;
-      lastWorkingDay: string;
-      noticePeriodDays?: number;
-      reason?: string;
-      actorId?: string;
-    },
+    @Body() dto: InitiateResignationDto,
   ) {
-    return this.lifecycleService.initiateResignation(id, body);
+    return this.lifecycleService.initiateResignation(id, dto);
   }
 
-  /** RESIGNED — notice period complete, full & final settled. Generates Experience + Relieving Letters. */
   @Post(':id/lifecycle/exit')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Process final exit of an employee' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to RESIGNED' })
   processExit(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      actualLastDay: string;
-      fullFinalAmount?: number;
-      note?: string;
-      actorId?: string;
-    },
+    @Body() dto: ProcessExitDto,
   ) {
-    return this.lifecycleService.processExit(id, body);
+    return this.lifecycleService.processExit(id, dto);
   }
 
-  /** TERMINATED — company-initiated exit. Generates Termination Letter. */
   @Post(':id/lifecycle/terminate')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Terminate an employee' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to TERMINATED' })
   terminate(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      effectiveDate: string;
-      reason: string;
-      terminationType?: string;
-      note?: string;
-      actorId?: string;
-    },
+    @Body() dto: TerminateEmployeeDto,
   ) {
-    return this.lifecycleService.terminate(id, body);
+    return this.lifecycleService.terminate(id, dto);
   }
 
-  /** SUSPENDED — disciplinary or administrative hold. */
   @Post(':id/lifecycle/suspend')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Suspend an employee' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to SUSPENDED' })
   suspend(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: {
-      suspensionDate: string;
-      reason: string;
-      expectedReturnDate?: string;
-      actorId?: string;
-    },
+    @Body() dto: SuspendEmployeeDto,
   ) {
-    return this.lifecycleService.suspend(id, body);
+    return this.lifecycleService.suspend(id, dto);
   }
 
-  /** CONFIRMED — reinstate from SUSPENDED. */
   @Post(':id/lifecycle/reinstate')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reinstate a suspended employee' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned back from SUSPENDED' })
   reinstate(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { reinstateDate: string; note?: string; actorId?: string },
+    @Body() dto: ReinstateEmployeeDto,
   ) {
-    return this.lifecycleService.reinstate(id, body);
+    return this.lifecycleService.reinstate(id, dto);
   }
 
-  /** ABSCONDED — employee went AWOL. */
   @Post(':id/lifecycle/abscond')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER, Role.PLATFORM_ADMIN)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Mark an employee as absconded' })
+  @ApiResponse({ status: 200, description: 'Successfully transitioned to ABSCONDED' })
   markAbsconded(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { reportedDate: string; actorId?: string },
+    @Body() dto: MarkAbscondedDto,
   ) {
-    return this.lifecycleService.markAbsconded(id, body);
+    return this.lifecycleService.markAbsconded(id, dto);
   }
 }

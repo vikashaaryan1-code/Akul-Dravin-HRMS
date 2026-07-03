@@ -8,7 +8,12 @@ export interface TaxCalculationResult {
     pf: string;
     esi: string;
     professionalTax: string;
+    lwf: string;
     total: string;
+  };
+  accruals: {
+    gratuity: string;
+    bonus: string;
   };
   netPayable: string;
   currency: string;
@@ -38,7 +43,10 @@ export class TaxEngineService {
     // 3. Professional Tax (PT) - Standard slab (e.g., ₹200)
     const pt = gross.isGreaterThan(15000) ? new BigNumber(200) : new BigNumber(0);
 
-    // 4. TDS (Income Tax) - simplified slab-based calculation
+    // 4. Labour Welfare Fund (LWF) - Standard stub (e.g., ₹20 in Maharashtra/Karnataka)
+    const lwf = new BigNumber(20);
+
+    // 5. TDS (Income Tax) - simplified slab-based calculation
     const annualGross = gross.multipliedBy(12);
     let annualTax = new BigNumber(0);
 
@@ -56,8 +64,14 @@ export class TaxEngineService {
 
     const tds = annualTax.dividedBy(12).decimalPlaces(2, this.ROUND_MODE);
 
-    const totalDeductions = pf.plus(esi).plus(pt).plus(tds);
+    const totalDeductions = pf.plus(esi).plus(pt).plus(lwf).plus(tds);
     const net = gross.minus(totalDeductions).decimalPlaces(2, this.ROUND_MODE);
+
+    // Accruals (Employer Liability, doesn't affect net payable immediately)
+    // Gratuity: 4.81% of Basic
+    const gratuity = basic.multipliedBy(0.0481).decimalPlaces(2, this.ROUND_MODE);
+    // Bonus: 8.33% of Basic (Statutory minimum)
+    const bonus = basic.multipliedBy(0.0833).decimalPlaces(2, this.ROUND_MODE);
 
     return {
       grossSalary: gross.toFixed(2),
@@ -66,7 +80,12 @@ export class TaxEngineService {
         pf: pf.toFixed(2),
         esi: esi.toFixed(2),
         professionalTax: pt.toFixed(2),
+        lwf: lwf.toFixed(2),
         total: totalDeductions.toFixed(2),
+      },
+      accruals: {
+        gratuity: gratuity.toFixed(2),
+        bonus: bonus.toFixed(2),
       },
       netPayable: net.toFixed(2),
       currency: 'INR',

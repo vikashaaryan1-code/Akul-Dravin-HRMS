@@ -21,6 +21,8 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/enums/role.enum';
 
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+
 /**
  * EMPLOYEE IMPORT / EXPORT CONTROLLER
  *
@@ -28,6 +30,8 @@ import { Role } from '../../common/enums/role.enum';
  * POST /employees/import/submit    → queue validated rows for async import
  * GET  /employees/export/csv       → download filtered CSV
  */
+@ApiTags('Employee Import/Export')
+@ApiBearerAuth()
 @Controller('employees')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class EmployeeImportExportController {
@@ -41,6 +45,9 @@ export class EmployeeImportExportController {
    */
   @Post('import/preview')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER)
+  @ApiOperation({ summary: 'Upload and preview CSV for employee import' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Validation report of the parsed CSV' })
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB max
@@ -66,6 +73,8 @@ export class EmployeeImportExportController {
   @Post('import/submit')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER)
   @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({ summary: 'Submit validated CSV rows for background import' })
+  @ApiResponse({ status: 202, description: 'Import job successfully queued' })
   async importSubmit(
     @Body() body: { rows: any[] },
     @Req() req: Request & { user?: { id: string } },
@@ -80,6 +89,8 @@ export class EmployeeImportExportController {
    */
   @Get('export/csv')
   @Roles(Role.HR_MANAGER, Role.COMPANY_ADMIN, Role.SUPER_ADMIN, Role.ROOT_OWNER)
+  @ApiOperation({ summary: 'Export employees to CSV' })
+  @ApiResponse({ status: 200, description: 'CSV file containing filtered employees' })
   async exportCsv(
     @Query('department') department?: string,
     @Query('status') status?: string,

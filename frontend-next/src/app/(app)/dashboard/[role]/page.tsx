@@ -2,15 +2,15 @@ import { notFound, redirect } from 'next/navigation';
 import { isPlatformRole } from '@/utils/platform-config';
 
 type DashboardRolePageProps = {
-  params: Promise<{ role: string }>;
+ params: Promise<{ role: string }>;
 };
 
 export default async function DashboardRolePage({ params }: DashboardRolePageProps) {
-  const { role } = await params;
+ const { role } = await params;
 
-  if (!isPlatformRole(role)) {
-    notFound();
-  }
+ if (!isPlatformRole(role)) {
+ notFound();
+ }
 
-  redirect(`/dashboard?role=${role}`);
+ redirect(`/dashboard?role=${role}`);
 }

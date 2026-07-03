@@ -6,13 +6,12 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { AuditLogModule } from '../common/audit/audit-log.module';
+import { EmailModule } from '../common/email/email.module';
 import { UserEntity } from '../database/entities/user.entity';
 import { CompanyEntity } from '../database/entities/company.entity';
 import { RoleEntity } from '../database/entities/role.entity';
-import { PermissionEntity } from '../database/entities/permission.entity';
 import { UserInvitationEntity } from '../database/entities/user-invitation.entity';
-import { AuditLogModule } from '../common/audit/audit-log.module';
-import { EmailModule } from '../common/email/email.module';
 
 @Module({
   imports: [
@@ -29,13 +28,7 @@ import { EmailModule } from '../common/email/email.module';
         expiresIn: Number(process.env.JWT_EXPIRES_IN_SECONDS ?? 900), // 15 min default
       },
     }),
-    TypeOrmModule.forFeature([
-      UserEntity,
-      CompanyEntity,
-      RoleEntity,
-      PermissionEntity,
-      UserInvitationEntity,
-    ]),
+    TypeOrmModule.forFeature([UserEntity, CompanyEntity, RoleEntity, UserInvitationEntity]),
     AuditLogModule,
     EmailModule,
   ],

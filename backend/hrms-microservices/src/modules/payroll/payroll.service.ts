@@ -565,6 +565,16 @@ export class PayrollService {
     });
   }
 
+  /** Get all payroll items for the current tenant */
+  async findAllItems(): Promise<PayrollItemEntity[]> {
+    const tenantId = TenantContext.getRequiredTenantId();
+    return this.dataSource.getRepository(PayrollItemEntity).find({
+      where: { tenantId },
+      relations: ['employee'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   /** Get single batch by ID */
   async findOne(id: string): Promise<PayrollBatchEntity | null> {
 

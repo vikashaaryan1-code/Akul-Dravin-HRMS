@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
@@ -34,13 +34,27 @@ export class EmployeeService {
       ...dto,
       tenantId,
     });
-    return this.repo.save(entity);
+    try {
+      return await this.repo.save(entity);
+    } catch (error: any) {
+      if (error.code === '23505' || error.message.includes('unique constraint')) {
+        throw new ConflictException('An employee with this employeeCode or workEmail already exists.');
+      }
+      throw error;
+    }
   }
 
   async update(id: string, dto: UpdateEmployeeDto): Promise<EmployeeEntity> {
     const employee = await this.findOne(id);
     const updated = this.repo.merge(employee, dto);
-    return this.repo.save(updated);
+    try {
+      return await this.repo.save(updated);
+    } catch (error: any) {
+      if (error.code === '23505' || error.message.includes('unique constraint')) {
+        throw new ConflictException('An employee with this employeeCode or workEmail already exists.');
+      }
+      throw error;
+    }
   }
 
   async remove(id: string): Promise<void> {

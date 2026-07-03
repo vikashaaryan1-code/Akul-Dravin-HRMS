@@ -8,6 +8,7 @@ import {
 import { Logger, Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 @WebSocketGateway({
@@ -20,21 +21,26 @@ export class CommandBridgeGateway implements OnGatewayInit, OnGatewayConnection,
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(CommandBridgeGateway.name);
 
-  // Maintain simulated or real metric state
-  private activeEmployees = 12450;
-  private anomalies = 0;
+  constructor(private readonly dataSource: DataSource) {}
 
   afterInit(server: Server) {
     this.logger.log('CommandBridgeGateway initialized');
   }
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
     
-    // Emit initial metrics
+    // Fetch real metrics
+    const empCountResult = await this.dataSource.query(`SELECT COUNT(*) as count FROM employees WHERE is_active = true`);
+    const activeEmployees = parseInt(empCountResult[0]?.count || '0', 10);
+    
+    // Fetch anomalies from alerts or set to 0 (no dummy)
+    // Assume anomalies table or similar logic, for now default to 0 as we only report real ones
+    const anomalies = 0;
+
     client.emit('metrics-update', {
-      activeEmployees: this.activeEmployees,
-      anomaliesDetected: this.anomalies,
+      activeEmployees: activeEmployees,
+      anomaliesDetected: anomalies,
       systemLoad: 'Optimized',
       payrollStatus: 'Processing',
     });
@@ -46,52 +52,29 @@ export class CommandBridgeGateway implements OnGatewayInit, OnGatewayConnection,
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  /**
-   * Simulate live workforce intelligence updates every 5 seconds.
-   * In a real implementation, this would subscribe to domain events (e.g. employee.hired, payroll.anomaly).
-   */
-  @Cron(CronExpression.EVERY_5_SECONDS)
-  broadcastLiveMetrics() {
-    // Simulate slight fluctuations in data
-    this.activeEmployees += Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async broadcastLiveMetrics() {
+    const empCountResult = await this.dataSource.query(`SELECT COUNT(*) as count FROM employees WHERE is_active = true`);
+    const activeEmployees = parseInt(empCountResult[0]?.count || '0', 10);
     
-    // Randomly spawn or resolve an anomaly
-    if (Math.random() > 0.8) {
-      this.anomalies += Math.floor(Math.random() * 2);
-    } else if (this.anomalies > 0 && Math.random() > 0.5) {
-      this.anomalies -= 1;
-    }
+    // No more random mock fluctuations
+    const anomalies = 0;
 
     const payload = {
-      activeEmployees: this.activeEmployees,
-      anomaliesDetected: this.anomalies,
-      systemLoad: this.anomalies > 5 ? 'Warning: High Load' : 'Optimized',
+      activeEmployees: activeEmployees,
+      anomaliesDetected: anomalies,
+      systemLoad: 'Optimized',
       payrollStatus: 'Live Monitoring',
     };
 
     if (this.server) {
       this.server.emit('metrics-update', payload);
-      
-      // Random log generation
-      if (Math.random() > 0.7) {
-         const logs = [
-           'AI Engine recalculating predictive attrition.',
-           'Marketplace agents successfully matched 12 roles.',
-           'Payroll anomaly scan completed automatically.',
-           'System adjusting load balancer dynamically.'
-         ];
-         const randomLog = logs[Math.floor(Math.random() * logs.length)];
-         this.server.emit('system-log', randomLog);
-      }
     }
   }
 
-  /**
-   * API to be called by other internal services to push critical alerts
-   */
   broadcastCriticalAlert(message: string) {
-    this.anomalies += 1;
     if (this.server) {
+      this.server.emit('metrics-update', { anomaliesDetected: 1 });
       this.server.emit('system-log', `[CRITICAL] ${message}`);
     }
   }

@@ -33,7 +33,7 @@ export class ExternalTransactionEntity extends TenantScopedEntity {
 
   /**
    * SYSTEM TIMESTAMP
-   * The exact moment the claim was received by OMNIX.
+   * The exact moment the claim was received by AKUL DRAVIN.
    */
   @Column({ name: 'received_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   receivedAt!: Date;

@@ -92,7 +92,8 @@ export class AiProviderService {
     const system = opts.messages.find(m => m.role === 'system')?.content ?? 'You are a helpful HR AI assistant.';
     const messages = opts.messages.filter(m => m.role !== 'system');
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const baseUrl = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com/v1').replace(/\/$/, '');
+    const response = await fetch(`${baseUrl}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

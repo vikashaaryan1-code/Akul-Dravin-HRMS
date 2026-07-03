@@ -7,7 +7,7 @@ function ApiProperty(_opts?: Record<string, unknown>): PropertyDecorator {
 }
 
 export class RegisterDto {
-  @ApiProperty({ example: 'admin@omnix.com' })
+  @ApiProperty({ example: 'admin@akuldravin.com' })
   @IsEmail()
   email!: string;
 

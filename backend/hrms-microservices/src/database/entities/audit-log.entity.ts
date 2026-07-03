@@ -20,7 +20,14 @@ export type AuditAction =
   | 'IMPERSONATE'
   | 'TENANT_CREATE'
   | 'TENANT_SUSPEND'
-  | 'FEATURE_FLAG_CHANGE';
+  | 'FEATURE_FLAG_CHANGE'
+  | 'VENDOR_CREATED'
+  | 'VENDOR_UPDATED'
+  | 'VENDOR_DELETED'
+  | 'PURCHASE_ORDER_CREATED'
+  | 'PURCHASE_ORDER_UPDATED'
+  | 'PURCHASE_ORDER_APPROVED'
+  | 'PURCHASE_ORDER_REJECTED';
 
 @Entity('audit_logs')
 @Index(['tenantId', 'entityType'])

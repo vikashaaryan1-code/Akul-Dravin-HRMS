@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AiEngineController } from './ai-engine.controller';
 import { AiEngineRestController } from './ai-engine-rest.controller';
@@ -39,6 +39,8 @@ import { LoginHistoryEntity } from '../../database/entities/login-history.entity
 import { AuditLogEntity } from '../../database/entities/audit-log.entity';
 import { DocumentRecordEntity } from '../../database/entities/document-record.entity';
 
+import { AiInsightController } from './ai-insight.controller';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -52,10 +54,10 @@ import { DocumentRecordEntity } from '../../database/entities/document-record.en
       AuditLogEntity,
       DocumentRecordEntity,
     ]),
-    EmployeeModule,
-    PayrollModule,
+    forwardRef(() => EmployeeModule),
+    forwardRef(() => PayrollModule),
   ],
-  controllers: [AiEngineController, ForensicAdvisoryController, AiEngineRestController],
+  controllers: [AiEngineController, ForensicAdvisoryController, AiEngineRestController, AiInsightController],
   providers: [
     AiEngineService,
     AiProviderService,

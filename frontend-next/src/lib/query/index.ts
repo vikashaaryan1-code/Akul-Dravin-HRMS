@@ -3,7 +3,7 @@
  * React Query data layer barrel export.
  *
  * Usage:
- *   import { queryKeys, apiFetch, getQueryClient } from '@/lib/query';
+ * import { queryKeys, apiFetch, getQueryClient } from '@/lib/query';
  */
 
 export { getQueryClient } from './client';

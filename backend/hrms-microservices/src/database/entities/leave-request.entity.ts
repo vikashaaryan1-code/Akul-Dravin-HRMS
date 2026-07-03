@@ -1,5 +1,7 @@
-﻿import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { TenantScopedEntity } from './tenant-scoped.entity';
+import { EmployeeEntity } from './employee.entity';
+import { LeaveTypeEntity } from './leave-type.entity';
 
 @Entity({ name: 'leave_requests' })
 export class LeaveRequestEntity extends TenantScopedEntity {
@@ -32,6 +34,19 @@ export class LeaveRequestEntity extends TenantScopedEntity {
   @Column({ name: 'approved_at', type: 'timestamp with time zone', nullable: true })
   approvedAt!: Date | null;
 
-  employee?: import('./employee.entity').EmployeeEntity;
-  leaveType?: any;
+  @ManyToOne(() => EmployeeEntity)
+  @JoinColumn({ name: 'employee_id' })
+  employee!: EmployeeEntity;
+
+  @ManyToOne(() => LeaveTypeEntity)
+  @JoinColumn({ name: 'leave_type_id' })
+  leaveType!: LeaveTypeEntity;
+
+  @Column({ type: 'jsonb', nullable: true })
+  approvalStages!: Array<{
+    stage: string;
+    approvedBy: string;
+    approvedAt: string;
+    status: string;
+  }> | null;
 }

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { TenantContext } from '../../common/context/tenant-context';
 import { AnalyticsEventEntity } from '../../database/entities/analytics-event.entity';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { RecruitmentApplicationEntity } from '../../database/entities/recruitment-application.entity';
@@ -385,7 +386,12 @@ export class SalesAutomationService {
   }
 
   findAllTargets(): Promise<SalesTargetEntity[]> {
-    return this.targetRepository.find({ order: { createdAt: 'DESC' } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    return this.targetRepository.find({
+      where: { tenantId },
+      relations: ['employee'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   findTarget(id: string): Promise<SalesTargetEntity | null> {
@@ -436,7 +442,12 @@ export class SalesAutomationService {
   }
 
   findAllCommissions(): Promise<SalesCommissionEntity[]> {
-    return this.commissionRepository.find({ order: { createdAt: 'DESC' } });
+    const tenantId = TenantContext.getRequiredTenantId();
+    return this.commissionRepository.find({
+      where: { tenantId },
+      relations: ['employee'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async calculateCommission(dto: CalculateSalesCommissionDto): Promise<SalesCommissionEntity> {

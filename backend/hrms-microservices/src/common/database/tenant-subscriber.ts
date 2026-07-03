@@ -14,12 +14,15 @@ export class TenantSubscriber implements EntitySubscriberInterface {
     const entity = event.entity;
     if (!entity) return;
 
+    const isAuditLog = entity.constructor?.name === 'AuditLogEntity';
     const tenantId = TenantContext.getTenantId();
-    if (!tenantId) {
+    if (!tenantId && !isAuditLog) {
       throw new Error("Tenant context missing");
     }
 
-    entity.tenantId = tenantId;
+    if (tenantId) {
+      entity.tenantId = tenantId;
+    }
     
     // Phase 🏁-Final: Automatic Governance Provenance Binding
     const provenance = TenantContext.getProvenance();
@@ -30,12 +33,14 @@ export class TenantSubscriber implements EntitySubscriberInterface {
       entity.epistemicConfidence = provenance.confidence;
     }
 
-    await this.setTenantSession(event.queryRunner, tenantId);
+    if (tenantId) {
+      await this.setTenantSession(event.queryRunner, tenantId);
+    }
   }
 
   async beforeUpdate(event: UpdateEvent<any>) {
-    const tenantId = this.getRequiredTenantId();
     const entity = event.entity;
+    const tenantId = this.getRequiredTenantId(entity);
     
     // Phase 🏁-Final: Automatic Governance Provenance Binding
     if (entity) {
@@ -48,17 +53,22 @@ export class TenantSubscriber implements EntitySubscriberInterface {
       }
     }
 
-    await this.setTenantSession(event.queryRunner, tenantId);
+    if (tenantId) {
+      await this.setTenantSession(event.queryRunner, tenantId);
+    }
   }
 
   async beforeRemove(event: RemoveEvent<any>) {
-    const tenantId = this.getRequiredTenantId();
-    await this.setTenantSession(event.queryRunner, tenantId);
+    const tenantId = this.getRequiredTenantId(event.entity);
+    if (tenantId) {
+      await this.setTenantSession(event.queryRunner, tenantId);
+    }
   }
 
-  private getRequiredTenantId(): string {
+  private getRequiredTenantId(entity?: any): string | null {
+    const isAuditLog = entity?.constructor?.name === 'AuditLogEntity';
     const tenantId = TenantContext.getTenantId();
-    if (!tenantId) {
+    if (!tenantId && !isAuditLog) {
       throw new Error("Tenant context missing");
     }
     return tenantId;

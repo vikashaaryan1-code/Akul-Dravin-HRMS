@@ -4,7 +4,7 @@ import { DocumentType, DesignMode } from './dto/render-document.dto';
 import type { RenderDocumentDto } from './dto/render-document.dto';
 
 /**
- * OMNIX Document Template Engine
+ * AKUL DRAVIN Document Template Engine
  * Generates HTML strings for each document type.
  * HTML is then passed to the PDF renderer.
  */
@@ -69,10 +69,8 @@ export class TemplateEngineService {
   // =========================================================
   private pageWrapper(title: string, body: string, design: DesignMode): string {
     const isPrint = design === DesignMode.PRINT_CLEAN;
-    const bg = isPrint
-      ? '#ffffff'
-      : 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #0F172A 100%)';
-    const color = isPrint ? '#1a1a2e' : '#f8fafc';
+    const bg = isPrint ? '#ffffff' : 'linear-gradient(135deg, #1a2d5a 0%, #2a5298 50%, #1a2d5a 100%)';
+    const color = isPrint ? '#1a2d5a' : '#f8fafc';
     const fontImport = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap');`;
 
     return `<!DOCTYPE html>
@@ -96,43 +94,57 @@ export class TemplateEngineService {
       min-height: 1123px;
       margin: 0 auto;
       background: ${isPrint ? '#fff' : 'rgba(255,255,255,0.04)'};
-      ${isPrint ? 'border: 1px solid #e5e7eb;' : 'border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(20px);'}
+      ${isPrint ? 'border: 1px solid #e5e7eb;' : 'border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(26,45,90,0.2);'}
       padding: 64px;
       position: relative;
       overflow: hidden;
     }
+    .watermark {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 140px;
+      font-weight: 900;
+      color: rgba(201,168,76,0.03); /* Gold faint watermark */
+      z-index: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .content-wrapper { position: relative; z-index: 1; }
     .header-bar {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       padding-bottom: 28px;
-      border-bottom: ${isPrint ? '3px solid #7C3AED' : '1px solid rgba(255,255,255,0.1)'};
+      border-bottom: ${isPrint ? '3px solid #1a2d5a' : '1px solid rgba(75,184,212,0.3)'};
       margin-bottom: 48px;
     }
     .company-name {
-      font-family: 'Outfit', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      color: ${isPrint ? '#7C3AED' : '#a78bfa'};
-      letter-spacing: -0.5px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: ${isPrint ? '#1a2d5a' : '#ffffff'};
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
-    .company-meta { font-size: 10px; color: ${isPrint ? '#6b7280' : '#94a3b8'}; margin-top: 2px; }
+    .company-accent { color: #C9A84C; } /* Gold accent */
+    .company-meta { font-size: 10px; color: ${isPrint ? '#6b7a99' : '#94a3b8'}; margin-top: 4px; }
     .doc-title {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 28px;
       font-weight: 900;
       letter-spacing: -1px;
       margin-bottom: 8px;
-      color: ${isPrint ? '#111827' : '#f8fafc'};
+      color: ${isPrint ? '#1a2d5a' : '#ffffff'};
     }
-    .doc-subtitle { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: ${isPrint ? '#7C3AED' : '#a78bfa'}; margin-bottom: 32px; }
-    .body-text { font-size: 13.5px; line-height: 1.85; color: ${isPrint ? '#374151' : '#cbd5e1'}; }
+    .doc-subtitle { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; color: ${isPrint ? '#4bb8d4' : '#7dd4e8'}; margin-bottom: 32px; }
+    .body-text { font-size: 13.5px; line-height: 1.85; color: ${isPrint ? '#4a5a7a' : '#cbd5e1'}; }
     .field-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: baseline; }
-    .field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: ${isPrint ? '#9ca3af' : '#64748b'}; min-width: 140px; }
-    .field-value { font-size: 13.5px; font-weight: 600; color: ${isPrint ? '#111827' : '#f8fafc'}; }
+    .field-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: ${isPrint ? '#6b7a99' : '#64748b'}; min-width: 140px; }
+    .field-value { font-size: 13.5px; font-weight: 600; color: ${isPrint ? '#1a2d5a' : '#f8fafc'}; }
     .highlight-box {
-      background: ${isPrint ? '#f5f3ff' : 'rgba(124,58,237,0.08)'};
-      border: 1px solid ${isPrint ? '#ddd6fe' : 'rgba(124,58,237,0.2)'};
+      background: ${isPrint ? 'rgba(75,184,212,0.05)' : 'rgba(75,184,212,0.1)'};
+      border: 1px solid ${isPrint ? 'rgba(26,45,90,0.1)' : 'rgba(75,184,212,0.2)'};
       border-radius: 12px;
       padding: 20px 24px;
       margin: 24px 0;
@@ -140,17 +152,32 @@ export class TemplateEngineService {
     .footer-section {
       margin-top: 64px;
       padding-top: 32px;
-      border-top: ${isPrint ? '1px solid #e5e7eb' : '1px solid rgba(255,255,255,0.06)'};
+      border-top: ${isPrint ? '2px solid rgba(26,45,90,0.1)' : '1px solid rgba(255,255,255,0.06)'};
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
     }
     .signature-block { text-align: left; }
-    .signature-name { font-weight: 800; font-size: 13px; color: ${isPrint ? '#111827' : '#f8fafc'}; }
-    .signature-role { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: ${isPrint ? '#6b7280' : '#64748b'}; }
-    .qr-block { text-align: right; }
-    .qr-block img { width: 72px; height: 72px; opacity: 0.85; }
-    .verify-hash { font-size: 9px; font-family: monospace; color: ${isPrint ? '#9ca3af' : '#475569'}; margin-top: 4px; word-break: break-all; max-width: 200px; }
+    .signature-name { font-weight: 900; font-size: 14px; color: ${isPrint ? '#1a2d5a' : '#f8fafc'}; }
+    .signature-role { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: ${isPrint ? '#4bb8d4' : '#7dd4e8'}; margin-bottom: 8px; }
+    .signature-line {
+      width: 160px;
+      border-bottom: 1px solid ${isPrint ? '#1a2d5a' : '#f8fafc'};
+      margin-top: 24px;
+    }
+    .footer-meta {
+      font-size: 9px;
+      color: ${isPrint ? '#9ba8c0' : '#475569'};
+      text-align: right;
+      line-height: 1.6;
+    }
+    .qr-box {
+      margin-bottom: 12px;
+      padding: 4px;
+      background: white;
+      border-radius: 4px;
+      display: inline-block;
+    }
     .watermark {
       position: absolute;
       top: 50%;
@@ -182,7 +209,7 @@ export class TemplateEngineService {
 <body>
   <div class="page">
     <div class="corner-accent"></div>
-    <div class="watermark">OMNIX</div>
+    <div class="watermark">AKUL DRAVIN</div>
     ${body}
   </div>
 </body>

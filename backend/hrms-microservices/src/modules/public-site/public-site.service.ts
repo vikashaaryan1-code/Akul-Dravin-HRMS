@@ -196,17 +196,17 @@ export type PublicA2zPayload = {
   };
 };
 
-const OMNIX_A2Z_HERO: PublicA2zPayload['hero'] = {
-  badge: 'Omnix A2Z Atlas',
-  title: 'Bring the full Omnix A2Z command catalog into your AKUL DRAVIN rollout workflow.',
-  subtitle: 'Platform, people, finance, growth, and learning modules are now grouped the same way as the Omnix dashboard atlas.',
+const AKUL_DRAVIN_A2Z_HERO: PublicA2zPayload['hero'] = {
+  badge: 'AKUL DRAVIN A2Z Atlas',
+  title: 'Bring the full AKUL DRAVIN A2Z command catalog into your AKUL DRAVIN rollout workflow.',
+  subtitle: 'Platform, people, finance, growth, and learning modules are now grouped the same way as the AKUL DRAVIN dashboard atlas.',
   description:
-    'This A2Z experience mirrors the Omnix A2Z Atlas so buyers can plan around the same module map used inside the premium dashboard experience: A2Z Atlas, Admin Command, Employee Matrix, Finance Vault, Recruitment Board, CRM Bridge, Training Grid, and more.',
+    'This A2Z experience mirrors the AKUL DRAVIN A2Z Atlas so buyers can plan around the same module map used inside the premium dashboard experience: A2Z Atlas, Admin Command, Employee Matrix, Finance Vault, Recruitment Board, CRM Bridge, Training Grid, and more.',
   primaryCta: { label: 'Start atlas workflow', href: '#a2z-form' },
   secondaryCta: { label: 'See atlas blueprint', href: '#a2z-workflow' },
 };
 
-const OMNIX_A2Z_SERVICE_SUITES: A2zServiceSuite[] = [
+const AKUL_DRAVIN_A2Z_SERVICE_SUITES: A2zServiceSuite[] = [
   {
     id: 'platform-command-atlas',
     title: 'Platform Command Atlas',
@@ -244,14 +244,14 @@ const OMNIX_A2Z_SERVICE_SUITES: A2zServiceSuite[] = [
   },
 ];
 
-const OMNIX_A2Z_WORKFLOW_STEPS: A2zWorkflowStep[] = [
+const AKUL_DRAVIN_A2Z_WORKFLOW_STEPS: A2zWorkflowStep[] = [
   {
     id: 'atlas-discovery',
     title: 'Atlas Discovery Mapping',
     owner: 'Solution architect',
     sla: 'Within 24 hours',
     status: 'ready',
-    description: 'We map your requested modules against the Omnix A2Z catalog so every command lane, team, and dependency is visible early.',
+    description: 'We map your requested modules against the AKUL DRAVIN A2Z catalog so every command lane, team, and dependency is visible early.',
     outputs: ['Atlas module shortlist', 'Department ownership map', 'Priority cluster plan'],
   },
   {
@@ -269,15 +269,15 @@ const OMNIX_A2Z_WORKFLOW_STEPS: A2zWorkflowStep[] = [
     owner: 'Delivery lead',
     sla: 'Within 72 hours',
     status: 'queued',
-    description: 'Your team receives a guided walkthrough of the selected Omnix atlas lanes, phased delivery path, and rollout milestones.',
+    description: 'Your team receives a guided walkthrough of the selected AKUL DRAVIN atlas lanes, phased delivery path, and rollout milestones.',
     outputs: ['Executive demo path', 'Milestone sequence', 'Go-live recommendation'],
   },
 ];
 
-const OMNIX_A2Z_ASSURANCES: A2zAssuranceItem[] = [
+const AKUL_DRAVIN_A2Z_ASSURANCES: A2zAssuranceItem[] = [
   {
-    title: 'Omnix-aligned module map',
-    description: 'The public A2Z page now reflects the same module grouping and command language used in the Omnix dashboard atlas.',
+    title: 'AKUL DRAVIN-aligned module map',
+    description: 'The public A2Z page now reflects the same module grouping and command language used in the AKUL DRAVIN dashboard atlas.',
   },
   {
     title: 'Workflow-based intake',
@@ -289,9 +289,9 @@ const OMNIX_A2Z_ASSURANCES: A2zAssuranceItem[] = [
   },
 ];
 
-const OMNIX_A2Z_FORM_OPTIONS: PublicA2zPayload['formOptions'] = {
+const AKUL_DRAVIN_A2Z_FORM_OPTIONS: PublicA2zPayload['formOptions'] = {
   serviceBundles: [
-    'Complete Omnix A2Z atlas rollout',
+    'Complete AKUL DRAVIN A2Z atlas rollout',
     'Platform command + governance stack',
     'People operations mesh',
     'Finance control + approvals stack',
@@ -303,7 +303,7 @@ const OMNIX_A2Z_FORM_OPTIONS: PublicA2zPayload['formOptions'] = {
   timelines: ['Within 2 weeks', 'Within 30 days', 'Within 60 days', 'Quarterly transformation roadmap'],
 };
 
-const OMNIX_A2Z_ACTIVE_MODULES = new Set(OMNIX_A2Z_SERVICE_SUITES.flatMap((suite) => suite.modules)).size;
+const AKUL_DRAVIN_A2Z_ACTIVE_MODULES = new Set(AKUL_DRAVIN_A2Z_SERVICE_SUITES.flatMap((suite) => suite.modules)).size;
 
 @Injectable()
 export class PublicSiteService {
@@ -542,17 +542,17 @@ export class PublicSiteService {
 
     return {
       generatedAt: new Date().toISOString(),
-      hero: OMNIX_A2Z_HERO,
-      serviceSuites: OMNIX_A2Z_SERVICE_SUITES,
-      workflowSteps: OMNIX_A2Z_WORKFLOW_STEPS,
-      assurances: OMNIX_A2Z_ASSURANCES,
+      hero: AKUL_DRAVIN_A2Z_HERO,
+      serviceSuites: AKUL_DRAVIN_A2Z_SERVICE_SUITES,
+      workflowSteps: AKUL_DRAVIN_A2Z_WORKFLOW_STEPS,
+      assurances: AKUL_DRAVIN_A2Z_ASSURANCES,
       implementationSignals: {
-        activeModules: OMNIX_A2Z_ACTIVE_MODULES,
+        activeModules: AKUL_DRAVIN_A2Z_ACTIVE_MODULES,
         readinessPercent,
         requestsReceived: this.a2zRequests.length,
         lastRequestAt: this.a2zRequests[0]?.submittedAt ?? null,
       },
-      formOptions: OMNIX_A2Z_FORM_OPTIONS,
+      formOptions: AKUL_DRAVIN_A2Z_FORM_OPTIONS,
     };
   }
 

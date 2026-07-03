@@ -48,6 +48,7 @@ export class LeaveService {
 
   async findAllLeaveRequests(): Promise<LeaveRequestEntity[]> {
     return this.leaveRequestRepo.find({
+      relations: ['employee', 'leaveType'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -69,8 +70,9 @@ export class LeaveService {
     const entity = this.leaveRequestRepo.create({
       ...dto,
       tenantId,
-      status: 'pending',
-    });
+      status: 'pending_manager',
+      approvalStages: [],
+    } as any) as unknown as LeaveRequestEntity;
     const saved = await this.leaveRequestRepo.save(entity);
 
     // Audit: leave applied
@@ -95,37 +97,108 @@ export class LeaveService {
   ): Promise<LeaveRequestEntity> {
     const tenantId = TenantContext.getRequiredTenantId();
     const request = await this.findLeaveRequest(id);
+    const actorId = dto.approvedBy || '00000000-0000-0000-0000-000000000000';
 
-    request.status     = dto.status;
-    request.approvedBy = dto.approvedBy ?? null;
-    request.approvedAt = dto.status === 'approved' ? new Date() : null;
+    if (dto.status === 'rejected' || dto.status === 'cancelled') {
+      const prevStatus = request.status;
+      request.status = dto.status;
+      request.approvalStages = [
+        ...(request.approvalStages || []),
+        {
+          stage: prevStatus,
+          approvedBy: actorId,
+          approvedAt: new Date().toISOString(),
+          status: dto.status,
+        },
+      ];
+
+      await this.leaveRequestRepo.save(request);
+
+      await this.auditLog.log(AuditAction.LEAVE_REJECTED, {
+        tenantId,
+        actorId,
+        resourceType: 'leave_request',
+        resourceId:   request.id,
+        metadata: {
+          employeeId: request.employeeId,
+          status:     dto.status,
+          startDate:  request.startDate,
+          endDate:    request.endDate,
+        },
+      });
+
+      await this.enqueueLeaveStatusNotification(request, dto.status as any, tenantId);
+      return request;
+    }
+
+    // Process multi-level approval: pending_manager -> pending_hr -> pending_dept_head -> approved
+    let nextStatus = 'pending_manager';
+    let currentStage = 'manager';
+
+    if (request.status === 'pending_manager' || request.status === 'pending') {
+      nextStatus = 'pending_hr';
+      currentStage = 'manager';
+    } else if (request.status === 'pending_hr') {
+      nextStatus = 'pending_dept_head';
+      currentStage = 'hr';
+    } else if (request.status === 'pending_dept_head') {
+      nextStatus = 'approved';
+      currentStage = 'dept_head';
+      request.approvedBy = dto.approvedBy ?? null;
+      request.approvedAt = new Date();
+    } else {
+      // Already approved or in final state
+      return request;
+    }
+
+    request.status = nextStatus;
+    request.approvalStages = [
+      ...(request.approvalStages || []),
+      {
+        stage: currentStage,
+        approvedBy: actorId,
+        approvedAt: new Date().toISOString(),
+        status: 'approved',
+      },
+    ];
 
     await this.leaveRequestRepo.save(request);
 
-    // Audit: approval or rejection
+    // Audit and Notification for transition/final approval
     const auditAction =
-      dto.status === 'approved' ? AuditAction.LEAVE_APPROVED : AuditAction.LEAVE_REJECTED;
+      nextStatus === 'approved' ? AuditAction.LEAVE_APPROVED : AuditAction.LEAVE_APPLIED;
 
     await this.auditLog.log(auditAction, {
       tenantId,
-      actorId:      dto.approvedBy ?? null,
+      actorId,
       resourceType: 'leave_request',
       resourceId:   request.id,
       metadata: {
         employeeId: request.employeeId,
-        status:     dto.status,
+        status:     nextStatus,
         startDate:  request.startDate,
         endDate:    request.endDate,
       },
     });
 
-    // Notification: enqueue email to employee when approved or rejected
-    if (dto.status === 'approved' || dto.status === 'rejected') {
-      await this.enqueueLeaveStatusNotification(request, dto.status, tenantId);
-    }
-
-    if (dto.status === 'approved') {
+    if (nextStatus === 'approved') {
+      await this.enqueueLeaveStatusNotification(request, 'approved', tenantId);
       await this.syncWithAttendance(request);
+    } else {
+      // Send intermediate stage transition notification
+      try {
+        await this.notificationService.create({
+          tenantId,
+          userId: request.employeeId,
+          channel: 'email',
+          type: `LEAVE_STAGE_${currentStage.toUpperCase()}`,
+          title: `Leave request approved by ${currentStage}`,
+          message: `Your leave request has been approved by the ${currentStage} and is now routing to the next level.`,
+          status: 'queued',
+        });
+      } catch (err: any) {
+        this.logger.warn(`Failed to enqueue intermediate stage notification: ${err.message}`);
+      }
     }
 
     return request;
