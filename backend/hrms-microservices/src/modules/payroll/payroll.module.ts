@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
 import { PayrollBatchEntity } from '../../database/entities/payroll-batch.entity';
@@ -58,7 +58,7 @@ import { PayrollCronService } from './payroll.cron';
     BullModule.registerQueue({ name: QUEUE_PAYROLL }),
     AttendanceModule,
     PerformanceManagementModule,
-    EmployeeModule,
+    forwardRef(() => EmployeeModule),
     FinanceModule,
     NotificationModule,
     AuditLogModule,

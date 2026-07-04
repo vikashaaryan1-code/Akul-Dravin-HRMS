@@ -46,7 +46,7 @@ export function PredictiveInsightsWidget() {
  <div>
  <p className="text-xs font-bold text-slate-600">Attrition Alert</p>
  <p className="text-[10px] text-slate-500">
- <span className="text-ember font-bold">{data.attritionRisk.score}% risk</span> detected in <span className="text-white">{data.attritionRisk.department}</span>. Trending {data.attritionRisk.trend}.
+ <span className="text-ember font-bold">{data.attritionRisk.score}% risk</span> detected in <span className="text-navy">{data.attritionRisk.department}</span>. Trending {data.attritionRisk.trend}.
  </p>
  </div>
  </div>

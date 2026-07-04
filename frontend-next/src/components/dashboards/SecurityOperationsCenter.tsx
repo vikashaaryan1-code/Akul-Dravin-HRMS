@@ -87,13 +87,13 @@ const MFA_COMPLIANCE = [
  <div className="flex items-center justify-between gap-3 flex-wrap">
  <div className="flex items-center gap-2">
  <Activity className="h-4 w-4 text-ember" aria-hidden="true" />
- <p className="text-sm font-black text-white">Live Threat Feed</p>
+ <p className="text-sm font-black text-navy">Live Threat Feed</p>
  </div>
  <div className="flex items-center gap-2">
- <button aria-label="Refresh threat feed" className="h-7 w-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Refresh threat feed" className="h-7 w-7 rounded-lg bg-white/60 border border-white/8 flex items-center justify-center text-slate-500 hover:text-navy transition-colors">
  <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
- <button aria-label="Export threat feed" className="h-7 w-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Export threat feed" className="h-7 w-7 rounded-lg bg-white/60 border border-white/8 flex items-center justify-center text-slate-500 hover:text-navy transition-colors">
  <Download className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
@@ -128,7 +128,7 @@ const MFA_COMPLIANCE = [
  <span>{threat.time}</span>
  </div>
  </div>
- <button aria-label={`Investigate threat ${threat.id}`} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-600 hover:text-white">
+ <button aria-label={`Investigate threat ${threat.id}`} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-600 hover:text-navy">
  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
@@ -144,7 +144,7 @@ const MFA_COMPLIANCE = [
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Eye className="h-4 w-4 text-gold" aria-hidden="true" />
- <p className="text-sm font-black text-white">Suspicious Sessions</p>
+ <p className="text-sm font-black text-navy">Suspicious Sessions</p>
  <span className="ml-auto text-xs font-black text-ember">{SUSPICIOUS_SESSIONS.length} active</span>
  </div>
  <div className="space-y-3" role="list" aria-label="Suspicious active sessions">
@@ -162,7 +162,7 @@ const MFA_COMPLIANCE = [
  <p className="text-[9px] text-slate-700">risk score</p>
  </div>
  </div>
- <div className="h-1.5 rounded-full bg-white/5">
+ <div className="h-1.5 rounded-full bg-white/60">
  <motion.div
  initial={{ width: 0 }}
  animate={{ width: `${sess.risk}%` }}
@@ -191,13 +191,13 @@ const MFA_COMPLIANCE = [
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Fingerprint className="h-4 w-4 text-aqua" aria-hidden="true" />
- <p className="text-sm font-black text-white">MFA Compliance</p>
+ <p className="text-sm font-black text-navy">MFA Compliance</p>
  </div>
  <div className="space-y-3" role="list" aria-label="MFA compliance by group">
  {MFA_COMPLIANCE.map((group) => (
  <div key={group.group} role="listitem" className="space-y-1.5">
  <div className="flex items-center justify-between text-xs">
- <span className={`font-semibold ${group.group === 'All Staff' ? 'text-white font-black' : 'text-slate-500'}`}>
+ <span className={`font-semibold ${group.group === 'All Staff' ? 'text-navy font-black' : 'text-slate-500'}`}>
  {group.group}
  </span>
  <div className="flex items-center gap-2 text-[10px]">
@@ -207,7 +207,7 @@ const MFA_COMPLIANCE = [
  </span>
  </div>
  </div>
- <div className="h-1.5 rounded-full bg-white/5" aria-hidden="true">
+ <div className="h-1.5 rounded-full bg-white/60" aria-hidden="true">
  <motion.div
  initial={{ width: 0 }}
  whileInView={{ width: `${group.pct}%` }}
@@ -219,7 +219,7 @@ const MFA_COMPLIANCE = [
  </div>
  ))}
  </div>
- <div className="pt-3 border-t border-white/5">
+ <div className="pt-3 border-t border-slate-200/60">
  <p className="text-xs text-slate-600">
  <span className="font-black text-ember">25 accounts</span> without MFA — automated enforcement reminder scheduled for Monday
  </p>
@@ -245,7 +245,7 @@ export function SecurityOperationsCenter() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-ember mb-2">Zero Trust Operations</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">Security Operations Center</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">Security Operations Center</h2>
  <p className="text-sm text-slate-500 mt-1">
  Threat score: 12/100 · 3 suspicious sessions · MFA: 94.2% coverage
  </p>
@@ -297,7 +297,7 @@ export function SecurityOperationsCenter() {
  <GlassCard className="p-6 flex flex-col gap-3">
  <div className="flex items-center gap-2">
  <MonitorCheck className="h-4 w-4 text-jade" aria-hidden="true" />
- <p className="text-sm font-black text-white">Device Trust</p>
+ <p className="text-sm font-black text-navy">Device Trust</p>
  </div>
  {[
  { label: 'Managed devices', value: '89%', color: 'text-jade' },

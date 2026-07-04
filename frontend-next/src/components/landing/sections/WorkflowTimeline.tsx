@@ -60,7 +60,7 @@ export function WorkflowTimeline({ steps }: Props) {
  <h3 className="text-base font-black tracking-tight text-navy">{step.title}</h3>
  <p className="text-xs text-slate-500 leading-relaxed">{step.description}</p>
  <ul className="space-y-2" aria-label={`Deliverables for ${step.title}`}>
- {step.deliverables.map((d) => (
+ {step.deliverables?.map((d) => (
  <li key={d} className="flex items-center gap-2 text-xs text-slate-500">
  <CheckCircle2 className="h-3.5 w-3.5 text-jade shrink-0" aria-hidden="true" />
  {d}

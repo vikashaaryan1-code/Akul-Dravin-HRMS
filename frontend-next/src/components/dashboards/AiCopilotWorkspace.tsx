@@ -92,8 +92,8 @@ function renderInline(text: string): React.ReactNode {
  .replace(/`(.+?)`/g, '<code>$1</code>')
  .split(/(<b>.*?<\/b>|<code>.*?<\/code>)/)
  .map((part, j) => {
- if (part.startsWith('<b>')) return <strong key={j} className="font-black text-white">{part.slice(3, -4)}</strong>;
- if (part.startsWith('<code>')) return <code key={j} className="px-1 py-0.5 rounded bg-white/10 text-jade text-[10px] font-mono">{part.slice(6, -7)}</code>;
+ if (part.startsWith('<b>')) return <strong key={j} className="font-black text-navy">{part.slice(3, -4)}</strong>;
+ if (part.startsWith('<code>')) return <code key={j} className="px-1 py-0.5 rounded bg-slate-100 text-jade text-[10px] font-mono">{part.slice(6, -7)}</code>;
  return part;
  })
  }
@@ -122,7 +122,7 @@ function renderInline(text: string): React.ReactNode {
  <Zap className="h-5 w-5 text-gold" aria-hidden="true" />
  </div>
  <div>
- <p id="action-modal-title" className="text-sm font-black text-white">Confirm Action</p>
+ <p id="action-modal-title" className="text-sm font-black text-navy">Confirm Action</p>
  <p className="text-xs text-slate-500">{action.label}</p>
  </div>
  </div>
@@ -142,13 +142,13 @@ function renderInline(text: string): React.ReactNode {
  <div className="flex gap-3 pt-1">
  <button
  onClick={onDismiss}
- className="flex-1 py-2.5 rounded-xl border border-white/8 bg-white/5 text-xs font-black text-slate-500 hover:text-white transition-colors"
+ className="flex-1 py-2.5 rounded-xl border border-white/8 bg-white/60 text-xs font-black text-slate-500 hover:text-navy transition-colors"
  >
  Cancel
  </button>
  <button
  onClick={onConfirm}
- className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-void text-xs font-black hover:scale-105 transition-transform"
+ className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-white text-xs font-black hover:scale-105 transition-transform"
  >
  Execute Action
  </button>
@@ -188,7 +188,7 @@ function renderInline(text: string): React.ReactNode {
  <div
  className={`h-7 w-7 rounded-lg border flex items-center justify-center text-[9px] font-black shrink-0 mt-1 ${
  isUser
- ? 'bg-white/10 border-white/10 text-slate-500'
+ ? 'bg-slate-100 border-slate-200 text-slate-500'
  : `${ACCENT_RING[accentColor] ?? ACCENT_RING.jade} text-${accentColor}`
  }`}
  aria-hidden="true"
@@ -346,7 +346,7 @@ export function AiCopilotWorkspace() {
  </div>
  <div>
  <p className={`section-label text-${ACCENT} mb-0.5`}>AI Copilot Workspace</p>
- <h2 className="text-xl font-black tracking-tighter text-white">{agent.name}</h2>
+ <h2 className="text-xl font-black tracking-tighter text-navy">{agent.name}</h2>
  </div>
  </div>
 
@@ -357,7 +357,7 @@ export function AiCopilotWorkspace() {
  onClick={() => setAgentOpen((o) => !o)}
  aria-haspopup="listbox"
  aria-expanded={agentOpen}
- className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/8 bg-white/[0.04] text-xs font-black text-slate-600 hover:text-white transition-colors"
+ className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/8 bg-white/[0.04] text-xs font-black text-slate-600 hover:text-navy transition-colors"
  >
  <AgentIcon className="h-3.5 w-3.5" aria-hidden="true" /> {agent.name}
  <ChevronDown className={`h-3 w-3 text-slate-600 transition-transform ${agentOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
@@ -383,13 +383,13 @@ export function AiCopilotWorkspace() {
  role="option"
  aria-selected={isActive}
  onClick={() => { setAgentMode(mode); setAgentOpen(false); }}
- className={`w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/5 transition-colors ${isActive ? 'bg-white/[0.04]' : ''}`}
+ className={`w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/60 transition-colors ${isActive ? 'bg-white/[0.04]' : ''}`}
  >
  <div className={`h-8 w-8 rounded-lg border border-${meta.accentColor}/20 bg-${meta.accentColor}/10 flex items-center justify-center shrink-0`}>
  <Icon className={`h-4 w-4 text-${meta.accentColor}`} aria-hidden="true" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black text-white">{meta.name}</p>
+ <p className="text-xs font-black text-navy">{meta.name}</p>
  <p className="text-[10px] text-slate-600 leading-snug mt-0.5 truncate">{meta.description}</p>
  </div>
  {isActive && <Check className="h-3.5 w-3.5 text-jade shrink-0" aria-hidden="true" />}
@@ -404,7 +404,7 @@ export function AiCopilotWorkspace() {
  <button
  onClick={clear}
  aria-label="Clear conversation"
- className="h-9 w-9 rounded-xl border border-white/8 bg-white/5 flex items-center justify-center text-slate-500 hover:text-white transition-colors"
+ className="h-9 w-9 rounded-xl border border-white/8 bg-white/60 flex items-center justify-center text-slate-500 hover:text-navy transition-colors"
  >
  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
@@ -426,7 +426,7 @@ export function AiCopilotWorkspace() {
  <AgentIcon className={`h-8 w-8 text-${ACCENT}`} aria-hidden="true" />
  </div>
  <div className="text-center">
- <p className="text-sm font-black text-white">{agent.name} ready</p>
+ <p className="text-sm font-black text-navy">{agent.name} ready</p>
  <p className="text-xs text-slate-500 mt-1 max-w-xs">{agent.description}</p>
  </div>
  <div className="grid gap-2 w-full max-w-md">
@@ -434,7 +434,7 @@ export function AiCopilotWorkspace() {
  <button
  key={suggestion}
  onClick={() => { setInput(suggestion); inputRef.current?.focus(); }}
- className="px-4 py-3 rounded-xl border border-white/8 bg-white/[0.03] text-xs text-slate-500 hover:text-white hover:bg-white/[0.05] transition-colors text-left"
+ className="px-4 py-3 rounded-xl border border-white/8 bg-white/[0.03] text-xs text-slate-500 hover:text-navy hover:bg-white/[0.05] transition-colors text-left"
  >
  {suggestion}
  </button>
@@ -468,7 +468,7 @@ export function AiCopilotWorkspace() {
  onKeyDown={handleKeyDown}
  placeholder={`Ask ${agent.name}… (Enter to send, Shift+Enter for newline)`}
  rows={2}
- className="flex-1 resize-none bg-transparent text-sm text-white placeholder-slate-600 focus:outline-none leading-relaxed scrollbar-none"
+ className="flex-1 resize-none bg-transparent text-sm text-navy placeholder-slate-600 focus:outline-none leading-relaxed scrollbar-none"
  aria-label="Message input"
  disabled={isStreaming}
  />
@@ -489,7 +489,7 @@ export function AiCopilotWorkspace() {
  className={`h-9 w-9 rounded-xl flex items-center justify-center transition-all ${
  input.trim()
  ? `bg-${ACCENT}/20 border border-${ACCENT}/30 text-${ACCENT} hover:bg-${ACCENT}/30`
- : 'bg-white/5 border border-white/8 text-slate-700 cursor-not-allowed'
+ : 'bg-white/60 border border-white/8 text-slate-700 cursor-not-allowed'
  }`}
  >
  {isStreaming

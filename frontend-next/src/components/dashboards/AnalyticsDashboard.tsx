@@ -100,7 +100,7 @@ const DEPT_PRODUCTIVITY = [
  onClick={() => onChange(p)}
  aria-pressed={value === p}
  className={`px-3 py-1 rounded-lg text-xs font-black transition-all ${
- value === p ? 'bg-white/10 text-white' : 'text-slate-600 hover:text-slate-500'
+ value === p ? 'bg-slate-100 text-navy' : 'text-slate-600 hover:text-slate-500'
  }`}
  >
  {p}
@@ -115,13 +115,13 @@ const DEPT_PRODUCTIVITY = [
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Globe className="h-4 w-4 text-aqua" aria-hidden="true" />
- <p className="text-sm font-black text-white">Geo Distribution</p>
+ <p className="text-sm font-black text-navy">Geo Distribution</p>
  </div>
  <div className="space-y-3" role="list" aria-label="Headcount by location">
  {GEO_BREAKDOWN.map((loc) => (
  <div key={loc.location} role="listitem" className="flex items-center gap-3">
  <p className="text-xs font-semibold text-slate-500 w-24 shrink-0">{loc.location}</p>
- <div className="flex-1 h-1.5 rounded-full bg-white/5" aria-hidden="true">
+ <div className="flex-1 h-1.5 rounded-full bg-white/60" aria-hidden="true">
  <motion.div
  initial={{ width: 0 }}
  whileInView={{ width: `${loc.pct}%` }}
@@ -131,7 +131,7 @@ const DEPT_PRODUCTIVITY = [
  />
  </div>
  <div className="flex items-center gap-2 shrink-0">
- <span className="text-xs font-black text-white">{loc.headcount}</span>
+ <span className="text-xs font-black text-navy">{loc.headcount}</span>
  <span className="text-[10px] text-slate-600">({loc.pct}%)</span>
  </div>
  </div>
@@ -147,16 +147,16 @@ const DEPT_PRODUCTIVITY = [
  <div className="flex items-center justify-between gap-3 flex-wrap">
  <div className="flex items-center gap-2">
  <Zap className="h-4 w-4 text-ember" aria-hidden="true" />
- <p className="text-sm font-black text-white">Dept Productivity</p>
+ <p className="text-sm font-black text-navy">Dept Productivity</p>
  </div>
- <button aria-label="Export productivity report" className="h-7 w-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Export productivity report" className="h-7 w-7 rounded-lg bg-white/60 border border-white/8 flex items-center justify-center text-slate-500 hover:text-navy transition-colors">
  <Download className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
  <div className="overflow-x-auto -mx-6 px-6">
  <table className="w-full text-xs" aria-label="Department productivity metrics">
  <thead>
- <tr className="border-b border-white/5">
+ <tr className="border-b border-slate-200/60">
  {['Department', 'Rev / Head (₹L)', 'Efficiency'].map((h) => (
  <th key={h} className="text-left text-[10px] font-black text-slate-600 uppercase tracking-wide pb-3 pr-4">{h}</th>
  ))}
@@ -173,7 +173,7 @@ const DEPT_PRODUCTIVITY = [
  </td>
  <td className="py-2.5">
  <div className="flex items-center gap-2">
- <div className="h-1.5 w-20 rounded-full bg-white/5">
+ <div className="h-1.5 w-20 rounded-full bg-white/60">
  <div
  className={`h-full rounded-full ${row.efficiency >= 90 ? 'bg-jade' : row.efficiency >= 80 ? 'bg-gold' : 'bg-ember'}`}
  style={{ width: `${row.efficiency}%` }}
@@ -211,12 +211,12 @@ export function AnalyticsDashboard() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-aqua mb-2">Workforce Intelligence</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">Analytics Command Center</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">Analytics Command Center</h2>
  <p className="text-sm text-slate-500 mt-1">430 employees · ₹18.4L revenue / head · 9.2% attrition</p>
  </div>
  <div className="flex items-center gap-3">
  <PeriodSelector value={period} onChange={setPeriod} />
- <button aria-label="Export analytics report" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/8 bg-white/5 text-xs font-black text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Export analytics report" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/8 bg-white/60 text-xs font-black text-slate-500 hover:text-navy transition-colors">
  <Download className="h-3.5 w-3.5" aria-hidden="true" /> Export
  </button>
  </div>

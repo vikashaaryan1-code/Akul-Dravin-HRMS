@@ -27,9 +27,7 @@ const GLOW_MAP = {
 export function GlassCard({ children, className = '', hover = true, glow = 'none', as: Tag = 'div' }: GlassCardProps) {
  return (
  <Tag
- className={`surface-raised border-subtle rounded-2xl transition-all duration-250 ${
- hover ? 'hover:bg-white/8' : ''
- } ${GLOW_MAP[glow]} ${className}`}
+ className={`glass-3d-panel transition-all duration-250 ${GLOW_MAP[glow]} ${className}`}
  >
  {children}
  </Tag>
@@ -88,7 +86,7 @@ export function KpiTile({
  <GlassCard glow={glow} className={`p-6 flex flex-col gap-4 ${className}`}>
  <div className="flex items-start justify-between">
  {Icon ? (
- <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center">
+ <div className="h-10 w-10 rounded-xl bg-white/60 border border-white flex items-center justify-center shadow-sm">
  <Icon className={`h-5 w-5 ${iconColor}`} aria-hidden="true" />
  </div>
  ) : <div />}
@@ -96,7 +94,7 @@ export function KpiTile({
  </div>
  <div>
  <p
- className="text-3xl font-black tracking-tighter text-white"
+ className="text-3xl font-black tracking-tighter text-navy"
  aria-label={`${label}: ${value}`}
  >
  {value}

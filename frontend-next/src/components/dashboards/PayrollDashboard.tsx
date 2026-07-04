@@ -90,7 +90,7 @@ function CycleStatusBanner() {
  return (
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center justify-between">
- <p className="text-sm font-black text-white">April 2026 Cycle Status</p>
+ <p className="text-sm font-black text-navy">April 2026 Cycle Status</p>
  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-jade/10 border border-jade/20 text-xs font-black text-jade">
  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
  Disbursed
@@ -105,7 +105,7 @@ function CycleStatusBanner() {
  <React.Fragment key={step.phase}>
  <div className="flex flex-col items-center gap-1.5 flex-1">
  <div className={`h-7 w-7 rounded-full flex items-center justify-center border-2 transition-colors ${
- isPast || isCurrent ? 'bg-jade/20 border-jade' : 'bg-white/5 border-white/10'
+ isPast || isCurrent ? 'bg-jade/20 border-jade' : 'bg-white/60 border-slate-200'
  }`}>
  {isPast || isCurrent
  ? <CheckCircle2 className="h-3.5 w-3.5 text-jade" aria-hidden="true" />
@@ -118,7 +118,7 @@ function CycleStatusBanner() {
  </div>
  {i < CYCLE_STEPS.length - 1 && (
  <div className={`h-0.5 flex-1 mb-5 mx-1 rounded-full transition-colors ${
- i < currentIndex ? 'bg-jade/50' : 'bg-white/5'
+ i < currentIndex ? 'bg-jade/50' : 'bg-white/60'
  }`} aria-hidden="true" />
  )}
  </React.Fragment>
@@ -146,14 +146,14 @@ export function PayrollDashboard() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-gold mb-2">Payroll Control Tower</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">April 2026 Cycle</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">April 2026 Cycle</h2>
  <p className="text-sm text-slate-500 mt-1">Gross: ₹4.82 Cr · Net: ₹3.91 Cr · 1,247 employees</p>
  </div>
  <div className="flex items-center gap-3">
- <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-xs font-bold text-navy hover:bg-white/8 transition-colors">
+ <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-navy hover:bg-white/8 transition-colors">
  <Download className="h-3.5 w-3.5" aria-hidden="true" /> Export
  </button>
- <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-void text-xs font-black hover:scale-105 transition-transform">
+ <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-white text-xs font-black hover:scale-105 transition-transform">
  <Send className="h-3.5 w-3.5" aria-hidden="true" /> Run Next Cycle
  </button>
  </div>
@@ -208,7 +208,7 @@ export function PayrollDashboard() {
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <AlertTriangle className="h-4 w-4 text-gold" aria-hidden="true" />
- <p className="text-sm font-black text-white">Variance Alerts</p>
+ <p className="text-sm font-black text-navy">Variance Alerts</p>
  </div>
  <div className="space-y-3" role="list" aria-label="Payroll variance alerts">
  {VARIANCE_ALERTS.map((alert) => {
@@ -235,7 +235,7 @@ export function PayrollDashboard() {
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Lock className="h-4 w-4 text-aqua" aria-hidden="true" />
- <p className="text-sm font-black text-white">Payslip Register</p>
+ <p className="text-sm font-black text-navy">Payslip Register</p>
  </div>
  <span className="section-label text-slate-600">Audit-locked</span>
  </div>
@@ -243,7 +243,7 @@ export function PayrollDashboard() {
  <div className="overflow-x-auto -mx-6 px-6">
  <table className="w-full text-xs" aria-label="Payslip register">
  <thead>
- <tr className="border-b border-white/5">
+ <tr className="border-b border-slate-200/60">
  {['ID', 'Employee', 'Department', 'Amount', 'Period', 'Status', ''].map((h) => (
  <th key={h} className="text-left text-[10px] font-black text-slate-600 uppercase tracking-wide pb-3 pr-4">{h}</th>
  ))}
@@ -266,7 +266,7 @@ export function PayrollDashboard() {
  </span>
  </td>
  <td className="py-3">
- <button aria-label={`Download payslip ${row.id}`} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-white">
+ <button aria-label={`Download payslip ${row.id}`} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-navy">
  <Download className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </td>

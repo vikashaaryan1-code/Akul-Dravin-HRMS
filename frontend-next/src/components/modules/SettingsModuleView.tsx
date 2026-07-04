@@ -279,11 +279,15 @@ type TabId = typeof TABS[number]['id'];
 }
 
 /* --- Billing Tab --- */ function BillingTab({ accessToken }: { accessToken: string | null }) {
- const plans = [
- { name: 'Starter', price: '₹999', seats: '10', modules: '5', active: false },
- { name: 'Growth', price: '₹4,999', seats: '50', modules: '15', active: true },
- { name: 'Enterprise', price: 'Custom', seats: 'Unlimited', modules: 'All', active: false },
- ];
+  const plans = [
+    { name: 'Free', price: '₹0', seats: '5', modules: 'Core', active: false },
+    { name: 'HR Lite', price: '₹999', seats: '25', modules: 'HR', active: false },
+    { name: 'HR Pro', price: '₹2,499', seats: '50', modules: 'HR+', active: false },
+    { name: 'HR + Payroll', price: '₹4,999', seats: '100', modules: 'All', active: true },
+    { name: 'Business HRMS', price: '₹9,999', seats: '250', modules: 'Scale', active: false },
+    { name: 'Premium HRMS', price: '₹17,999', seats: '500', modules: 'Premium', active: false },
+    { name: 'Enterprise', price: 'Custom', seats: 'Unlimited', modules: 'Bespoke', active: false },
+  ];
 
  return (
  <div className="space-y-5">
@@ -294,7 +298,7 @@ type TabId = typeof TABS[number]['id'];
  <Zap className="h-6 w-6 text-white" />
  </div>
  <div className="flex-1">
- <p className="text-sm font-bold text-slate-900 ">Growth Plan</p>
+ <p className="text-sm font-bold text-slate-900 ">HR + Payroll Plan</p>
  <p className="text-xs text-slate-500 mt-0.5">Renews on June 1, 2026 · ₹4,999/month</p>
  <div className="mt-2 flex items-center gap-1">
  <div className="flex-1 h-1.5 rounded-full bg-slate-200 ">
@@ -311,7 +315,7 @@ type TabId = typeof TABS[number]['id'];
 
  <GlassCard>
  <p className="text-sm font-semibold text-slate-800 mb-4">Available Plans</p>
- <div className="grid gap-3 sm:grid-cols-3">
+ <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
  {plans.map(plan => (
  <div key={plan.name} className={`p-4 rounded-xl border transition ${plan.active ? 'border-blue-500 bg-blue-50/50 ' : 'border-slate-200 '}`}>
  <p className="text-sm font-bold text-slate-800 ">{plan.name}</p>

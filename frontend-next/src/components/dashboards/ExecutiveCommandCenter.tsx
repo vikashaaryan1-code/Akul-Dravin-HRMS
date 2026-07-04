@@ -183,7 +183,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Zap className="h-4 w-4 text-ember" aria-hidden="true" />
- <p className="text-sm font-black text-white">AI Intelligence Feed</p>
+ <p className="text-sm font-black text-navy">AI Intelligence Feed</p>
  </div>
  <span className={`section-label ${isLoading ? 'text-slate-500' : isError ? 'text-amber-400' : 'text-ember'}`}>
  {isLoading ? 'Loading…' : isError ? 'Fallback' : 'Live'}
@@ -193,7 +193,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  {isLoading ? (
  <div className="space-y-3">
  {Array.from({ length: 3 }).map((_, i) => (
- <div key={i} className="h-20 rounded-xl bg-white/5 animate-pulse" />
+ <div key={i} className="h-20 rounded-xl bg-white/60 animate-pulse" />
  ))}
  </div>
  ) : (
@@ -206,7 +206,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <div className="flex items-start gap-3">
  <InsightIcon className={`h-4 w-4 ${style.color} shrink-0 mt-0.5`} aria-hidden="true" />
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black text-white">{insight.title}</p>
+ <p className="text-xs font-black text-navy">{insight.title}</p>
  <p className="text-xs text-slate-500 mt-1 leading-relaxed">{insight.body}</p>
  </div>
  </div>
@@ -237,16 +237,16 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <GlassCard className="p-6 flex flex-col gap-5">
  <div className="flex items-center gap-2">
  <TrendingUp className="h-4 w-4 text-jade" aria-hidden="true" />
- <p className="text-sm font-black text-white">Org Health</p>
+ <p className="text-sm font-black text-navy">Org Health</p>
  </div>
  <dl className="space-y-4">
  {ORG_HEALTH.map((m) => (
  <div key={m.label}>
  <div className="flex justify-between mb-1.5">
  <dt className="text-xs text-slate-500">{m.label}</dt>
- <dd className="text-xs font-black text-white">{m.value}%</dd>
+ <dd className="text-xs font-black text-navy">{m.value}%</dd>
  </div>
- <div className="h-1.5 rounded-full bg-white/5" role="progressbar" aria-valuenow={m.value} aria-valuemin={0} aria-valuemax={m.max} aria-label={m.label}>
+ <div className="h-1.5 rounded-full bg-white/60" role="progressbar" aria-valuenow={m.value} aria-valuemin={0} aria-valuemax={m.max} aria-label={m.label}>
  <motion.div
  initial={{ width: 0 }}
  whileInView={{ width: `${m.value}%` }}
@@ -258,7 +258,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  </div>
  ))}
  </dl>
- <div className="pt-2 border-t border-white/5 flex items-center gap-2">
+ <div className="pt-2 border-t border-slate-200/60 flex items-center gap-2">
  <CheckCircle2 className="h-3.5 w-3.5 text-jade" aria-hidden="true" />
  <p className="text-xs text-slate-500">Org health index: <span className="text-jade font-black">91/100</span></p>
  </div>
@@ -275,7 +275,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Clock className="h-4 w-4 text-gold" aria-hidden="true" />
- <p className="text-sm font-black text-white">Pending Approvals</p>
+ <p className="text-sm font-black text-navy">Pending Approvals</p>
  </div>
  <div className="flex items-center gap-2">
  {!isLoading && (
@@ -284,7 +284,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <button
  onClick={() => void refetch()}
  disabled={isLoading}
- className="h-6 w-6 rounded-lg bg-white/5 flex items-center justify-center text-slate-500 hover:text-white transition-colors disabled:opacity-40"
+ className="h-6 w-6 rounded-lg bg-white/60 flex items-center justify-center text-slate-500 hover:text-navy transition-colors disabled:opacity-40"
  aria-label="Refresh approvals"
  >
  <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
@@ -309,7 +309,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <div
  key={item.id}
  role="listitem"
- className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-white/5 transition-colors duration-150 group cursor-pointer"
+ className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-white/60 transition-colors duration-150 group cursor-pointer"
  >
  <span className={`h-2 w-2 rounded-full shrink-0 ${urg.dot}`} aria-hidden="true" />
  <div className="flex-1 min-w-0">
@@ -344,7 +344,7 @@ const SEVERITY_STYLE: Record<string, { icon: any; color: string; border: string;
  <div className="flex items-start justify-between gap-4 mb-8">
  <div>
  <p className="section-label text-gold mb-2">Executive Command Center</p>
- <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-white">
+ <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-navy">
  {greeting}, Commander
  </h1>
  <p className="text-sm text-slate-500 mt-1">
@@ -410,15 +410,15 @@ export function ExecutiveCommandCenter() {
  <CommandCenterHeader />
 
  {/* 3D Glass Tab Bar Selector */}
- <div className="mb-8 p-1.5 rounded-2xl bg-[#091a30]/60 border border-white/10 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-wrap gap-2">
+ <div className="mb-8 p-1.5 rounded-2xl bg-[#091a30]/60 border border-slate-200 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-wrap gap-2">
  <button
  id="tab-cockpit"
  type="button"
  onClick={() => setActiveTab('cockpit')}
  className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
  activeTab === 'cockpit'
- ? 'bg-gradient-to-r from-amber to-ember text-white shadow-[0_0_20px_rgba(242,170,59,0.3)] scale-[1.02]'
- : 'text-slate-500 hover:text-white hover:bg-white/5'
+ ? 'bg-gradient-to-r from-amber to-ember text-navy shadow-[0_0_20px_rgba(242,170,59,0.3)] scale-[1.02]'
+ : 'text-slate-500 hover:text-navy hover:bg-white/60'
  }`}
  >
  <BrainCircuit className="h-4 w-4" />
@@ -430,8 +430,8 @@ export function ExecutiveCommandCenter() {
  onClick={() => setActiveTab('deel')}
  className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
  activeTab === 'deel'
- ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-[0_0_20px_rgba(14,165,233,0.3)] scale-[1.02]'
- : 'text-slate-500 hover:text-white hover:bg-white/5'
+ ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-navy shadow-[0_0_20px_rgba(14,165,233,0.3)] scale-[1.02]'
+ : 'text-slate-500 hover:text-navy hover:bg-white/60'
  }`}
  >
  <Globe className="h-4 w-4" />
@@ -443,8 +443,8 @@ export function ExecutiveCommandCenter() {
  onClick={() => setActiveTab('keka')}
  className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
  activeTab === 'keka'
- ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-[0_0_20px_rgba(20,184,166,0.3)] scale-[1.02]'
- : 'text-slate-500 hover:text-white hover:bg-white/5'
+ ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-navy shadow-[0_0_20px_rgba(20,184,166,0.3)] scale-[1.02]'
+ : 'text-slate-500 hover:text-navy hover:bg-white/60'
  }`}
  >
  <Fingerprint className="h-4 w-4" />
@@ -456,8 +456,8 @@ export function ExecutiveCommandCenter() {
  onClick={() => setActiveTab('razorpay')}
  className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
  activeTab === 'razorpay'
- ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] scale-[1.02]'
- : 'text-slate-500 hover:text-white hover:bg-white/5'
+ ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-navy shadow-[0_0_20px_rgba(37,99,235,0.3)] scale-[1.02]'
+ : 'text-slate-500 hover:text-navy hover:bg-white/60'
  }`}
  >
  <CreditCard className="h-4 w-4" />
@@ -536,13 +536,13 @@ export function ExecutiveCommandCenter() {
  { name: 'David Smith', role: 'Product Manager', country: 'United Kingdom', rate: '£6,800/mo', status: 'Active (GBP)', compliance: '100% Compliant', color: 'text-emerald-400 bg-emerald-500/10' },
  { name: 'Rajesh Kumar', role: 'Senior Developer', country: 'India', rate: '₹1,80,000/mo', status: 'Active (INR)', compliance: '100% Compliant', color: 'text-emerald-400 bg-emerald-500/10' }
  ].map((contractor, i) => (
- <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-wrap items-center justify-between gap-4 hover:bg-white/10 transition-colors">
+ <div key={i} className="p-4 rounded-2xl bg-white/60 border border-slate-200/60 flex flex-wrap items-center justify-between gap-4 hover:bg-slate-100 transition-colors">
  <div>
  <p className="text-sm font-bold text-navy">{contractor.name}</p>
  <p className="text-xs text-slate-500 mt-0.5">{contractor.role} · <span className="text-sky-300">{contractor.country}</span></p>
  </div>
  <div className="text-right">
- <p className="text-sm font-black text-white">{contractor.rate}</p>
+ <p className="text-sm font-black text-navy">{contractor.rate}</p>
  <p className="text-[10px] text-slate-500 mt-0.5">{contractor.status}</p>
  </div>
  <div>
@@ -558,7 +558,7 @@ export function ExecutiveCommandCenter() {
 
  <div className="space-y-6">
  <GlassCard className="p-6">
- <h4 className="text-sm font-black text-white flex items-center gap-2 mb-4">
+ <h4 className="text-sm font-black text-navy flex items-center gap-2 mb-4">
  <ShieldCheck className="text-sky-400" />
  Global Compliance Check
  </h4>
@@ -610,11 +610,11 @@ export function ExecutiveCommandCenter() {
  {/* Punch-In Self Service Card */}
  <GlassCard className="p-8 backdrop-blur-3xl bg-[#091a30]/40 border-white/[0.08] text-center hover:border-emerald-500/20 transition-all duration-300">
  <Fingerprint className="h-16 w-16 text-emerald-400 mx-auto mb-4 animate-pulse" />
- <h3 className="text-lg font-black text-white">Interactive Shift Portal</h3>
+ <h3 className="text-lg font-black text-navy">Interactive Shift Portal</h3>
  <p className="text-slate-500 text-xs mt-1">General Shift: 09:00 AM - 06:00 PM</p>
  
  <div className="my-6">
- <span className="text-3xl font-mono text-white block">10:36 AM</span>
+ <span className="text-3xl font-mono text-navy block">10:36 AM</span>
  <span className="text-[10px] text-slate-500 uppercase tracking-widest mt-1 block">GPS: Bengaluru, Karnataka</span>
  </div>
 
@@ -624,15 +624,15 @@ export function ExecutiveCommandCenter() {
  onClick={triggerKekaPunch}
  className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 ${
  isPunchedIn
- ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-[0_0_20px_rgba(239,68,68,0.3)]'
- : 'bg-gradient-to-r from-emerald-400 to-teal-500 text-void shadow-[0_0_20px_rgba(52,211,153,0.3)]'
+ ? 'bg-gradient-to-r from-rose-500 to-red-600 text-navy shadow-[0_0_20px_rgba(239,68,68,0.3)]'
+ : 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-[0_0_20px_rgba(52,211,153,0.3)]'
  }`}
  >
  {isPunchedIn ? 'Punch Out Workday' : 'Punch In Workday'}
  </button>
 
  {punchMessage && (
- <div className="mt-4 p-3 rounded-xl bg-white/5 border border-white/10 text-emerald-300 text-xs font-semibold animate-rise leading-relaxed">
+ <div className="mt-4 p-3 rounded-xl bg-white/60 border border-slate-200 text-emerald-300 text-xs font-semibold animate-rise leading-relaxed">
  {punchMessage}
  </div>
  )}
@@ -652,15 +652,15 @@ export function ExecutiveCommandCenter() {
  </div>
 
  <div className="grid sm:grid-cols-3 gap-4 mb-6">
- <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+ <div className="p-4 rounded-2xl bg-white/60 border border-slate-200/60">
  <p className="text-slate-500 text-[10px] uppercase font-black">Present Today</p>
  <p className="text-2xl font-bold text-emerald-400 mt-1">942 <span className="text-xs text-slate-500">/ 1247</span></p>
  </div>
- <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+ <div className="p-4 rounded-2xl bg-white/60 border border-slate-200/60">
  <p className="text-slate-500 text-[10px] uppercase font-black">Late Arrivals</p>
  <p className="text-2xl font-bold text-amber-400 mt-1">18 <span className="text-xs text-slate-500">within 15m</span></p>
  </div>
- <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+ <div className="p-4 rounded-2xl bg-white/60 border border-slate-200/60">
  <p className="text-slate-500 text-[10px] uppercase font-black">On Paid Leave</p>
  <p className="text-2xl font-bold text-sky-400 mt-1">5 <span className="text-xs text-slate-500">approved</span></p>
  </div>
@@ -671,7 +671,7 @@ export function ExecutiveCommandCenter() {
  <div className="overflow-x-auto">
  <table className="w-full text-xs text-slate-600">
  <thead>
- <tr className="border-b border-white/5">
+ <tr className="border-b border-slate-200/60">
  <th className="text-left font-black pb-2 text-slate-500">DEPARTMENT</th>
  <th className="text-left font-black pb-2 text-slate-500">SHIFT RULE</th>
  <th className="text-left font-black pb-2 text-slate-500">GEOFENCE RADIUS</th>
@@ -719,7 +719,7 @@ export function ExecutiveCommandCenter() {
  <button
  type="button"
  onClick={resetRazorpayPayout}
- className="px-4 py-2 rounded-full border border-white/10 hover:bg-white/5 text-xs text-slate-600 font-bold transition-colors"
+ className="px-4 py-2 rounded-full border border-slate-200 hover:bg-white/60 text-xs text-slate-600 font-bold transition-colors"
  >
  Reset Status
  </button>
@@ -739,12 +739,12 @@ export function ExecutiveCommandCenter() {
 
  {/* Progress bar for payout */}
  {payoutStatus === 'processing' && (
- <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/5 space-y-2 animate-rise">
+ <div className="mb-6 p-4 rounded-xl bg-white/60 border border-slate-200/60 space-y-2 animate-rise">
  <div className="flex justify-between text-xs text-blue-300">
  <span>Executing direct HDFC/ICICI bank gateway transfer...</span>
  <span className="font-bold">{payoutProgress}%</span>
  </div>
- <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+ <div className="h-2 w-full bg-white/60 rounded-full overflow-hidden">
  <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${payoutProgress}%` }} />
  </div>
  </div>
@@ -760,8 +760,8 @@ export function ExecutiveCommandCenter() {
  <h4 className="text-sm font-bold text-navy mb-3">Instant Disbursement Queue</h4>
  <div className="space-y-3">
  {[
- { item: 'Salary Batch (HDFC Corporate Route)', amount: '₹3,10,42,800', type: 'Instant Bank Payout', status: payoutStatus === 'completed' ? 'Disbursed' : payoutStatus === 'processing' ? 'Processing' : 'Approved', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : payoutStatus === 'processing' ? 'text-blue-400 border-blue-500/20 bg-blue-500/5 animate-pulse' : 'text-slate-500 border-white/5 bg-white/5' },
- { item: 'Contractor Invoices (ICICI Bank Direct)', amount: '₹81,20,000', type: 'Fast Settlement', status: payoutStatus === 'completed' ? 'Disbursed' : payoutStatus === 'processing' ? 'Processing' : 'Approved', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : payoutStatus === 'processing' ? 'text-blue-400 border-blue-500/20 bg-blue-500/5 animate-pulse' : 'text-slate-500 border-white/5 bg-white/5' },
+ { item: 'Salary Batch (HDFC Corporate Route)', amount: '₹3,10,42,800', type: 'Instant Bank Payout', status: payoutStatus === 'completed' ? 'Disbursed' : payoutStatus === 'processing' ? 'Processing' : 'Approved', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : payoutStatus === 'processing' ? 'text-blue-400 border-blue-500/20 bg-blue-500/5 animate-pulse' : 'text-slate-500 border-slate-200/60 bg-white/60' },
+ { item: 'Contractor Invoices (ICICI Bank Direct)', amount: '₹81,20,000', type: 'Fast Settlement', status: payoutStatus === 'completed' ? 'Disbursed' : payoutStatus === 'processing' ? 'Processing' : 'Approved', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : payoutStatus === 'processing' ? 'text-blue-400 border-blue-500/20 bg-blue-500/5 animate-pulse' : 'text-slate-500 border-slate-200/60 bg-white/60' },
  { item: 'Statutory Taxes (PF / ESI / TDS Pool)', amount: '₹42,65,400', type: 'Compliance Escrow', status: payoutStatus === 'completed' ? 'Deposited' : 'Pending Approval', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-amber-400 border-amber-500/20 bg-slate-50mber-500/5' }
  ].map((queue, i) => (
  <div key={i} className={`p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-4 transition-colors ${queue.color}`}>
@@ -770,7 +770,7 @@ export function ExecutiveCommandCenter() {
  <p className="text-[10px] text-slate-500 mt-0.5">{queue.type}</p>
  </div>
  <div className="text-right">
- <p className="text-sm font-black text-white">{queue.amount}</p>
+ <p className="text-sm font-black text-navy">{queue.amount}</p>
  <span className="text-[10px] uppercase tracking-wider font-bold block mt-0.5">{queue.status}</span>
  </div>
  </div>
@@ -781,7 +781,7 @@ export function ExecutiveCommandCenter() {
 
  <div className="space-y-6">
  <GlassCard className="p-6">
- <h4 className="text-sm font-black text-white flex items-center gap-2 mb-4">
+ <h4 className="text-sm font-black text-navy flex items-center gap-2 mb-4">
  <Landmark className="text-blue-400" />
  Indian statutory pool
  </h4>
@@ -792,7 +792,7 @@ export function ExecutiveCommandCenter() {
  { label: 'Professional Tax (PT)', rule: '₹200/mo slab auto-applied' },
  { label: 'Tax Deducted at Source (TDS)', rule: 'New slab regime annual apportionment' }
  ].map((rule, i) => (
- <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/5">
+ <div key={i} className="p-3 rounded-xl bg-white/60 border border-slate-200/60">
  <p className="text-xs font-bold text-navy">{rule.label}</p>
  <p className="text-[10px] text-slate-500 mt-1">{rule.rule}</p>
  </div>

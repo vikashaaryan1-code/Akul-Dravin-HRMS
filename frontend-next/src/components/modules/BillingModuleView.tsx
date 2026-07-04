@@ -30,7 +30,7 @@ const fallbackData: BillingPayload = {
  id: 'fallback-sub-1',
  tenantId: null,
  companyId: 'COMPANY-ALPHA',
- planName: 'Enterprise Growth',
+ planName: 'Premium HRMS',
  billingCycle: 'monthly',
  price: '2999.00',
  features: { seats: 120, modules: ['payments', 'finance', 'analytics'] },
@@ -44,7 +44,7 @@ const fallbackData: BillingPayload = {
  id: 'fallback-sub-2',
  tenantId: null,
  companyId: 'COMPANY-BETA',
- planName: 'Recruitment Pro',
+ planName: 'HR Pro',
  billingCycle: 'annual',
  price: '18000.00',
  features: { seats: 60, modules: ['recruitment', 'marketplace'] },
@@ -169,7 +169,7 @@ export function BillingModuleView({ focus }: BillingModuleViewProps) {
  try {
  await platformApi.createBillingSubscription({
  companyId: `COMPANY-${Date.now().toString().slice(-4)}`,
- planName: focus === 'payments' ? 'Collections Control' : 'Growth Suite',
+ planName: focus === 'payments' ? 'HR Pro' : 'HR + Payroll',
  billingCycle: 'monthly',
  price: 3499,
  features: {
@@ -199,7 +199,7 @@ export function BillingModuleView({ focus }: BillingModuleViewProps) {
  if (!subscriptionId) {
  const created = await platformApi.createBillingSubscription({
  companyId: `COMPANY-${Date.now().toString().slice(-4)}`,
- planName: 'Starter Platform',
+ planName: 'Free',
  billingCycle: 'monthly',
  price: 2499,
  status: 'active',

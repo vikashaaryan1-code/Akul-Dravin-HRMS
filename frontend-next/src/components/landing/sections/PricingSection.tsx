@@ -81,7 +81,7 @@ export function PricingSection({ plans }: Props) {
  <p className="section-label text-slate-500">{plan.name}</p>
  <p className="text-4xl font-black tracking-tighter text-navy mt-2">
  {yearly && plan.price !== 'Custom'
- ? plan.price.replace(/\$(\d+)/, (_, n) => `$${Math.floor(+n * 0.8)}`)
+ ? plan.price.replace(/₹([\d,]+)/, (_, n) => `₹${Math.floor(parseInt(n.replace(/,/g, '')) * 0.8).toLocaleString()}`)
  : plan.price}
  </p>
  <p className="text-xs text-slate-500 mt-1">{plan.commitment}</p>

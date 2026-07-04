@@ -90,7 +90,7 @@ const WORKER_NODES = [
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Activity className="h-4 w-4 text-jade" aria-hidden="true" />
- <p className="text-sm font-black text-white">Live Queue Telemetry</p>
+ <p className="text-sm font-black text-navy">Live Queue Telemetry</p>
  </div>
  <div className="flex items-center gap-1.5">
  <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-jade animate-pulse' : 'bg-slate-700'}`} aria-hidden="true" />
@@ -145,7 +145,7 @@ const WORKER_NODES = [
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Server className="h-4 w-4 text-aqua" aria-hidden="true" />
- <p className="text-sm font-black text-white">Service Health</p>
+ <p className="text-sm font-black text-navy">Service Health</p>
  </div>
  <div className="space-y-2" role="list" aria-label="Service health status">
  {SERVICES.map((svc) => {
@@ -179,7 +179,7 @@ const WORKER_NODES = [
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Cpu className="h-4 w-4 text-ember" aria-hidden="true" />
- <p className="text-sm font-black text-white">Worker Nodes</p>
+ <p className="text-sm font-black text-navy">Worker Nodes</p>
  </div>
  <div className="space-y-4" role="list" aria-label="Worker node metrics">
  {WORKER_NODES.map((node) => {
@@ -196,7 +196,7 @@ const WORKER_NODES = [
  {/* CPU bar */}
  <div className="flex items-center gap-2 text-[10px]">
  <span className="text-slate-700 w-8 shrink-0">CPU</span>
- <div className="flex-1 h-1.5 rounded-full bg-white/5" aria-hidden="true">
+ <div className="flex-1 h-1.5 rounded-full bg-white/60" aria-hidden="true">
  <div
  className={`h-full rounded-full ${node.cpu > 70 ? 'bg-ember' : node.cpu > 50 ? 'bg-gold' : 'bg-jade'}`}
  style={{ width: `${node.cpu}%` }}
@@ -208,7 +208,7 @@ const WORKER_NODES = [
  {/* Mem bar */}
  <div className="flex items-center gap-2 text-[10px]">
  <span className="text-slate-700 w-8 shrink-0">MEM</span>
- <div className="flex-1 h-1.5 rounded-full bg-white/5" aria-hidden="true">
+ <div className="flex-1 h-1.5 rounded-full bg-white/60" aria-hidden="true">
  <div
  className={`h-full rounded-full ${node.mem > 80 ? 'bg-ember' : node.mem > 60 ? 'bg-gold' : 'bg-aqua'}`}
  style={{ width: `${node.mem}%` }}
@@ -243,7 +243,7 @@ export function ObservabilityDashboard() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-jade mb-2">Platform Telemetry</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">Observability Command Center</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">Observability Command Center</h2>
  <p className="text-sm text-slate-500 mt-1">
  8 services monitored · 4 worker nodes · 99.94% platform uptime
  </p>

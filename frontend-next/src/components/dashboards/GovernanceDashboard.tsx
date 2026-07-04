@@ -34,7 +34,7 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <AlertTriangle className="h-4 w-4 text-gold" aria-hidden="true" />
- <p className="text-sm font-black text-white">Open Risk Items</p>
+ <p className="text-sm font-black text-navy">Open Risk Items</p>
  </div>
  <span className="text-xs font-black text-gold">{risks.length} open</span>
  </div>
@@ -59,14 +59,14 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  <span>{risk.detected}</span>
  </div>
  </div>
- <button aria-label={`View risk ${risk.id}`} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-600 hover:text-white">
+ <button aria-label={`View risk ${risk.id}`} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-600 hover:text-navy">
  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
  );
  })}
  </div>
- <div className="pt-2 border-t border-white/5 flex justify-end">
+ <div className="pt-2 border-t border-slate-200/60 flex justify-end">
  <button className="text-xs font-bold text-gold hover:underline">
  View Full Risk Register →
  </button>
@@ -80,11 +80,11 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Globe className="h-4 w-4 text-jade" aria-hidden="true" />
- <p className="text-sm font-black text-white">Compliance Frameworks</p>
+ <p className="text-sm font-black text-navy">Compliance Frameworks</p>
  </div>
  <div className="space-y-2" role="list" aria-label="Compliance frameworks">
  {frameworks.map((fw) => (
- <div key={fw.name} role="listitem" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors">
+ <div key={fw.name} role="listitem" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/60 transition-colors">
  <span className={`h-2 w-2 rounded-full shrink-0 ${fw.dot}`} aria-hidden="true" />
  <p className="flex-1 text-xs font-bold text-navy">{fw.name}</p>
  <p className={`text-xs font-semibold ${fw.color}`}>{fw.status}</p>
@@ -104,13 +104,13 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  <div className="flex items-center justify-between gap-3 flex-wrap">
  <div className="flex items-center gap-2">
  <FileSearch className="h-4 w-4 text-aqua" aria-hidden="true" />
- <p className="text-sm font-black text-white">Forensic Audit Log</p>
+ <p className="text-sm font-black text-navy">Forensic Audit Log</p>
  </div>
  <div className="flex items-center gap-2">
- <button aria-label="Refresh audit log" className="h-7 w-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Refresh audit log" className="h-7 w-7 rounded-lg bg-white/60 border border-white/8 flex items-center justify-center text-slate-500 hover:text-navy transition-colors">
  <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
- <button aria-label="Export audit log" className="h-7 w-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Export audit log" className="h-7 w-7 rounded-lg bg-white/60 border border-white/8 flex items-center justify-center text-slate-500 hover:text-navy transition-colors">
  <Download className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
@@ -119,7 +119,7 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  <div className="overflow-x-auto -mx-6 px-6">
  <table className="w-full text-xs" aria-label="Forensic audit log">
  <thead>
- <tr className="border-b border-white/5">
+ <tr className="border-b border-slate-200/60">
  {['ID', 'Actor', 'Action', 'Module', 'Severity', 'Time'].map((h) => (
  <th key={h} className="text-left text-[10px] font-black text-slate-600 uppercase tracking-wide pb-3 pr-4">{h}</th>
  ))}
@@ -153,7 +153,7 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Cpu className="h-4 w-4 text-ember" aria-hidden="true" />
- <p className="text-sm font-black text-white">Framework Coverage</p>
+ <p className="text-sm font-black text-navy">Framework Coverage</p>
  </div>
  <div className="grid grid-cols-2 gap-4">
  {coverage.map((fw) => (
@@ -173,7 +173,7 @@ const AUDIT_SEVERITY_STYLE: Record<string, string> = {
  />
  </svg>
  <div className="absolute inset-0 flex items-center justify-center">
- <span className="text-sm font-black text-white">{fw.value}%</span>
+ <span className="text-sm font-black text-navy">{fw.value}%</span>
  </div>
  </div>
  <p className="text-[10px] font-bold text-slate-500 text-center">{fw.name}</p>
@@ -225,7 +225,7 @@ export function GovernanceDashboard() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-jade mb-2">Zero Trust Governance</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">Security Command Center</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">Security Command Center</h2>
  <p className="text-sm text-slate-500 mt-1">
  Compliance score: {data.kpis.complianceScore}/100 · {data.kpis.openRiskItems} open risks
  </p>

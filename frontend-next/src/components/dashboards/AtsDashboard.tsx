@@ -82,7 +82,7 @@ const PRIORITY_STYLE = {
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <TrendingUp className="h-4 w-4 text-gold" aria-hidden="true" />
- <p className="text-sm font-black text-white">Hiring Pipeline Funnel</p>
+ <p className="text-sm font-black text-navy">Hiring Pipeline Funnel</p>
  </div>
  <div className="space-y-3">
  {PIPELINE_FUNNEL_DATA.map((stage, i) => {
@@ -91,7 +91,7 @@ const PRIORITY_STYLE = {
  <div key={stage.stage}>
  <div className="flex justify-between mb-1.5 text-xs">
  <span className="text-slate-500 font-semibold">{stage.stage}</span>
- <span className="font-black text-white">{stage.count.toLocaleString()} <span className="text-slate-600 font-normal">({pct.toFixed(0)}%)</span></span>
+ <span className="font-black text-navy">{stage.count.toLocaleString()} <span className="text-slate-600 font-normal">({pct.toFixed(0)}%)</span></span>
  </div>
  <div className="h-5 bg-white/[0.03] rounded-lg overflow-hidden">
  <motion.div
@@ -107,7 +107,7 @@ const PRIORITY_STYLE = {
  );
  })}
  </div>
- <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+ <div className="pt-3 border-t border-slate-200/60 flex items-center justify-between text-xs">
  <span className="text-slate-500">Conversion: Applied → Hired</span>
  <span className="font-black text-jade">2.56%</span>
  </div>
@@ -121,7 +121,7 @@ const PRIORITY_STYLE = {
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Briefcase className="h-4 w-4 text-aqua" aria-hidden="true" />
- <p className="text-sm font-black text-white">Open Positions</p>
+ <p className="text-sm font-black text-navy">Open Positions</p>
  </div>
  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gold/10 border border-gold/20 text-[10px] font-black text-gold hover:bg-gold/20 transition-colors">
  <Plus className="h-3 w-3" aria-hidden="true" /> Post Role
@@ -129,7 +129,7 @@ const PRIORITY_STYLE = {
  </div>
  <div className="space-y-2" role="list" aria-label="Open positions">
  {OPEN_ROLES.map((role) => (
- <div key={role.title} role="listitem" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors group">
+ <div key={role.title} role="listitem" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/60 transition-colors group">
  <div className="flex-1 min-w-0">
  <p className="text-xs font-bold text-navy">{role.title}</p>
  <p className="text-[10px] text-slate-500">{role.dept} · {role.applicants} applicants</p>
@@ -156,21 +156,21 @@ const PRIORITY_STYLE = {
  <div className="flex items-center justify-between gap-3 flex-wrap">
  <div className="flex items-center gap-2">
  <Zap className="h-4 w-4 text-ember" aria-hidden="true" />
- <p className="text-sm font-black text-white">AI Candidate Scoring</p>
+ <p className="text-sm font-black text-navy">AI Candidate Scoring</p>
  </div>
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-600" aria-hidden="true" />
  <input
  type="search" value={query} onChange={(e) => setQuery(e.target.value)}
  placeholder="Search candidates…" aria-label="Search candidates"
- className="pl-8 pr-4 py-2 rounded-xl bg-white/5 border border-white/8 text-xs text-white placeholder:text-slate-600 outline-none focus:border-gold/30 transition-colors w-44"
+ className="pl-8 pr-4 py-2 rounded-xl bg-white/60 border border-white/8 text-xs text-navy placeholder:text-slate-600 outline-none focus:border-gold/30 transition-colors w-44"
  />
  </div>
  </div>
  <div className="overflow-x-auto -mx-6 px-6">
  <table className="w-full text-xs" aria-label="Candidate scoring board">
  <thead>
- <tr className="border-b border-white/5">
+ <tr className="border-b border-slate-200/60">
  {['Candidate', 'Role', 'AI Score', 'Stage', 'Source', 'Days', ''].map((h) => (
  <th key={h} className="text-left text-[10px] font-black text-slate-600 uppercase tracking-wide pb-3 pr-3">{h}</th>
  ))}
@@ -181,7 +181,7 @@ const PRIORITY_STYLE = {
  <tr key={c.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors group">
  <td className="py-3 pr-3">
  <div className="flex items-center gap-2">
- <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold/30 to-ember/20 flex items-center justify-center text-[10px] font-black text-white">
+ <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold/30 to-ember/20 flex items-center justify-center text-[10px] font-black text-navy">
  {c.name.split(' ').map((n) => n[0]).join('')}
  </div>
  <span className="font-bold text-navy">{c.name}</span>
@@ -191,7 +191,7 @@ const PRIORITY_STYLE = {
  <td className="py-3 pr-3">
  <div className="flex items-center gap-2">
  <span className={`font-black ${c.score >= 90 ? 'text-jade' : c.score >= 80 ? 'text-gold' : 'text-slate-500'}`}>{c.score}</span>
- <div className="h-1 w-12 rounded-full bg-white/5">
+ <div className="h-1 w-12 rounded-full bg-white/60">
  <div className="h-full rounded-full bg-gradient-to-r from-gold to-jade" style={{ width: `${c.score}%` }} />
  </div>
  </div>
@@ -203,10 +203,10 @@ const PRIORITY_STYLE = {
  <td className="py-3 pr-3 text-slate-500">{c.days}d</td>
  <td className="py-3">
  <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
- <button aria-label={`Message ${c.name}`} className="text-slate-500 hover:text-white transition-colors">
+ <button aria-label={`Message ${c.name}`} className="text-slate-500 hover:text-navy transition-colors">
  <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
- <button aria-label={`Schedule ${c.name}`} className="text-slate-500 hover:text-white transition-colors">
+ <button aria-label={`Schedule ${c.name}`} className="text-slate-500 hover:text-navy transition-colors">
  <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
@@ -237,10 +237,10 @@ export function AtsDashboard() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-gold mb-2">Recruitment Marketplace</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">ATS Pipeline</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">ATS Pipeline</h2>
  <p className="text-sm text-slate-500 mt-1">38 open roles · 1,482 active applicants · 22d avg time-to-hire</p>
  </div>
- <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-void text-xs font-black hover:scale-105 transition-transform">
+ <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-white text-xs font-black hover:scale-105 transition-transform">
  <Plus className="h-3.5 w-3.5" aria-hidden="true" /> Post New Role
  </button>
  </div>

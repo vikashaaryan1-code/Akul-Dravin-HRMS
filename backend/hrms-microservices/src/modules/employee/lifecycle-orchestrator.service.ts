@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { DomainEventService, DomainEvent } from '../../common/events/domain-event.service';
 import { EmployeeLifecycleService } from './employee-lifecycle.service';
 import { PayrollService } from '../payroll/payroll.service';
@@ -13,6 +13,7 @@ export class LifecycleOrchestratorService {
   constructor(
     private readonly eventBus: DomainEventService,
     private readonly lifecycleService: EmployeeLifecycleService,
+    @Inject(forwardRef(() => PayrollService))
     private readonly payrollService: PayrollService,
   ) {}
 

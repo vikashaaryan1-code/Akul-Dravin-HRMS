@@ -109,8 +109,8 @@ const TOP_PERFORMERS = [
  { name: 'Ananya Das', dept: 'Engineering', score: 4.9, rank: 1, badge: 'bg-gradient-to-br from-gold to-ember' },
  { name: 'Vikram Singh', dept: 'Sales', score: 4.7, rank: 2, badge: 'bg-gradient-to-br from-slate-400 to-slate-600' },
  { name: 'Meera Pillai', dept: 'Product', score: 4.6, rank: 3, badge: 'bg-gradient-to-br from-amber-700 to-amber-900' },
- { name: 'Arjun Verma', dept: 'Ops', score: 4.4, rank: 4, badge: 'bg-white/10' },
- { name: 'Divya K.', dept: 'Finance', score: 4.3, rank: 5, badge: 'bg-white/10' },
+ { name: 'Arjun Verma', dept: 'Ops', score: 4.4, rank: 4, badge: 'bg-slate-100' },
+ { name: 'Divya K.', dept: 'Finance', score: 4.3, rank: 5, badge: 'bg-slate-100' },
 ];
 
 /* ── OKR Card ────────────────────────────────────────────────────────────────── */ function OkrCard({ okr }: { okr: OkrItem }) {
@@ -118,7 +118,7 @@ const TOP_PERFORMERS = [
  const s = OKR_STATUS_STYLE[okr.status];
 
  return (
- <div className="border border-white/[0.05] rounded-2xl overflow-hidden hover:border-white/10 transition-colors">
+ <div className="border border-white/[0.05] rounded-2xl overflow-hidden hover:border-slate-200 transition-colors">
  <button
  onClick={() => setExpanded((e) => !e)}
  className="w-full text-left p-5 flex items-start gap-4 hover:bg-white/[0.02] transition-colors"
@@ -140,7 +140,7 @@ const TOP_PERFORMERS = [
  <span>{okr.dept}</span>
  </div>
  <div className="mt-3 flex items-center gap-3">
- <div className="flex-1 h-1.5 rounded-full bg-white/5">
+ <div className="flex-1 h-1.5 rounded-full bg-white/60">
  <motion.div
  initial={{ width: 0 }}
  animate={{ width: `${okr.progress}%` }}
@@ -149,7 +149,7 @@ const TOP_PERFORMERS = [
  role="progressbar" aria-valuenow={okr.progress} aria-valuemin={0} aria-valuemax={100}
  />
  </div>
- <span className="text-xs font-black text-white">{okr.progress}%</span>
+ <span className="text-xs font-black text-navy">{okr.progress}%</span>
  </div>
  </div>
  {expanded
@@ -168,7 +168,7 @@ const TOP_PERFORMERS = [
  ? <CheckCircle2 className="h-3.5 w-3.5 text-jade shrink-0" aria-label="Completed" />
  : <Clock className="h-3.5 w-3.5 text-slate-600 shrink-0" aria-label="Pending" />
  }
- <span className={`text-xs ${kr.done ? 'text-slate-500 line-through' : 'text-white'}`}>{kr.label}</span>
+ <span className={`text-xs ${kr.done ? 'text-slate-500 line-through' : 'text-navy'}`}>{kr.label}</span>
  </div>
  ))}
  </div>
@@ -183,12 +183,12 @@ const TOP_PERFORMERS = [
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center gap-2">
  <Star className="h-4 w-4 text-gold" aria-hidden="true" />
- <p className="text-sm font-black text-white">Top Performers</p>
+ <p className="text-sm font-black text-navy">Top Performers</p>
  </div>
  <div className="space-y-3" role="list" aria-label="Top performers">
  {TOP_PERFORMERS.map((p) => (
  <div key={p.name} role="listitem" className="flex items-center gap-3 group cursor-pointer">
- <div className={`h-8 w-8 rounded-full ${p.badge} flex items-center justify-center text-xs font-black text-void shrink-0`}>
+ <div className={`h-8 w-8 rounded-full ${p.badge} flex items-center justify-center text-xs font-black text-white shrink-0`}>
  {p.rank <= 3 ? p.rank : p.name[0]}
  </div>
  <div className="flex-1 min-w-0">
@@ -196,7 +196,7 @@ const TOP_PERFORMERS = [
  <p className="text-[10px] text-slate-600">{p.dept}</p>
  </div>
  <div className="flex items-center gap-2 shrink-0">
- <div className="h-1 w-14 rounded-full bg-white/5">
+ <div className="h-1 w-14 rounded-full bg-white/60">
  <div className="h-full rounded-full bg-gold/60" style={{ width: `${(p.score / 5) * 100}%` }} />
  </div>
  <span className="text-xs font-black text-gold w-8">{p.score}</span>
@@ -229,10 +229,10 @@ export function PerformanceDashboard() {
  <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
  <div>
  <p className="section-label text-gold mb-2">Performance Intelligence</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">OKR Command Hub</h2>
+ <h2 className="text-3xl font-black tracking-tighter text-navy">OKR Command Hub</h2>
  <p className="text-sm text-slate-500 mt-1">Q2 2026 · 4 objectives · 12 key results tracked</p>
  </div>
- <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-void text-xs font-black hover:scale-105 transition-transform">
+ <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold to-ember text-white text-xs font-black hover:scale-105 transition-transform">
  <Plus className="h-3.5 w-3.5" aria-hidden="true" /> New Objective
  </button>
  </div>
@@ -279,7 +279,7 @@ export function PerformanceDashboard() {
  {/* OKR Cards */}
  <div className="lg:col-span-2 flex flex-col gap-4">
  <div className="flex items-center justify-between flex-wrap gap-3">
- <p className="text-sm font-black text-white">Active OKRs</p>
+ <p className="text-sm font-black text-navy">Active OKRs</p>
  <div className="flex items-center gap-2 flex-wrap" role="group" aria-label="Filter OKRs by status">
  {(['all', 'on-track', 'at-risk', 'off-track'] as const).map((f) => (
  <button
@@ -289,7 +289,7 @@ export function PerformanceDashboard() {
  className={`px-3 py-1.5 rounded-full text-[10px] font-black capitalize transition-all duration-200 ${
  filter === f
  ? 'bg-gold/15 border border-gold/20 text-gold'
- : 'bg-white/5 border border-white/8 text-slate-500 hover:text-white'
+ : 'bg-white/60 border border-white/8 text-slate-500 hover:text-navy'
  }`}
  >
  {f === 'all' ? 'All' : f.replace('-', ' ')}
@@ -310,7 +310,7 @@ export function PerformanceDashboard() {
  <TopPerformersPanel />
  {/* Quick stats */}
  <GlassCard className="p-5 flex flex-col gap-3">
- <p className="text-xs font-black text-white">Cycle Health</p>
+ <p className="text-xs font-black text-navy">Cycle Health</p>
  {[
  { label: 'Reviews submitted', value: '84%', color: 'text-jade' },
  { label: 'Calibration done', value: '61%', color: 'text-gold' },

@@ -151,7 +151,7 @@ const LIFECYCLE_FUNNEL = [
  return (
  <GlassCard className="p-6 flex flex-col gap-4">
  <div className="flex items-center justify-between gap-4 flex-wrap">
- <p className="text-sm font-black text-white">Recent Employees</p>
+ <p className="text-sm font-black text-navy">Recent Employees</p>
  <div className="flex items-center gap-2">
  <div className="relative">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-600" aria-hidden="true" />
@@ -161,18 +161,18 @@ const LIFECYCLE_FUNNEL = [
  onChange={(e) => setRawQuery(e.target.value)}
  placeholder="Search…"
  aria-label="Search employees"
- className="pl-8 pr-4 py-2 rounded-xl bg-white/5 border border-white/8 text-xs text-white placeholder:text-slate-600 outline-none focus:border-gold/30 transition-colors w-36"
+ className="pl-8 pr-4 py-2 rounded-xl bg-white/60 border border-white text-xs text-navy placeholder:text-slate-500 outline-none focus:border-gold/50 transition-colors w-36 shadow-sm"
  />
  </div>
  <button
  onClick={() => void refetch()}
  disabled={isLoading}
  aria-label="Refresh employees"
- className="h-8 w-8 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors disabled:opacity-40"
+ className="h-8 w-8 rounded-xl bg-white/60 border border-white flex items-center justify-center text-slate-500 hover:text-navy hover:shadow-sm transition-all disabled:opacity-40"
  >
  <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
  </button>
- <button aria-label="Export employee data" className="h-8 w-8 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-white transition-colors">
+ <button aria-label="Export employee data" className="h-8 w-8 rounded-xl bg-white/60 border border-white flex items-center justify-center text-slate-500 hover:text-navy hover:shadow-sm transition-all">
  <Download className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </div>
@@ -198,7 +198,7 @@ const LIFECYCLE_FUNNEL = [
  <div className="overflow-x-auto -mx-6 px-6">
  <table className="w-full text-xs" aria-label="Recent employees table">
  <thead>
- <tr className="border-b border-white/5">
+ <tr className="border-b border-slate-200">
  {['Employee', 'Department', 'Role', 'Joined', 'Status', ''].map((h) => (
  <th key={h} className="text-left text-[10px] font-black text-slate-600 uppercase tracking-wide pb-3 pr-4">{h}</th>
  ))}
@@ -206,10 +206,10 @@ const LIFECYCLE_FUNNEL = [
  </thead>
  <tbody>
  {employees.map((emp) => (
- <tr key={emp.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors group">
+ <tr key={emp.id} className="border-b border-slate-100 hover:bg-white/60 transition-colors group">
  <td className="py-3 pr-4">
  <div className="flex items-center gap-2.5">
- <div className="h-7 w-7 rounded-full bg-gradient-to-br from-aqua/30 to-jade/30 flex items-center justify-center text-[10px] font-black text-white">
+ <div className="h-7 w-7 rounded-full bg-gradient-to-br from-aqua/20 to-jade/20 flex items-center justify-center text-[10px] font-black text-navy border border-white shadow-sm">
  {emp.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
  </div>
  <div>
@@ -227,7 +227,7 @@ const LIFECYCLE_FUNNEL = [
  </span>
  </td>
  <td className="py-3">
- <button aria-label={`View ${emp.name} profile`} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-white">
+ <button aria-label={`View ${emp.name} profile`} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-navy">
  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
  </button>
  </td>
@@ -245,7 +245,7 @@ const LIFECYCLE_FUNNEL = [
 /* ── Lifecycle Funnel ────────────────────────────────────────────────────────── */ function LifecycleFunnel() {
  return (
  <GlassCard className="p-6 flex flex-col gap-4">
- <p className="text-sm font-black text-white">Employee Lifecycle Funnel</p>
+ <p className="text-sm font-black text-navy">Employee Lifecycle Funnel</p>
  <div className="space-y-3">
  {LIFECYCLE_FUNNEL.map((stage, i) => {
  const maxCount = LIFECYCLE_FUNNEL[0].count;
@@ -254,9 +254,9 @@ const LIFECYCLE_FUNNEL = [
  <div key={stage.stage}>
  <div className="flex justify-between text-xs mb-1.5">
  <span className="text-slate-500 font-semibold">{stage.stage}</span>
- <span className="font-black text-white">{stage.count.toLocaleString()}</span>
+ <span className="font-black text-navy">{stage.count.toLocaleString()}</span>
  </div>
- <div className="h-6 rounded-lg bg-white/5 overflow-hidden">
+ <div className="h-6 rounded-lg bg-slate-100 overflow-hidden shadow-inner border border-slate-200">
  <motion.div
  initial={{ width: 0 }}
  whileInView={{ width: `${pct}%` }}
@@ -269,7 +269,7 @@ const LIFECYCLE_FUNNEL = [
  aria-valuemax={maxCount}
  aria-label={stage.stage}
  >
- <span className="text-[10px] font-black text-white">{pct.toFixed(0)}%</span>
+ <span className="text-[10px] font-black text-white drop-shadow-md">{pct.toFixed(0)}%</span>
  </motion.div>
  </div>
  </div>
@@ -294,8 +294,8 @@ export function HrmsDashboard() {
 
  {/* Header */}
  <div className="mb-8">
- <p className="section-label text-aqua mb-2">HRMS Intelligence</p>
- <h2 className="text-3xl font-black tracking-tighter text-white">Workforce Command</h2>
+ <p className="section-label mb-2">HRMS Intelligence</p>
+ <h2 className="text-3xl font-black tracking-tighter text-navy drop-shadow-sm">Workforce Command</h2>
  <p className="text-sm text-slate-500 mt-1">Real-time people analytics · live from backend</p>
  </div>
 
@@ -331,15 +331,15 @@ export function HrmsDashboard() {
  {/* Quick actions */}
  <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
  {[
- { label: 'Add Employee', icon: UserPlus, color: 'text-jade', bg: 'bg-jade/10 border-jade/20' },
- { label: 'Approve Leaves', icon: CheckCircle2, color: 'text-gold', bg: 'bg-gold/10 border-gold/20' },
- { label: 'Flag Violations', icon: AlertTriangle,color: 'text-ember', bg: 'bg-ember/10 border-ember/20' },
- { label: 'Export Report', icon: Download, color: 'text-aqua', bg: 'bg-aqua/10 border-aqua/20' },
+ { label: 'Add Employee', icon: UserPlus, color: 'text-jade', bg: 'bg-white/60 border-white shadow-sm' },
+ { label: 'Approve Leaves', icon: CheckCircle2, color: 'text-gold', bg: 'bg-white/60 border-white shadow-sm' },
+ { label: 'Flag Violations', icon: AlertTriangle,color: 'text-ember', bg: 'bg-white/60 border-white shadow-sm' },
+ { label: 'Export Report', icon: Download, color: 'text-aqua', bg: 'bg-white/60 border-white shadow-sm' },
  ].map((action) => (
  <button
  key={action.label}
  aria-label={action.label}
- className={`flex items-center gap-3 p-4 rounded-2xl border ${action.bg} hover:scale-[1.02] transition-all duration-200`}
+ className={`flex items-center gap-3 p-4 rounded-2xl border ${action.bg} hover:-translate-y-1 hover:shadow-md transition-all duration-200`}
  >
  <action.icon className={`h-5 w-5 ${action.color}`} aria-hidden="true" />
  <span className={`text-xs font-black ${action.color}`}>{action.label}</span>

@@ -124,6 +124,15 @@ export class AnalyticsController {
     );
   }
 
+  /** GET /analytics/workforce/attrition-risk */
+  @Get('workforce/attrition-risk')
+  @Roles(...ANALYTICS_ROLES)
+  async getAttritionRisk(@Query('tenantId') tenantId?: string) {
+    return this.workforceAnalytics.getAttritionRisk(
+      tenantId ?? TenantContext.getRequiredTenantId(),
+    );
+  }
+
   /** GET /analytics/workforce/tenure */
   @Get('workforce/tenure')
   @Roles(...ANALYTICS_ROLES)

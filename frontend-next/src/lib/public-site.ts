@@ -307,7 +307,10 @@ const FALLBACK_PUBLIC_LANDING_DATA: PublicLandingPayload = {
  },
  {
  phase: '04',
-},
+ title: 'Measure and optimize globally',
+ description: 'Real-time analytics and predictive models drive strategic HR decisions.',
+ deliverables: ['Workforce Analytics', 'Attrition Predictions', 'Budget Forecasting'],
+ },
  ],
  plans: [
  {

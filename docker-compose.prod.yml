@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # ─── API Layer (NestJS) ─────────────────────────────────────────────────────
   api:
-    image: pueri-backend:latest
+    image: akul-dravin-backend:latest
     build:
       context: ./backend/hrms-microservices
       dockerfile: Dockerfile.prod
@@ -15,11 +15,11 @@ services:
       - redis
     restart: always
     networks:
-      - pueri-network
+      - akul-dravin-network
 
   # ─── Frontend Layer (Next.js) ────────────────────────────────────────────────
   frontend:
-    image: pueri-frontend:latest
+    image: akul-dravin-frontend:latest
     build:
       context: ./frontend-next
       dockerfile: Dockerfile.prod
@@ -29,20 +29,20 @@ services:
       - api
     restart: always
     networks:
-      - pueri-network
+      - akul-dravin-network
 
   # ─── Database (PostgreSQL) ──────────────────────────────────────────────────
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: pueri_db
+      POSTGRES_DB: akul_dravin_hrms
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
     networks:
-      - pueri-network
+      - akul-dravin-network
 
   # ─── Queue & Cache (Redis) ──────────────────────────────────────────────────
   redis:
@@ -52,7 +52,7 @@ services:
       - redisdata:/data
     restart: always
     networks:
-      - pueri-network
+      - akul-dravin-network
 
   # ─── Reverse Proxy (NGINX + SSL) ─────────────────────────────────────────────
   nginx:
@@ -68,10 +68,10 @@ services:
       - api
     restart: always
     networks:
-      - pueri-network
+      - akul-dravin-network
 
 networks:
-  pueri-network:
+  akul-dravin-network:
     driver: bridge
 
 volumes:
