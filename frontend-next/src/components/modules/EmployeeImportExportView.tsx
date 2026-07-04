@@ -36,7 +36,7 @@ interface PreviewResult {
 /* ── Status badge colours ────────────────────────────────────────────────────── */ const rowColors: Record<RowStatus, string> = {
  valid: 'bg-emerald-50 border-emerald-200 ',
  invalid: 'bg-red-50 border-red-200 ',
- duplicate: 'bg-slate-50mber-50 border-amber-200 ',
+ duplicate: 'bg-amber-50 border-amber-200 ',
 };
 
 const rowIcon: Record<RowStatus, React.ReactNode> = {

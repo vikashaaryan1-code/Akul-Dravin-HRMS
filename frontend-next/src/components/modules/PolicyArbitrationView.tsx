@@ -80,19 +80,19 @@ const DEMO_RULES: ConflictRule[] = [
 /* ── Styling ─────────────────────────────────────────────────────────────────── */ const VERDICT_STYLE: Record<ArbitrationVerdict, { label: string; color: string; bg: string; border: string; icon: any }> = {
  ALLOWED: { label: 'Allowed', color: 'text-emerald-400', bg: 'bg-emerald-500/12', border: 'border-emerald-500/30', icon: CheckCircle },
  BLOCKED: { label: 'Blocked', color: 'text-red-400', bg: 'bg-red-500/12', border: 'border-red-500/30', icon: XCircle },
- DEFERRED: { label: 'Deferred', color: 'text-amber-400', bg: 'bg-slate-50mber-500/12', border: 'border-amber-500/30', icon: Clock },
+ DEFERRED: { label: 'Deferred', color: 'text-amber-400', bg: 'bg-amber-500/12', border: 'border-amber-500/30', icon: Clock },
  DOWNGRADED: { label: 'Downgraded', color: 'text-blue-400', bg: 'bg-blue-500/12', border: 'border-blue-500/30', icon: ChevronDown },
 };
 
 const URGENCY_STYLE: Record<Urgency, string> = {
  CRITICAL: 'text-red-400 bg-red-500/15 border-red-500/30',
  HIGH: 'text-orange-400 bg-orange-500/15 border-orange-500/30',
- MEDIUM: 'text-amber-400 bg-slate-50mber-500/15 border-amber-500/30',
+ MEDIUM: 'text-amber-400 bg-amber-500/15 border-amber-500/30',
 };
 
 const RULE_VERDICT_COLOR: Record<string, string> = {
  BLOCK: 'text-red-400 bg-red-500/15 border-red-500/30',
- DEFER: 'text-amber-400 bg-slate-50mber-500/12 border-amber-500/30',
+ DEFER: 'text-amber-400 bg-amber-500/12 border-amber-500/30',
  DOWNGRADE: 'text-blue-400 bg-blue-500/12 border-blue-500/30',
 };
 
@@ -231,7 +231,7 @@ type Tab = 'decisions' | 'conflicts' | 'rules';
  {report.conflicts.map((c, i) => (
  <div key={i} className="p-3 rounded-xl bg-slate-50/50 border border-slate-200/30 space-y-2">
  <div className="flex items-center gap-2">
- <span className="text-[10px] font-mono text-amber-400 bg-slate-50mber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{c.resource}</span>
+ <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{c.resource}</span>
  <span className="text-[10px] text-slate-500 font-semibold uppercase">conflict</span>
  <span className="text-[9px] font-mono text-slate-600">rule: {c.ruleId}</span>
  </div>
@@ -260,7 +260,7 @@ type Tab = 'decisions' | 'conflicts' | 'rules';
  { label: '→' },
  { label: 'Policy Engine', color: 'text-indigo-400 bg-indigo-500/12' },
  { label: `→ ${dec.length} matches` },
- { label: 'Arbitration', color: 'text-amber-400 bg-slate-50mber-500/12' },
+ { label: 'Arbitration', color: 'text-amber-400 bg-amber-500/12' },
  { label: `→ ${stats.allowed} allowed` },
  { label: 'Signal Service', color: 'text-emerald-400 bg-emerald-500/12' },
  ].map((item, i) => item.color ? (
@@ -306,7 +306,7 @@ type Tab = 'decisions' | 'conflicts' | 'rules';
  <p className="font-mono text-slate-500 text-[9px]">{r.activeResource}</p>
  </div>
  <span className="text-slate-600">+ candidate</span>
- <div className="px-2 py-1 rounded-lg bg-slate-50mber-500/10 border border-amber-500/20 text-center">
+ <div className="px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
  <p className="text-[9px] text-slate-500">candidate action</p>
  <p className="font-mono text-amber-300">{r.candidateAction}</p>
  <p className="font-mono text-slate-500 text-[9px]">{r.candidateResource}</p>

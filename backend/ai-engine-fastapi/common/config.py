@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     ai_env: str = 'dev'
     model_registry_dir: str = 'backend/ai-engine-fastapi/models/registry'
     default_top_k: int = 20
-    orchestrator_base_url: str = 'http://localhost:9000'
+    orchestrator_base_url: str = 'http://localhost:8000'
     resume_parser_url: str = 'http://localhost:8001'
     matching_url: str = 'http://localhost:8002'
     interview_url: str = 'http://localhost:8003'

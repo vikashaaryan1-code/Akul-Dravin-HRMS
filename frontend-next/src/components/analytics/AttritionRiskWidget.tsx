@@ -87,7 +87,7 @@ export const AttritionRiskWidget = () => {
     <ThreeDGlassCard className="p-6 h-full border-t-4 border-t-red-500">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h3 className="text-xl font-bold text-navy">Attrition Risk Radar</h3>
+          <h3 className="text-xl font-bold text-white">Attrition Risk Radar</h3>
           <p className="text-xs text-white/50">Target: High-Risk Engineering Segment</p>
         </div>
         <div className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-bold border border-red-500/30 animate-pulse">
@@ -106,7 +106,7 @@ export const AttritionRiskWidget = () => {
           </div>
           
           <div className="absolute z-10 text-center pointer-events-none">
-            <span className="text-3xl font-bold text-navy drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+            <span className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
               {data.probabilityToLeave}%
             </span>
             <p className="text-[10px] text-red-400 font-medium">PROBABILITY</p>
@@ -128,7 +128,7 @@ export const AttritionRiskWidget = () => {
       </div>
       
       <div>
-        <h4 className="text-sm font-bold text-navy mb-3">Identified Risk Factors</h4>
+        <h4 className="text-sm font-bold text-white mb-3">Identified Risk Factors</h4>
         <div className="space-y-3">
           {data.riskFactors.map((factor: any, i: number) => (
             <div key={i} className="flex flex-col gap-1">

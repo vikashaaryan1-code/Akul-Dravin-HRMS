@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Job } from 'bullmq';
 import { PayrollService } from '../payroll.service';
 import { TaxEngineService } from '../tax-engine.service';
 import { DomainEventService } from '../../../common/events/domain-event.service';
@@ -9,7 +9,7 @@ import { LedgerService } from '../../finance/ledger.service';
 
 @Processor('payroll-orchestration')
 @Injectable()
-export class PayrollOrchestratorWorker {
+export class PayrollOrchestratorWorker extends WorkerHost {
   private readonly logger = new Logger(PayrollOrchestratorWorker.name);
 
   constructor(
@@ -18,13 +18,24 @@ export class PayrollOrchestratorWorker {
     private readonly documentEngine: DocumentEngineService,
     private readonly ledgerService: LedgerService,
     private readonly eventBus: DomainEventService,
-  ) {}
+  ) {
+    super();
+  }
+
+  async process(job: Job): Promise<any> {
+    switch (job.name) {
+      case 'execute-batch':
+        return this.executePayrollBatch(job);
+      default:
+        this.logger.warn(`Unknown job name: ${job.name}`);
+        return null;
+    }
+  }
 
   /**
    * Autonomous "Zero-Touch" Payroll Batch Processor.
    * Handles calculation -> document generation -> ledger entry -> event publishing.
    */
-  @Process('execute-batch')
   async executePayrollBatch(job: Job<{ batchId: string; tenantId: string }>) {
     const { batchId, tenantId } = job.data;
     this.logger.log(`AUTONOMOUS_PAYROLL starting for batchId=${batchId} tenant=${tenantId}`);

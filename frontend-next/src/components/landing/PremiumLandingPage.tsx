@@ -39,7 +39,7 @@ type Props = { data: PublicLandingPayload };
  */
 export function PremiumLandingPage({ data }: Props) {
  return (
- <div className="min-h-screen bg-void text-navy font-sans selection:bg-gold/20 selection:text-gold antialiased">
+ <div className="min-h-screen bg-navy text-white font-sans selection:bg-gold/20 selection:text-gold antialiased">
  {/* Skip-to-content for a11y */}
  <a
  href="#top"
@@ -53,7 +53,7 @@ export function PremiumLandingPage({ data }: Props) {
 
  <main id="main-content">
  {/* 2. Hero */}
- <HeroSection hero={data.hero} />
+ <HeroSection />
 
  {/* 3. Trust Ticker */}
  <TrustTicker />

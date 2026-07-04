@@ -60,7 +60,7 @@ import Link from 'next/link';
  <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-navy/5 bg-white/[0.03] hover:bg-white/[0.06] transition group">
  <div className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: layer.color, boxShadow: `0 0 8px ${layer.color}80` }} />
  <div className="min-w-0 flex-1">
- <p className="text-xs font-semibold text-navy">{layer.label}</p>
+ <p className="text-xs font-semibold text-white">{layer.label}</p>
  <p className="text-[10px] text-slate-500 truncate">{layer.desc}</p>
  </div>
  <div className="h-6 w-px bg-navy/10" />
@@ -72,7 +72,7 @@ import Link from 'next/link';
  <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-navy/5">
  {LIVE_METRICS.map((m, i) => (
  <div key={i} className="text-center">
- <p className="text-sm font-bold text-navy">{m.value}</p>
+ <p className="text-sm font-bold text-white">{m.value}</p>
  <p className="text-[8px] text-slate-500 leading-tight mt-0.5">{m.label}</p>
  </div>
  ))}
@@ -90,7 +90,7 @@ const CAPABILITY_TAGS = [
  { label: 'HRMS', color: 'text-blue-400 border-blue-400/20 bg-blue-400/5' },
  { label: 'ERP', color: 'text-violet-400 border-violet-400/20 bg-violet-400/5' },
  { label: 'CRM', color: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' },
- { label: 'Workflow Engine', color: 'text-amber-400 border-amber-400/20 bg-slate-50mber-400/5' },
+ { label: 'Workflow Engine', color: 'text-amber-400 border-amber-400/20 bg-amber-400/5' },
  { label: 'AI Memory', color: 'text-cyan-400 border-cyan-400/20 bg-cyan-400/5' },
  { label: 'Recruitment', color: 'text-rose-400 border-rose-400/20 bg-rose-400/5' },
 ];
@@ -109,59 +109,59 @@ export function HeroSection() {
  <div className="space-y-8 animate-rise">
 
  {/* Eyebrow badge */}
- <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-400/20 bg-blue-400/5 backdrop-blur-sm">
- <span className="flex h-2 w-2 rounded-full bg-blue-400 animate-ping" />
- <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-400">
- Enterprise Platform · ~99% Production Ready
+ <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-aqua/30 bg-aqua/10 backdrop-blur-md shadow-[0_0_15px_rgba(0,229,171,0.2)]">
+ <span className="flex h-2 w-2 rounded-full bg-aqua animate-ping" />
+ <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-aqua">
+ World's Most Advanced Enterprise Platform
  </span>
  </div>
 
  {/* H1 */}
- <h1 className="text-balance text-5xl font-extrabold leading-[1.05] tracking-tighter text-navy sm:text-6xl lg:text-7xl">
- Sovereign
+ <h1 className="text-balance text-5xl font-extrabold leading-[1.05] tracking-tighter text-white sm:text-6xl lg:text-7xl font-display drop-shadow-lg">
+ The AI-Powered
  <br />
- <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
- Coordination
+ <span className="bg-gradient-to-r from-gold via-[#FFE866] to-[#CFAE00] bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]">
+ Intelligence
  </span>
  <br />
  Kernel.
  </h1>
 
  {/* Sub-headline */}
- <p className="max-w-lg text-lg leading-relaxed text-slate-500 border-l-2 border-pink-500/30 pl-5">
- Akul Dravin is a deterministic coordination substrate for institutional-grade execution. Combining HRMS, ERP, and CRM with a sovereign governance kernel for forensic-grade auditability.
+ <p className="max-w-lg text-lg leading-relaxed text-slate-300 border-l-2 border-aqua/40 pl-5 font-body">
+ Akul Dravin is the ultimate coordination substrate for institutional-grade execution. Combining HRMS, ERP, and CRM with a sovereign AI kernel for unparalleled enterprise scale.
  </p>
 
  {/* Capability tags */}
  <div className="flex flex-wrap gap-2">
  {CAPABILITY_TAGS.map(t => (
- <span key={t.label} className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-widest rounded-full border ${t.color}`}>
+ <span key={t.label} className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border shadow-sm backdrop-blur-md ${t.color}`}>
  {t.label}
  </span>
  ))}
  </div>
 
  {/* CTAs */}
- <div className="flex flex-wrap items-center gap-3 pt-2">
+ <div className="flex flex-wrap items-center gap-4 pt-4">
  <Link
  href="/login"
- className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-navy font-bold text-sm shadow-[0_0_30px_rgba(59,130,246,0.35)] hover:scale-[1.03] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] transition-all duration-300 active:scale-95"
+ className="px-8 py-4 rounded-xl bg-gradient-to-r from-aqua to-blue text-[#051124] font-black text-sm shadow-[0_4px_20px_rgba(0,229,171,0.3),inset_0_2px_10px_rgba(255,255,255,0.4)] hover:shadow-[0_8px_30px_rgba(30,104,229,0.5)] hover:-translate-y-0.5 border border-white/20 transition-all duration-300"
  >
  Enter Platform
  </Link>
  <Link
  href="#contact"
- className="px-8 py-4 rounded-full border border-white/15 bg-navy/5 text-navy font-bold text-sm hover:bg-navy/10 hover:border-white/25 transition-all duration-300 backdrop-blur-sm"
+ className="px-8 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-bold text-sm hover:bg-white/10 hover:border-white/20 shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all duration-300 backdrop-blur-xl"
  >
  Book Demo
  </Link>
  </div>
 
  {/* Trust badges */}
- <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-navy/5">
+ <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-white/10">
  {TRUST_BADGES.map(b => (
- <span key={b} className="text-[10px] font-mono text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
- <span className="h-1 w-1 rounded-full bg-emerald-400" />{b}
+ <span key={b} className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+ <span className="h-1.5 w-1.5 rounded-full bg-gold shadow-[0_0_5px_rgba(255,215,0,0.5)]" />{b}
  </span>
  ))}
  </div>

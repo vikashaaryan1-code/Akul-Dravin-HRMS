@@ -320,7 +320,7 @@ const STATUS_STYLE: Record<ReviewStatus, { label: string; color: string; bg: str
  }`}
  >
  <div className={`flex-shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-black ${
- rank === 0 ? 'bg-gold text-white' : rank === 1 ? 'bg-slate-400/20 text-slate-600' : rank === 2 ? 'bg-slate-50mber-700/20 text-amber-600' : 'bg-white/5 text-slate-500'
+ rank === 0 ? 'bg-gold text-white' : rank === 1 ? 'bg-slate-400/20 text-slate-600' : rank === 2 ? 'bg-amber-700/20 text-amber-600' : 'bg-white/5 text-slate-500'
  }`}>
  {rank + 1}
  </div>

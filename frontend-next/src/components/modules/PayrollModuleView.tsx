@@ -53,7 +53,7 @@ import {
  success: 'text-emerald-400 bg-emerald-400/10',
  calculated: 'text-sky-400 bg-sky-400/10',
  failed: 'text-red-400 bg-red-400/10',
- pending: 'text-amber-400 bg-slate-50mber-400/10',
+ pending: 'text-amber-400 bg-amber-400/10',
  };
  const statusClass = statusColors[item.executionStatus?.toLowerCase()] ?? 'text-slate-500 bg-slate-400/10';
 

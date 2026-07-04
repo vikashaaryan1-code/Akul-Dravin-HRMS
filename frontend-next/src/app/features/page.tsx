@@ -62,7 +62,7 @@ const FEATURE_CLUSTERS = [
 
 export default function FeaturesPage() {
  return (
- <div className="min-h-screen bg-void text-navy selection:bg-aqua/30 selection:text-navy">
+ <div className="min-h-screen bg-void text-white selection:bg-aqua/30 selection:text-white">
  <LandingNavbar />
 
  <main className="relative pt-24">
@@ -116,7 +116,7 @@ export default function FeaturesPage() {
  className="space-y-8"
  >
  <div className="space-y-4">
- <span className="text-xs font-black uppercase tracking-[0.4em] text-navy/30">{cluster.eyebrow}</span>
+ <span className="text-xs font-black uppercase tracking-[0.4em] text-white/30">{cluster.eyebrow}</span>
  <h2 className="text-4xl font-bold tracking-tight">{cluster.title}</h2>
  <p className="text-lg text-slate-500 leading-relaxed">
  {cluster.description}
@@ -166,7 +166,7 @@ export default function FeaturesPage() {
  </Link>
  <Link 
  href="/pricing" 
- className="px-8 py-4 rounded-full border border-navy/10 bg-navy/5 text-navy font-bold text-sm tracking-widest hover:bg-navy/10 transition-colors"
+ className="px-8 py-4 rounded-full border border-navy/10 bg-navy/5 text-white font-bold text-sm tracking-widest hover:bg-navy/10 transition-colors"
  >
  VIEW PRICING
  </Link>

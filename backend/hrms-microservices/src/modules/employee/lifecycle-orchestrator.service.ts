@@ -2,12 +2,12 @@ import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { DomainEventService, DomainEvent } from '../../common/events/domain-event.service';
 import { EmployeeLifecycleService } from './employee-lifecycle.service';
 import { PayrollService } from '../payroll/payroll.service';
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Job } from 'bullmq';
 
 @Processor('domain-events')
 @Injectable()
-export class LifecycleOrchestratorService {
+export class LifecycleOrchestratorService extends WorkerHost {
   private readonly logger = new Logger(LifecycleOrchestratorService.name);
 
   constructor(
@@ -15,13 +15,18 @@ export class LifecycleOrchestratorService {
     private readonly lifecycleService: EmployeeLifecycleService,
     @Inject(forwardRef(() => PayrollService))
     private readonly payrollService: PayrollService,
-  ) {}
+  ) {
+    super();
+  }
 
   /**
    * Autonomous Processor for Lifecycle Events.
    * "Fully Automatic A2Z" lifecycle management.
    */
-  @Process()
+  async process(job: Job<DomainEvent>): Promise<void> {
+    await this.handleLifecycleEvent(job);
+  }
+
   async handleLifecycleEvent(job: Job<DomainEvent>) {
     const event = job.data;
     this.logger.log(`Orchestrating event: [${event.type}] for tenant=${event.tenantId}`);

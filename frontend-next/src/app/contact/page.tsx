@@ -17,7 +17,7 @@ import { LandingLeadHub } from '@/components/landing/LandingLeadHub';
 
 export default function ContactPage() {
  return (
- <div className="min-h-screen bg-void text-navy selection:bg-aqua/30">
+ <div className="min-h-screen bg-void text-white selection:bg-aqua/30">
  <LandingNavbar />
 
  <main className="relative pt-24 overflow-hidden">
@@ -59,7 +59,7 @@ export default function ContactPage() {
  <Globe className="w-6 h-6" />
  </div>
  <div>
- <h4 className="font-bold text-navy tracking-tight">Global Headquarters</h4>
+ <h4 className="font-bold text-white tracking-tight">Global Headquarters</h4>
  <p className="text-sm text-slate-500 mt-1 leading-relaxed">
  Sovereign Plaza, Level 88 <br />
  Financial District, Singapore 018981
@@ -72,7 +72,7 @@ export default function ContactPage() {
  <Mail className="w-6 h-6" />
  </div>
  <div>
- <h4 className="font-bold text-navy tracking-tight">Enterprise Inquiries</h4>
+ <h4 className="font-bold text-white tracking-tight">Enterprise Inquiries</h4>
  <p className="text-sm text-slate-500 mt-1">sovereign@akul-dravin.io</p>
  <p className="text-sm text-slate-500">compliance@akul-dravin.io</p>
  </div>
@@ -83,9 +83,9 @@ export default function ContactPage() {
  <ShieldCheck className="w-6 h-6" />
  </div>
  <div>
- <h4 className="font-bold text-navy tracking-tight">Operational Support</h4>
+ <h4 className="font-bold text-white tracking-tight">Operational Support</h4>
  <p className="text-sm text-slate-500 mt-1">24/7 Autonomic Monitoring Active</p>
- <p className="text-xs font-mono text-navy/40 mt-2 uppercase tracking-widest">support_token: forensic-active-88</p>
+ <p className="text-xs font-mono text-white/40 mt-2 uppercase tracking-widest">support_token: forensic-active-88</p>
  </div>
  </div>
  </div>
@@ -119,7 +119,7 @@ export default function ContactPage() {
  <div className="absolute inset-0 bg-aqua/20 blur-3xl rounded-full" />
  <Globe className="w-40 h-40 text-aqua/30 relative animate-[spin_20s_linear_infinite]" />
  </div>
- <p className="text-xs font-black text-navy/30 uppercase tracking-[0.5em] mt-12">Universal Hub Connectivity Active</p>
+ <p className="text-xs font-black text-white/30 uppercase tracking-[0.5em] mt-12">Universal Hub Connectivity Active</p>
  </section>
  </main>
 

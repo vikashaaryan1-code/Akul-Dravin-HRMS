@@ -77,17 +77,28 @@ export const useAuthStore = create<AuthState>()(
  }),
 
  setAuth: ({ user, token }) => {
- set({
- accessToken: token,
- user: {
- id: user.id ?? '',
- email: user.email ?? '',
- fullName: (user as any).fullName ?? (user as any).name ?? 'AKUL DRAVIN User',
- tenantId: user.tenantId ?? null,
- role: user.role ?? 'platform-admin',
- avatarUrl: (user as any).avatarUrl ?? null,
- oauthProvider: (user as any).oauthProvider ?? 'email',
- },
+  // Widen the incoming user object type to include API response variants
+  const u = user as {
+    id?: string;
+    email?: string;
+    fullName?: string;
+    name?: string;
+    tenantId?: string | null;
+    role?: string;
+    avatarUrl?: string | null;
+    oauthProvider?: string;
+  };
+  set({
+    accessToken: token,
+    user: {
+      id: u.id ?? '',
+      email: u.email ?? '',
+      fullName: u.fullName ?? u.name ?? 'AKUL DRAVIN User',
+      tenantId: u.tenantId ?? null,
+      role: u.role ?? 'platform-admin',
+      avatarUrl: u.avatarUrl ?? null,
+      oauthProvider: u.oauthProvider ?? 'email',
+    },
  activeRole: toPlatformRole(user.role),
  });
  },

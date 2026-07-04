@@ -212,7 +212,7 @@ export function WhiteLabelAdminView() {
  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Custom Domain Configuration</p>
  <div className="space-y-4 max-w-lg">
  <div className="flex items-center gap-2">
- <div className={`h-2 w-2 rounded-full ${domainVerified ? 'bg-emerald-400' : 'bg-slate-50mber-400'}`} />
+ <div className={`h-2 w-2 rounded-full ${domainVerified ? 'bg-emerald-400' : 'bg-amber-400'}`} />
  <span className="text-xs text-slate-500">{domainVerified ? 'Domain verified and active' : 'No verified domain'}</span>
  </div>
  <div>

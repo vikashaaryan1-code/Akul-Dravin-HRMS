@@ -67,7 +67,7 @@ const DEMO_CONFIDENCE: ConfRecord[] = [
 
 /* ── Helpers ─────────────────────────────────────────────────────────────────── */ const NODE_STYLE: Record<NodeType, { color: string; bg: string; border: string; icon: any }> = {
  ACTIVE_SIGNAL: { color: 'text-blue-400', bg: 'bg-blue-500/12', border: 'border-blue-500/30', icon: Activity },
- DEFERRED_MATCH: { color: 'text-amber-400', bg: 'bg-slate-50mber-500/12', border: 'border-amber-500/30', icon: Clock },
+ DEFERRED_MATCH: { color: 'text-amber-400', bg: 'bg-amber-500/12', border: 'border-amber-500/30', icon: Clock },
  PLAN_STEP: { color: 'text-indigo-400', bg: 'bg-indigo-500/12', border: 'border-indigo-500/30', icon: GitBranch },
  RESOURCE: { color: 'text-slate-500', bg: 'bg-slate-50/60', border: 'border-slate-200/40', icon: Target },
 };
@@ -98,11 +98,11 @@ function NodeChip({ node }: { node: WFNode }) {
  {ownership.map(res => {
  const hot = res.contentionScore > 1.5;
  return (
- <div key={res.resource} className={`rounded-xl border p-3 ${hot ? 'border-amber-500/30 bg-slate-50mber-500/5' : 'border-slate-200/30 bg-slate-50/40'}`}>
+ <div key={res.resource} className={`rounded-xl border p-3 ${hot ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-200/30 bg-slate-50/40'}`}>
  <div className="flex items-center gap-2 mb-2">
  <Target className={`h-3.5 w-3.5 ${hot ? 'text-amber-400' : 'text-slate-500'}`} />
  <span className="font-mono text-xs font-bold text-slate-600">{res.resource}</span>
- {hot && <span className="text-[8px] text-amber-400 bg-slate-50mber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded font-bold">HOT</span>}
+ {hot && <span className="text-[8px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded font-bold">HOT</span>}
  <span className="ml-auto text-[9px] text-slate-600">score: {res.contentionScore.toFixed(2)}</span>
  </div>
  <div className="flex items-start gap-4 text-[10px]">
@@ -145,7 +145,7 @@ function WaitChainPanel({ chains, nodeMap }: { chains: ChainEntry[]; nodeMap: Ma
  Long Wait Chains ({chains.length})
  </p>
  {chains.map((chain, idx) => (
- <div key={idx} className="rounded-xl border border-amber-500/25 bg-slate-50mber-500/5">
+ <div key={idx} className="rounded-xl border border-amber-500/25 bg-amber-500/5">
  <div className="flex items-center gap-2 p-2.5 cursor-pointer" onClick={() => setExpanded(expanded === idx ? null : idx)}>
  <Zap className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />
  <span className="text-xs font-semibold text-amber-300">{chain.hopCount} hops</span>
@@ -277,7 +277,7 @@ function ConfidencePanel({ records }: { records: ConfRecord[] }) {
  </span>
  )}
  {stats.hotspots > 0 && (
- <span className="px-2.5 py-1 rounded-xl bg-slate-50mber-500/12 border border-amber-500/30 text-amber-400 font-semibold">
+ <span className="px-2.5 py-1 rounded-xl bg-amber-500/12 border border-amber-500/30 text-amber-400 font-semibold">
  {stats.hotspots} hot resource{stats.hotspots > 1 ? 's' : ''}
  </span>
  )}

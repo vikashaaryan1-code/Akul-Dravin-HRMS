@@ -18,13 +18,13 @@ export function PricingSection({ plans }: Props) {
  <p className="section-label text-gold mb-3">Pricing</p>
  <h2
  id="pricing-heading"
- className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-navy"
+ className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-white"
  >
  Plans Built for
  <br />
- <span className="text-gradient-gold">Every Growth Stage</span>
+ <span className="bg-gradient-to-r from-gold via-[#FFE866] to-[#CFAE00] bg-clip-text text-transparent drop-shadow-md">Every Growth Stage</span>
  </h2>
- <p className="mt-5 text-lg text-slate-500 max-w-xl mx-auto">
+ <p className="mt-5 text-lg text-slate-400 max-w-xl mx-auto">
  Start lean, scale sovereign. No lock-in. Cancel anytime.
  </p>
 
@@ -34,7 +34,7 @@ export function PricingSection({ plans }: Props) {
  onClick={() => setYearly(false)}
  aria-pressed={!yearly}
  className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-wide transition-all duration-200 ${
- !yearly ? 'bg-white text-void shadow-sm' : 'text-slate-500 hover:text-navy'
+ !yearly ? 'bg-white/5 text-void shadow-sm' : 'text-slate-400 hover:text-white'
  }`}
  >
  Monthly
@@ -43,7 +43,7 @@ export function PricingSection({ plans }: Props) {
  onClick={() => setYearly(true)}
  aria-pressed={yearly}
  className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-wide transition-all duration-200 ${
- yearly ? 'bg-white text-void shadow-sm' : 'text-slate-500 hover:text-navy'
+ yearly ? 'bg-white/5 text-void shadow-sm' : 'text-slate-400 hover:text-white'
  }`}
  >
  Yearly
@@ -65,7 +65,7 @@ export function PricingSection({ plans }: Props) {
  className={`relative rounded-2xl p-8 flex flex-col gap-6 border transition-all duration-300 ${
  plan.featured
  ? 'glass-holographic scale-[1.02]'
- : 'glass-3d-panel hover:bg-white/8'
+ : 'glass-3d-panel hover:bg-white/5/8'
  }`}
  >
  {plan.featured && (
@@ -78,20 +78,20 @@ export function PricingSection({ plans }: Props) {
  )}
 
  <div>
- <p className="section-label text-slate-500">{plan.name}</p>
- <p className="text-4xl font-black tracking-tighter text-navy mt-2">
+ <p className="section-label text-slate-400">{plan.name}</p>
+ <p className="text-4xl font-black tracking-tighter text-white mt-2">
  {yearly && plan.price !== 'Custom'
  ? plan.price.replace(/₹([\d,]+)/, (_, n) => `₹${Math.floor(parseInt(n.replace(/,/g, '')) * 0.8).toLocaleString()}`)
  : plan.price}
  </p>
- <p className="text-xs text-slate-500 mt-1">{plan.commitment}</p>
+ <p className="text-xs text-slate-400 mt-1">{plan.commitment}</p>
  </div>
 
- <p className="text-sm text-slate-500 leading-relaxed">{plan.description}</p>
+ <p className="text-sm text-slate-400 leading-relaxed">{plan.description}</p>
 
  <ul className="space-y-3 flex-1" aria-label={`${plan.name} features`}>
  {plan.features.map((f) => (
- <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">
+ <li key={f} className="flex items-start gap-2.5 text-sm text-slate-300">
  <CheckCircle2
  className={`h-4 w-4 shrink-0 mt-0.5 ${plan.featured ? 'text-gold' : 'text-jade'}`}
  aria-hidden="true"
@@ -107,7 +107,7 @@ export function PricingSection({ plans }: Props) {
  className={`inline-flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-black uppercase tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
  plan.featured
  ? 'bg-gradient-to-r from-gold to-ember text-void shadow-gold-sm hover:shadow-gold-md'
- : 'border border-navy/10 text-navy hover:bg-white/8'
+ : 'border border-white/10 text-white hover:bg-white/5/8'
  }`}
  >
  {plan.cta}
@@ -130,8 +130,8 @@ export function PricingSection({ plans }: Props) {
  <Zap className="h-6 w-6 text-gold" aria-hidden="true" />
  </div>
  <div>
- <p className="font-black text-navy">Sovereign Suite — Unlimited Scale</p>
- <p className="text-sm text-slate-500 mt-0.5">
+ <p className="font-black text-white">Sovereign Suite — Unlimited Scale</p>
+ <p className="text-sm text-slate-400 mt-0.5">
  Multi-entity, white-label, air-gap deployment. Custom SLA with dedicated success pod.
  </p>
  </div>

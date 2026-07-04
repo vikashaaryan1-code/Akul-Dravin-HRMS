@@ -107,11 +107,11 @@ export function BurnRateView() {
  const over = b.budgetConsumedPct >= 1;
  const warn = b.budgetConsumedPct >= 0.8;
  return (
- <div key={b.sloId} className={`p-4 rounded-2xl border ${over ? 'bg-red-500/10 border-red-500/30' : warn ? 'bg-slate-50mber-500/10 border-amber-500/30' : 'bg-slate-50/60 border-slate-200/50'}`}>
+ <div key={b.sloId} className={`p-4 rounded-2xl border ${over ? 'bg-red-500/10 border-red-500/30' : warn ? 'bg-amber-500/10 border-amber-500/30' : 'bg-slate-50/60 border-slate-200/50'}`}>
  <p className="text-xs font-semibold text-slate-600 mb-3">{b.name}</p>
  {/* Radial-style gauge as stacked bars */}
  <div className="h-3 rounded-full bg-slate-700 mb-2 overflow-hidden">
- <div className={`h-3 rounded-full transition-all ${over ? 'bg-red-500' : warn ? 'bg-slate-50mber-500' : 'bg-indigo-500'}`}
+ <div className={`h-3 rounded-full transition-all ${over ? 'bg-red-500' : warn ? 'bg-amber-500' : 'bg-indigo-500'}`}
  style={{ width: `${pct}%` }} />
  </div>
  <div className="flex justify-between text-[10px]">
@@ -198,7 +198,7 @@ export function BurnRateView() {
  const hrs = (r.forecastExhaustionMin! / 60);
  const urgent = hrs < 4;
  return (
- <div key={i} className={`p-4 rounded-2xl border ${urgent ? 'bg-red-500/10 border-red-500/30' : 'bg-slate-50mber-500/10 border-amber-500/30'}`}>
+ <div key={i} className={`p-4 rounded-2xl border ${urgent ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-500/10 border-amber-500/30'}`}>
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  {urgent ? <AlertTriangle className="h-4 w-4 text-red-400" /> : <Clock className="h-4 w-4 text-amber-400" />}

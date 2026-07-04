@@ -49,7 +49,7 @@ const EDGES: GraphEdge[] = [
 /* ── Styling ─────────────────────────────────────────────────────────────────── */ const NODE_STYLE: Record<GraphNodeType, { icon: any; color: string; bg: string; border: string }> = {
  INCIDENT: { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/15', border: 'border-red-500/40' },
  MITIGATION: { icon: Shield, color: 'text-indigo-400', bg: 'bg-indigo-500/15', border: 'border-indigo-500/40' },
- PROJECTION: { icon: Database, color: 'text-amber-400', bg: 'bg-slate-50mber-500/15', border: 'border-amber-500/40' },
+ PROJECTION: { icon: Database, color: 'text-amber-400', bg: 'bg-amber-500/15', border: 'border-amber-500/40' },
  QUEUE_JOB: { icon: Inbox, color: 'text-orange-400', bg: 'bg-orange-500/15', border: 'border-orange-500/40' },
  DOMAIN_EVENT: { icon: GitBranch, color: 'text-slate-500', bg: 'bg-slate-700/40', border: 'border-slate-600/40' },
  REVISION: { icon: Layers, color: 'text-cyan-400', bg: 'bg-cyan-500/15', border: 'border-cyan-500/40' },
@@ -66,7 +66,7 @@ const EDGE_STYLE: Record<GraphEdgeRelation, { label: string; color: string }> = 
 };
 
 const SEV_DOT: Record<Severity, string> = {
- CRITICAL: 'bg-red-500', HIGH: 'bg-orange-500', MEDIUM: 'bg-slate-50mber-400',
+ CRITICAL: 'bg-red-500', HIGH: 'bg-orange-500', MEDIUM: 'bg-amber-400',
  LOW: 'bg-blue-500', INFO: 'bg-slate-500',
 };
 

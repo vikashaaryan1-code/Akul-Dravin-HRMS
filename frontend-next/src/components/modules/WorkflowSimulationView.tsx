@@ -80,14 +80,14 @@ for (const result of Object.values(SIM_RESULTS)) {
 
 /* ── Styles ──────────────────────────────────────────────────────────────────── */ const RISK_STYLE: Record<SimRisk, { color: string; bg: string; border: string }> = {
  LOW: { color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/25' },
- MEDIUM: { color: 'text-amber-400', bg: 'bg-slate-50mber-500/10', border: 'border-amber-500/25' },
+ MEDIUM: { color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/25' },
  HIGH: { color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/25' },
  CRITICAL: { color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/25' },
 };
 
 const REC_STYLE: Record<Recommendation, { label: string; color: string; bg: string; border: string; icon: any }> = {
  PROCEED: { label: 'Proceed', color: 'text-emerald-300', bg: 'bg-emerald-500/15', border: 'border-emerald-500/30', icon: CheckCircle },
- PROCEED_WITH_CAUTION: { label: 'Proceed with Caution', color: 'text-amber-300', bg: 'bg-slate-50mber-500/12', border: 'border-amber-500/30', icon: AlertTriangle },
+ PROCEED_WITH_CAUTION: { label: 'Proceed with Caution', color: 'text-amber-300', bg: 'bg-amber-500/12', border: 'border-amber-500/30', icon: AlertTriangle },
  REVIEW_BEFORE_PROCEEDING: { label: 'Review Before Proceeding', color: 'text-orange-300', bg: 'bg-orange-500/10', border: 'border-orange-500/30', icon: Shield },
  ABORT: { label: 'Abort — Unsafe', color: 'text-red-300', bg: 'bg-red-500/12', border: 'border-red-500/30', icon: XCircle },
 };
@@ -96,8 +96,8 @@ function pct(v: number) { return `${Math.round(v * 100)}%`; }
 
 function ProbBar({ value, danger = false }: { value: number; danger?: boolean }) {
  const color = danger
- ? (value > 0.6 ? 'bg-red-500' : value > 0.3 ? 'bg-slate-50mber-500' : 'bg-slate-600')
- : (value > 0.75 ? 'bg-emerald-500' : value > 0.5 ? 'bg-slate-50mber-500' : 'bg-red-500');
+ ? (value > 0.6 ? 'bg-red-500' : value > 0.3 ? 'bg-amber-500' : 'bg-slate-600')
+ : (value > 0.75 ? 'bg-emerald-500' : value > 0.5 ? 'bg-amber-500' : 'bg-red-500');
  return (
  <div className="flex items-center gap-1.5">
  <div className="h-1.5 flex-1 rounded-full bg-slate-700/60 overflow-hidden">

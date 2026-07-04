@@ -9,7 +9,7 @@ interface DynamicFormProps {
 }
 
 const INPUT_STYLES =
- 'w-full rounded-2xl border border-navy/10 bg-navy/5 px-4 py-3 text-sm text-navy outline-none transition focus:border-amber/60 focus:bg-navy/10';
+ 'w-full rounded-2xl border border-white/10 bg-navy-light/40 px-4 py-3 text-sm text-white outline-none transition focus:border-amber/60 focus:bg-navy-light/60';
 
 export function DynamicForm({ steps, values, onChange }: DynamicFormProps) {
  return (
@@ -49,8 +49,8 @@ export function DynamicForm({ steps, values, onChange }: DynamicFormProps) {
  }}
  className={`rounded-full border px-4 py-2 text-xs font-medium transition ${
  selected
- ? 'border-amber bg-slate-50mber/20 text-navy'
- : 'border-navy/10 bg-navy/5 text-slate-500 hover:border-navy/20'
+ ? 'border-amber bg-amber/20 text-white'
+ : 'border-white/10 bg-navy-light/40 text-slate-500 hover:border-white/20'
  }`}
  >
  {opt}

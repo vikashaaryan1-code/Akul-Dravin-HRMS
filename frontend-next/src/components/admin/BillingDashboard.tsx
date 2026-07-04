@@ -80,7 +80,7 @@ const BillingDashboard = () => {
  <td className="py-4 font-bold">{inv.amount}</td>
  <td className="py-4">
  <span className={`flex items-center gap-2 text-sm ${inv.status === 'Paid' ? 'text-emerald-400' : 'text-amber-400'}`}>
- <div className={`w-1.5 h-1.5 rounded-full ${inv.status === 'Paid' ? 'bg-emerald-400' : 'bg-slate-50mber-400'}`}></div>
+ <div className={`w-1.5 h-1.5 rounded-full ${inv.status === 'Paid' ? 'bg-emerald-400' : 'bg-amber-400'}`}></div>
  {inv.status}
  </span>
  </td>

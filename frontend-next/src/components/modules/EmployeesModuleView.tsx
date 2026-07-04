@@ -260,7 +260,7 @@ export function EmployeesModuleView() {
  <span className="inline-flex rounded-full border border-slate-300/80 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600 ">
  Active Role: {toRoleLabel(safeRole)}
  </span>
- <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${isLive ? 'bg-emerald-100 text-emerald-700 ' : 'bg-slate-50mber-100 text-amber-700 '}`}>
+ <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${isLive ? 'bg-emerald-100 text-emerald-700 ' : 'bg-amber-100 text-amber-700 '}`}>
  {isLive ? 'Realtime roster' : 'Fallback roster'}
  </span>
  </div>
@@ -375,7 +375,7 @@ export function EmployeesModuleView() {
  <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-ember to-amber text-sm font-bold text-navy">
  {spotlight.avatar}
  </div>
- <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${spotlight.status === 'Active' ? 'bg-emerald-500/15 text-emerald-200' : spotlight.status === 'On Leave' ? 'bg-slate-50mber-500/15 text-amber-200' : 'bg-white/10 text-slate-700'}`}>
+ <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${spotlight.status === 'Active' ? 'bg-emerald-500/15 text-emerald-200' : spotlight.status === 'On Leave' ? 'bg-amber-500/15 text-amber-200' : 'bg-white/10 text-slate-700'}`}>
  {spotlight.status}
  </span>
  </div>
@@ -549,7 +549,7 @@ export function EmployeesModuleView() {
  isLive ? 'Realtime employee data is connected to the backend mesh.' : 'Fallback employee data is protecting the experience while live APIs reconnect.',
  ].map((note) => (
  <div key={note} className="flex gap-3 rounded-2xl border border-slate-200/80 bg-white/80 p-4 ">
- <span className="mt-1.5 h-2 w-2 rounded-full bg-slate-50mber-500" />
+ <span className="mt-1.5 h-2 w-2 rounded-full bg-amber-500" />
  <p className="text-sm leading-6 text-slate-600 ">{note}</p>
  </div>
  ))}

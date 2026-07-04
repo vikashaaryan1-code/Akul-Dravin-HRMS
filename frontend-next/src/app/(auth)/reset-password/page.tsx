@@ -22,7 +22,7 @@ function strengthScore(password: string): number {
 
 const STRENGTH_CONFIG = [
  { label: 'Weak', color: 'bg-red-500', text: 'text-red-400' },
- { label: 'Fair', color: 'bg-slate-50mber-500', text: 'text-amber-400' },
+ { label: 'Fair', color: 'bg-amber-500', text: 'text-amber-400' },
  { label: 'Good', color: 'bg-yellow-400', text: 'text-yellow-400' },
  { label: 'Strong', color: 'bg-emerald-500', text: 'text-emerald-400' },
  { label: 'Perfect', color: 'bg-blue-500', text: 'text-blue-400' },

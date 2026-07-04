@@ -9,4 +9,4 @@ COPY . .
 
 ENV PYTHONPATH=/app
 
-CMD ["uvicorn", "services.orchestrator_service.main:app", "--host", "0.0.0.0", "--port", "9000"]
+CMD ["python", "start.py"]

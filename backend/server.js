@@ -3,11 +3,90 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import pg from "pg";
+
+const { Pool } = pg;
+const dbPool = (() => {
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl) {
+    console.info("[DATABASE] DATABASE_URL not set. Running in-memory.");
+    return null;
+  }
+  try {
+    const pool = new Pool({
+      connectionString: dbUrl,
+      max: 5,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    });
+    console.info("[DATABASE] PostgreSQL pool initialized successfully.");
+    return pool;
+  } catch (error) {
+    console.error("[DATABASE] Failed to initialize PostgreSQL pool:", error);
+    return null;
+  }
+})();
+
+// ─── In-memory rate limiter ───────────────────────────────────────────────────
+// Replace with Redis-backed store for multi-instance production deployments.
+const _rlStore = new Map(); // key → { count, resetAt }
+setInterval(() => { const now = Date.now(); for (const [k, v] of _rlStore) if (v.resetAt <= now) _rlStore.delete(k); }, 120_000);
+
+function checkRateLimit(req, res, { max, windowMs, prefix }) {
+  const ip = (String(req.headers['x-forwarded-for'] ?? '')).split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+  const key = `${prefix}:${ip}`;
+  const now = Date.now();
+  let entry = _rlStore.get(key);
+  if (!entry || entry.resetAt <= now) { entry = { count: 1, resetAt: now + windowMs }; _rlStore.set(key, entry); }
+  else { entry.count += 1; }
+  const remaining = Math.max(0, max - entry.count);
+  const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+  res.setHeader('X-RateLimit-Limit', max);
+  res.setHeader('X-RateLimit-Remaining', remaining);
+  res.setHeader('X-RateLimit-Reset', retryAfter);
+  if (entry.count > max) {
+    res.setHeader('Retry-After', retryAfter);
+    res.writeHead(429, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: false, error: 'Rate limit exceeded', retryAfter, code: 'RATE_LIMIT_EXCEEDED' }));
+    return false;
+  }
+  return true;
+}
 
 const PORT = Number(process.env.HRMS_API_PORT ?? 4100);
 const HOST = process.env.HRMS_API_HOST ?? "127.0.0.1";
-const TOKEN_SECRET = process.env.HRMS_TOKEN_SECRET ?? "akul-dravin-hrms-dev-secret";
-const TOKEN_TTL_SECONDS = 60 * 60 * 12;
+
+// ── Security: Token Secret ─────────────────────────────────────────────────
+// CRITICAL: HRMS_TOKEN_SECRET MUST be set in production.
+// Use: openssl rand -hex 64  to generate a secure secret.
+// Never commit a real secret to source control.
+const TOKEN_SECRET = (() => {
+  const secret = process.env.HRMS_TOKEN_SECRET;
+  const isDev = process.env.NODE_ENV !== 'production';
+  if (!secret) {
+    if (isDev) {
+      console.warn(
+        '[SECURITY WARNING] HRMS_TOKEN_SECRET not set. ' +
+        'Using insecure development fallback. ' +
+        'Set HRMS_TOKEN_SECRET in production or this server will refuse to start.'
+      );
+      return 'akul-dravin-hrms-DEV-ONLY-DO-NOT-USE-IN-PRODUCTION-' + Date.now();
+    }
+    throw new Error(
+      '[FATAL] HRMS_TOKEN_SECRET environment variable is not set. ' +
+      'The server cannot start without a secure token secret in production. ' +
+      'Generate one with: openssl rand -hex 64'
+    );
+  }
+  if (secret.length < 32) {
+    throw new Error(
+      '[FATAL] HRMS_TOKEN_SECRET is too short (minimum 32 characters required for security).'
+    );
+  }
+  return secret;
+})();
+
+const TOKEN_TTL_SECONDS = Number(process.env.HRMS_TOKEN_TTL_SECONDS ?? 60 * 60 * 4); // 4h default
 const CONTACT_WEBHOOK_URL = String(process.env.HRMS_CONTACT_WEBHOOK_URL ?? "").trim();
 const CONTACT_WEBHOOK_SECRET = String(process.env.HRMS_CONTACT_WEBHOOK_SECRET ?? "");
 const CONTACT_WEBHOOK_TIMEOUT_MS = Number(process.env.HRMS_CONTACT_WEBHOOK_TIMEOUT_MS ?? 5000);
@@ -589,6 +668,29 @@ function parseJsonBody(req) {
 // ─── Contact leads persistence ────────────────────────────────────────────────
 
 async function loadContactLeads() {
+  if (dbPool) {
+    try {
+      const client = await dbPool.connect();
+      const res = await client.query('SELECT * FROM contact_leads ORDER BY created_at DESC');
+      client.release();
+      state.contactLeads = res.rows.map(row => ({
+        id: row.id,
+        fullName: row.name,
+        workEmail: row.email,
+        companySize: row.company_size,
+        requirements: row.message,
+        source: row.source,
+        status: row.status,
+        createdAt: row.created_at ? new Date(row.created_at).toISOString() : nowIso(),
+        updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : nowIso()
+      }));
+      console.info(`[DATABASE] Loaded ${state.contactLeads.length} contact leads from PostgreSQL.`);
+      return;
+    } catch (err) {
+      console.error('[DATABASE] Failed to load contact leads from PostgreSQL, falling back to JSON:', err.message);
+    }
+  }
+
   try {
     const raw = await readFile(CONTACT_LEADS_PATH, "utf8");
     const normalizedRaw = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
@@ -604,10 +706,38 @@ async function loadContactLeads() {
   }
 }
 
-async function saveContactLeads() {
+async function saveContactLeads(lead) {
+  if (dbPool && lead) {
+    try {
+      const client = await dbPool.connect();
+      await client.query(
+        `INSERT INTO contact_leads 
+         (id, name, email, company_size, message, source, status, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          lead.id.startsWith('lead-') ? randomUUID() : lead.id, // Ensure UUID format
+          lead.fullName,
+          lead.workEmail,
+          lead.companySize,
+          lead.requirements || '',
+          lead.source || 'website',
+          lead.status || 'new',
+          lead.createdAt,
+          lead.updatedAt
+        ]
+      );
+      client.release();
+      console.info(`[DATABASE] Saved lead ${lead.id} to PostgreSQL.`);
+      return;
+    } catch (err) {
+      console.error('[DATABASE] Failed to save lead to PostgreSQL, falling back to JSON:', err.message);
+    }
+  }
+
   await mkdir(dirname(CONTACT_LEADS_PATH), { recursive: true });
   await writeFile(CONTACT_LEADS_PATH, JSON.stringify(state.contactLeads, null, 2), "utf8");
 }
+
 
 // ─── Webhook ──────────────────────────────────────────────────────────────────
 
@@ -902,7 +1032,22 @@ async function handleRequest(req, res) {
     pathname = '/api/' + pathname.slice(8);
   }
 
-  // ── Public: health ──────────────────────────────────────────────────────────
+  // ── Rate limiting ────────────────────────────────────────────────────────────
+  const RL_MAX = Number(process.env.RATE_LIMIT_MAX_REQUESTS ?? 100);
+  const isAuthPath = pathname.startsWith('/api/auth/login') || pathname.startsWith('/api/auth/register');
+  const isContactPath = pathname === '/api/contacts' || pathname === '/api/contact-leads';
+  const isAiPath = pathname.startsWith('/api/ai/');
+
+  if (isAuthPath) {
+    if (!checkRateLimit(req, res, { max: Number(process.env.RATE_LIMIT_LOGIN_MAX ?? 10), windowMs: 15 * 60_000, prefix: 'auth' })) return;
+  } else if (isContactPath) {
+    if (!checkRateLimit(req, res, { max: 5, windowMs: 60 * 60_000, prefix: 'contact' })) return;
+  } else if (isAiPath) {
+    if (!checkRateLimit(req, res, { max: 30, windowMs: 60_000, prefix: 'ai' })) return;
+  } else {
+    if (!checkRateLimit(req, res, { max: RL_MAX, windowMs: 60_000, prefix: 'api' })) return;
+  }
+
   if (req.method === "GET" && pathname === "/api/health") {
     ok(res, {
       service: "akul-dravin-hrms-api",
@@ -1019,7 +1164,7 @@ async function handleRequest(req, res) {
     state.contactLeads.unshift(lead);
 
     try {
-      await saveContactLeads();
+      await saveContactLeads(lead);
     } catch (error) {
       state.contactLeads.shift();
       fail(res, 500, `Unable to store lead: ${error.message}`);

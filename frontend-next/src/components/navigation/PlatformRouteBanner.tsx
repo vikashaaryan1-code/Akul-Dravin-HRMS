@@ -175,31 +175,31 @@ export function PlatformRouteBanner() {
  const highlights = banner.highlights ?? defaultBanner.highlights ?? [];
 
  return (
- <section className="overflow-hidden rounded-[30px] border border-white/70 bg-[radial-gradient(circle_at_top_left,_rgba(15,139,141,0.12),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.14),_transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.95),rgba(255,255,255,0.84))] p-4 shadow-panel backdrop-blur [radial-gradient(circle_at_top_left,_rgba(15,139,141,0.22),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(232,90,42,0.18),_transparent_32%),linear-gradient(135deg,rgba(15,23,42,0.94),rgba(15,23,42,0.84))] sm:p-5">
+ <section className="overflow-hidden rounded-[30px] border border-white/10 bg-gradient-to-br from-depth-1 to-navy-dark p-4 shadow-lg backdrop-blur shadow-glass sm:p-5">
  <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
  <div>
  <div className="flex flex-wrap items-center gap-2">
  <p className="inline-flex rounded-full bg-aqua/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aqua">
  {banner.badge}
  </p>
- <p className="inline-flex rounded-full border border-slate-300/80 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600 ">
+ <p className="inline-flex rounded-full border border-white/10 bg-navy-light/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300 ">
  Active Role: {toRoleLabel(activeRole)}
  </p>
  </div>
- <h2 className="mt-3 text-2xl font-semibold text-slate-900 ">{banner.title}</h2>
- <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 ">{banner.description}</p>
+ <h2 className="mt-3 text-2xl font-semibold text-white ">{banner.title}</h2>
+ <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 ">{banner.description}</p>
  <div className="mt-4 flex flex-wrap gap-2">
  {highlights.map((highlight) => (
  <span
  key={highlight}
- className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-semibold text-slate-600 "
+ className="rounded-full border border-white/10 bg-navy-light/70 px-3 py-1 text-[11px] font-semibold text-slate-300 "
  >
  {highlight}
  </span>
  ))}
  </div>
  </div>
- <div className="relative h-40 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/90 sm:h-44">
+ <div className="relative h-40 overflow-hidden rounded-2xl border border-white/10 bg-navy-light/90 sm:h-44">
  <Image
  src={banner.imageSrc}
  alt={`${banner.title} visual`}
@@ -208,8 +208,8 @@ export function PlatformRouteBanner() {
  className="object-cover"
  sizes="(max-width: 768px) 100vw, 35vw"
  />
- <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-slate-50/60 p-3 text-white backdrop-blur">
- <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">Route Focus</p>
+ <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-navy-light/60 p-3 text-white backdrop-blur">
+ <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-300">Route Focus</p>
  <p className="mt-1 text-sm font-semibold">{safePath || '/dashboard'}</p>
  </div>
  </div>

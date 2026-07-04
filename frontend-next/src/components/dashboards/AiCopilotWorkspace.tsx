@@ -92,7 +92,7 @@ function renderInline(text: string): React.ReactNode {
  .replace(/`(.+?)`/g, '<code>$1</code>')
  .split(/(<b>.*?<\/b>|<code>.*?<\/code>)/)
  .map((part, j) => {
- if (part.startsWith('<b>')) return <strong key={j} className="font-black text-navy">{part.slice(3, -4)}</strong>;
+ if (part.startsWith('<b>')) return <strong key={j} className="font-black text-white">{part.slice(3, -4)}</strong>;
  if (part.startsWith('<code>')) return <code key={j} className="px-1 py-0.5 rounded bg-slate-100 text-jade text-[10px] font-mono">{part.slice(6, -7)}</code>;
  return part;
  })
@@ -122,7 +122,7 @@ function renderInline(text: string): React.ReactNode {
  <Zap className="h-5 w-5 text-gold" aria-hidden="true" />
  </div>
  <div>
- <p id="action-modal-title" className="text-sm font-black text-navy">Confirm Action</p>
+ <p id="action-modal-title" className="text-sm font-black text-white">Confirm Action</p>
  <p className="text-xs text-slate-500">{action.label}</p>
  </div>
  </div>
@@ -346,7 +346,7 @@ export function AiCopilotWorkspace() {
  </div>
  <div>
  <p className={`section-label text-${ACCENT} mb-0.5`}>AI Copilot Workspace</p>
- <h2 className="text-xl font-black tracking-tighter text-navy">{agent.name}</h2>
+ <h2 className="text-xl font-black tracking-tighter text-white">{agent.name}</h2>
  </div>
  </div>
 
@@ -389,7 +389,7 @@ export function AiCopilotWorkspace() {
  <Icon className={`h-4 w-4 text-${meta.accentColor}`} aria-hidden="true" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black text-navy">{meta.name}</p>
+ <p className="text-xs font-black text-white">{meta.name}</p>
  <p className="text-[10px] text-slate-600 leading-snug mt-0.5 truncate">{meta.description}</p>
  </div>
  {isActive && <Check className="h-3.5 w-3.5 text-jade shrink-0" aria-hidden="true" />}
@@ -426,7 +426,7 @@ export function AiCopilotWorkspace() {
  <AgentIcon className={`h-8 w-8 text-${ACCENT}`} aria-hidden="true" />
  </div>
  <div className="text-center">
- <p className="text-sm font-black text-navy">{agent.name} ready</p>
+ <p className="text-sm font-black text-white">{agent.name} ready</p>
  <p className="text-xs text-slate-500 mt-1 max-w-xs">{agent.description}</p>
  </div>
  <div className="grid gap-2 w-full max-w-md">
@@ -468,7 +468,7 @@ export function AiCopilotWorkspace() {
  onKeyDown={handleKeyDown}
  placeholder={`Ask ${agent.name}… (Enter to send, Shift+Enter for newline)`}
  rows={2}
- className="flex-1 resize-none bg-transparent text-sm text-navy placeholder-slate-600 focus:outline-none leading-relaxed scrollbar-none"
+ className="flex-1 resize-none bg-transparent text-sm text-white placeholder-slate-600 focus:outline-none leading-relaxed scrollbar-none"
  aria-label="Message input"
  disabled={isStreaming}
  />

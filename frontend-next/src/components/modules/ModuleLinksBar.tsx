@@ -126,7 +126,7 @@ export function ModuleLinksBar({ links, isLive, loading = false, error = null }:
  className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
  isLive
  ? 'bg-emerald-100 text-emerald-700 '
- : 'bg-slate-50mber-100 text-amber-700 '
+ : 'bg-amber-100 text-amber-700 '
  }`}
  >
  {loading ? 'Refreshing...' : isLive ? 'Realtime Route Mesh' : 'Fallback Route Mesh'}
@@ -152,7 +152,7 @@ export function ModuleLinksBar({ links, isLive, loading = false, error = null }:
  ))}
  </div>
  {displayError ? (
- <div className="rounded-2xl border border-amber-200 bg-slate-50mber-50/80 px-4 py-3 text-xs text-amber-700 ">
+ <div className="rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-xs text-amber-700 ">
  {displayError}
  </div>
  ) : null}

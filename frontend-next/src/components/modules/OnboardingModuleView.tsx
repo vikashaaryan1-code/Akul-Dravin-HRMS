@@ -10,7 +10,7 @@ import { useEmployees } from '@/hooks/useDomainData';
 const ONBOARDING_STEPS = [
  { id: 'docs', label: 'Document Verification', icon: <ClipboardList className="h-4 w-4" />, color: 'text-blue-500 bg-blue-50 ' },
  { id: 'accounts', label: 'Account Setup', icon: <Shield className="h-4 w-4" />, color: 'text-violet-500 bg-violet-50 ' },
- { id: 'training', label: 'Onboarding Training', icon: <BookOpen className="h-4 w-4" />, color: 'text-amber-500 bg-slate-50mber-50 ' },
+ { id: 'training', label: 'Onboarding Training', icon: <BookOpen className="h-4 w-4" />, color: 'text-amber-500 bg-amber-50 ' },
  { id: 'team', label: 'Team Introduction', icon: <Users className="h-4 w-4" />, color: 'text-emerald-500 bg-emerald-50 ' },
  { id: 'complete', label: 'Onboarding Complete', icon: <CheckSquare className="h-4 w-4" />, color: 'text-teal-500 bg-teal-50 ' },
 ];

@@ -53,20 +53,20 @@ function MetricCard({
  className="glass-3d-panel p-8 group flex flex-col gap-4"
  >
  <div className="flex items-start justify-between">
- <div className="h-10 w-10 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center">
- <TrendingUp className="h-5 w-5 text-gold" aria-hidden="true" />
+ <div className="h-12 w-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shadow-[0_0_15px_rgba(255,215,0,0.15)]">
+ <TrendingUp className="h-6 w-6 text-gold drop-shadow-md" aria-hidden="true" />
  </div>
- <span className="section-label text-slate-600">Live</span>
+ <span className="section-label text-aqua font-bold tracking-widest uppercase">Live</span>
  </div>
  <div>
  <p
- className="text-4xl lg:text-5xl font-black tracking-tighter text-gradient-gold"
+ className="text-4xl lg:text-5xl font-black tracking-tighter bg-gradient-to-r from-gold via-[#FFE866] to-[#CFAE00] bg-clip-text text-transparent drop-shadow-[0_2px_5px_rgba(255,215,0,0.3)]"
  aria-label={`${metric.value} ${metric.label}`}
  >
  {value}
  </p>
- <p className="text-base font-bold text-navy mt-1">{metric.label}</p>
- <p className="text-sm text-slate-500 mt-1 leading-relaxed">{metric.detail}</p>
+ <p className="text-lg font-bold text-white mt-2 drop-shadow-sm">{metric.label}</p>
+ <p className="text-sm text-slate-400 mt-1 leading-relaxed font-medium">{metric.detail}</p>
  </div>
  </motion.div>
  );
@@ -80,25 +80,28 @@ export function MetricsGrid({ metrics }: Props) {
  <section
  id="metrics"
  ref={ref}
- className="py-28 bg-depth-1/40"
+ className="py-28 bg-[#051124]/40 relative overflow-hidden"
  aria-labelledby="metrics-heading"
  >
- <div className="container-brand">
+ {/* Abstract Glass Glow */}
+ <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] bg-gradient-to-r from-blue/5 to-aqua/5 filter blur-[100px] pointer-events-none"></div>
+
+ <div className="container-brand relative z-10">
  <div className="text-center mb-16">
- <p className="section-label text-gold mb-3">By The Numbers</p>
+ <p className="section-label text-aqua mb-3 tracking-widest uppercase font-bold drop-shadow-[0_0_8px_rgba(0,229,171,0.5)]">By The Numbers</p>
  <h2
  id="metrics-heading"
- className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-navy"
+ className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-white font-display drop-shadow-lg"
  >
  Platform at Scale
  </h2>
- <p className="mt-4 text-lg text-slate-500 max-w-xl mx-auto">
+ <p className="mt-4 text-lg text-slate-300 max-w-xl mx-auto font-body">
  Real-time operational intelligence across every business domain.
  </p>
  </div>
 
  <div
- className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+ className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
  role="list"
  aria-label="Platform metrics"
  >

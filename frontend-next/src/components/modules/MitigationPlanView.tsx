@@ -99,7 +99,7 @@ const DEMO_PLANS: PlanDef[] = [
 /* ── Step State Styles ───────────────────────────────────────────────────────── */ const STEP_STYLE: Record<StepState, { label: string; color: string; bg: string; border: string; icon: any }> = {
  PENDING: { label: 'Pending', color: 'text-slate-500', bg: 'bg-slate-50/60', border: 'border-slate-200/40', icon: Clock },
  EXECUTING: { label: 'Executing', color: 'text-blue-400', bg: 'bg-blue-500/12', border: 'border-blue-500/30', icon: Activity },
- AWAITING_SUCCESS:{ label: 'Awaiting', color: 'text-amber-400', bg: 'bg-slate-50mber-500/12', border: 'border-amber-500/30', icon: RefreshCw },
+ AWAITING_SUCCESS:{ label: 'Awaiting', color: 'text-amber-400', bg: 'bg-amber-500/12', border: 'border-amber-500/30', icon: RefreshCw },
  SUCCEEDED: { label: 'Succeeded', color: 'text-emerald-400', bg: 'bg-emerald-500/12', border: 'border-emerald-500/30', icon: CheckCircle },
  FAILED: { label: 'Failed', color: 'text-red-400', bg: 'bg-red-500/12', border: 'border-red-500/30', icon: XCircle },
  COMPENSATING: { label: 'Compensating', color: 'text-orange-400', bg: 'bg-orange-500/12', border: 'border-orange-500/30', icon: Shield },
@@ -149,7 +149,7 @@ function relTime(iso: string) {
  </div>
  )}
  <div className={`flex-1 flex items-center gap-2 p-2 rounded-lg border text-[10px] ${step.criticalPath ? 'bg-slate-50/60 border-slate-200/40' : 'bg-slate-50/30 border-slate-200/20'}`}>
- <span className={`font-mono px-1.5 py-0.5 rounded text-[8px] font-bold ${step.urgency === 'CRITICAL' ? 'bg-red-500/15 text-red-400' : step.urgency === 'HIGH' ? 'bg-slate-50mber-500/12 text-amber-400' : 'bg-slate-700 text-slate-500'}`}>{step.urgency}</span>
+ <span className={`font-mono px-1.5 py-0.5 rounded text-[8px] font-bold ${step.urgency === 'CRITICAL' ? 'bg-red-500/15 text-red-400' : step.urgency === 'HIGH' ? 'bg-amber-500/12 text-amber-400' : 'bg-slate-700 text-slate-500'}`}>{step.urgency}</span>
  <span className="font-semibold text-slate-600">{step.name}</span>
  <span className="text-slate-600 ml-auto font-mono">{step.action}</span>
  <span className="text-slate-700 font-mono">{step.targetResource}</span>

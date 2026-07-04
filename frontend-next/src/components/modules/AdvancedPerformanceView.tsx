@@ -75,13 +75,13 @@ const DEPT_SCORES = [
 /* ─── OKR Progress Bar ───────────────────────────────────────────────────────── */ function OKRCard({ goal }: { goal: OKRGoal }) {
  const colors: Record<GoalStatus, string> = {
  'on-track': 'bg-emerald-500',
- 'at-risk': 'bg-slate-50mber-500',
+ 'at-risk': 'bg-amber-500',
  'completed': 'bg-blue-500',
  'not-started':'bg-slate-500',
  };
  const tone: Record<GoalStatus, string> = {
  'on-track': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
- 'at-risk': 'bg-slate-50mber-500/15 text-amber-400 border-amber-500/30',
+ 'at-risk': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
  'completed': 'bg-blue-500/15 text-blue-400 border-blue-500/30',
  'not-started':'bg-slate-500/15 text-slate-500 border-slate-500/30',
  };
@@ -124,7 +124,7 @@ const DEPT_SCORES = [
  'Outstanding': 'text-yellow-400 bg-yellow-500/15 border-yellow-500/30',
  'Exceeds Expectations': 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30',
  'Meets Expectations': 'text-blue-400 bg-blue-500/15 border-blue-500/30',
- 'Needs Improvement': 'text-amber-400 bg-slate-50mber-500/15 border-amber-500/30',
+ 'Needs Improvement': 'text-amber-400 bg-amber-500/15 border-amber-500/30',
  'Unsatisfactory': 'text-rose-400 bg-rose-500/15 border-rose-500/30',
 };
 
@@ -262,7 +262,7 @@ export function AdvancedPerformanceView() {
  <GlassCard>
  <div className="flex items-center justify-between mb-4">
  <p className="text-sm font-semibold text-slate-700">Q2 2026 — Appraisal Cycle</p>
- <span className="text-xs text-amber-400 bg-slate-50mber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">In Progress</span>
+ <span className="text-xs text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">In Progress</span>
  </div>
 
  <div className="overflow-x-auto">
@@ -327,7 +327,7 @@ export function AdvancedPerformanceView() {
  { label: 'Outstanding', count: 3, pct: 12, color: 'bg-yellow-500' },
  { label: 'Exceeds Exp.', count: 8, pct: 32, color: 'bg-emerald-500' },
  { label: 'Meets Exp.', count: 11, pct: 44, color: 'bg-blue-500' },
- { label: 'Needs Impr.', count: 2, pct: 8, color: 'bg-slate-50mber-500' },
+ { label: 'Needs Impr.', count: 2, pct: 8, color: 'bg-amber-500' },
  { label: 'Unsat.', count: 1, pct: 4, color: 'bg-rose-500' },
  ].map(r => (
  <div key={r.label} className="text-center space-y-2">

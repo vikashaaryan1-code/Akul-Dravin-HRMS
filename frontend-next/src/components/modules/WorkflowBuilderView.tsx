@@ -40,7 +40,7 @@ interface WorkflowDef {
  { value: 'manual', label: 'Manual Trigger', icon: <Play className="h-4 w-4" />, color: 'bg-slate-100 text-slate-600' },
  { value: 'event:employee_created', label: 'Employee Created', icon: <Database className="h-4 w-4" />, color: 'bg-blue-50 text-blue-600' },
  { value: 'event:employee_offboarded', label: 'Employee Offboarded', icon: <Database className="h-4 w-4" />, color: 'bg-rose-50 text-rose-600' },
- { value: 'event:leave_approved', label: 'Leave Approved', icon: <Database className="h-4 w-4" />, color: 'bg-slate-50mber-50 text-amber-600' },
+ { value: 'event:leave_approved', label: 'Leave Approved', icon: <Database className="h-4 w-4" />, color: 'bg-amber-50 text-amber-600' },
  { value: 'event:payroll_generated', label: 'Payroll Generated', icon: <Database className="h-4 w-4" />, color: 'bg-emerald-50 text-emerald-600' },
  { value: 'event:crm_lead_created', label: 'CRM Lead Created', icon: <Database className="h-4 w-4" />, color: 'bg-violet-50 text-violet-600' },
  { value: 'schedule', label: 'Scheduled (Cron)', icon: <Clock className="h-4 w-4" />, color: 'bg-cyan-50 text-cyan-600' },
@@ -48,7 +48,7 @@ interface WorkflowDef {
 
 const STEP_TYPES: { type: StepType; label: string; icon: React.ReactNode; color: string; defaultName: string }[] = [
  { type: 'email', label: 'Send Email', icon: <Mail className="h-4 w-4" />, color: 'text-blue-600 bg-blue-50 ', defaultName: 'Send Email' },
- { type: 'notification', label: 'Push Notification', icon: <Bell className="h-4 w-4" />, color: 'text-amber-600 bg-slate-50mber-50 ', defaultName: 'Send Notification' },
+ { type: 'notification', label: 'Push Notification', icon: <Bell className="h-4 w-4" />, color: 'text-amber-600 bg-amber-50 ', defaultName: 'Send Notification' },
  { type: 'webhook', label: 'Call Webhook', icon: <Webhook className="h-4 w-4" />, color: 'text-violet-600 bg-violet-50 ', defaultName: 'Call Webhook' },
  { type: 'delay', label: 'Wait / Delay', icon: <Clock className="h-4 w-4" />, color: 'text-slate-600 bg-slate-100 ', defaultName: 'Wait 1 Hour' },
  { type: 'condition', label: 'Condition Branch', icon: <GitBranch className="h-4 w-4" />, color: 'text-emerald-600 bg-emerald-50 ', defaultName: 'If / Else Condition' },

@@ -55,13 +55,13 @@ export function SiteFooter() {
  <Rocket className="h-4 w-4 text-void" aria-hidden="true" />
  </div>
  <div>
- <p className="text-sm font-black tracking-tighter text-navy">AKUL DRAVIN</p>
+ <p className="text-sm font-black tracking-tighter text-white">AKUL DRAVIN</p>
  <p className="text-[9px] font-bold uppercase tracking-widest text-gold/50">
  Sovereign AI OS
  </p>
  </div>
  </Link>
- <p className="text-xs text-slate-500 leading-relaxed max-w-[220px]">
+ <p className="text-xs text-slate-400 leading-relaxed max-w-[220px]">
  The world&apos;s most comprehensive AI-native business operating system for modern enterprises.
  </p>
  <div className="flex gap-3 mt-6" aria-label="Social media links">
@@ -72,7 +72,7 @@ export function SiteFooter() {
  target="_blank"
  rel="noopener noreferrer"
  aria-label={s.label}
- className="h-8 w-8 rounded-lg surface-base border-subtle flex items-center justify-center text-slate-500 hover:text-navy hover:bg-white/8 transition-all duration-200"
+ className="h-8 w-8 rounded-lg surface-base border-subtle flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5/8 transition-all duration-200"
  >
  <s.icon className="h-3.5 w-3.5" aria-hidden="true" />
  </a>
@@ -84,13 +84,13 @@ export function SiteFooter() {
  {(Object.entries(FOOTER_LINKS) as [string, readonly { label: string; href: string }[]][]).map(
  ([group, links]) => (
  <nav key={group} aria-label={`${group} links`}>
- <p className="section-label text-slate-500 mb-5">{group}</p>
+ <p className="section-label text-slate-400 mb-5">{group}</p>
  <ul className="space-y-3">
  {links.map((link) => (
  <li key={link.label}>
  <Link
  href={link.href}
- className="text-xs text-slate-500 hover:text-navy transition-colors duration-200"
+ className="text-xs text-slate-400 hover:text-white transition-colors duration-200"
  >
  {link.label}
  </Link>
@@ -107,7 +107,7 @@ export function SiteFooter() {
  {['SOC 2 Type II', 'ISO 27001', 'GDPR Ready', 'Zero-Trust', 'AES-256'].map((badge) => (
  <span
  key={badge}
- className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/8 bg-white/[0.03] text-[10px] font-bold text-slate-500"
+ className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/8 bg-white/5/[0.03] text-[10px] font-bold text-slate-400"
  >
  <span className="h-1 w-1 rounded-full bg-jade" aria-hidden="true" />
  {badge}
@@ -116,7 +116,7 @@ export function SiteFooter() {
  </div>
 
  {/* Bottom row */}
- <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+ <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-300">
  <p>© {new Date().getFullYear()} Pueri Ecosystem Pvt. Ltd. All rights reserved.</p>
  <p>AKUL DRAVIN — Sovereign AI Business Operating System</p>
  </div>

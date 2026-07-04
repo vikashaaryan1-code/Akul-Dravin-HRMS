@@ -88,25 +88,25 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
  viewport={{ once: true, margin: '-60px' }}
  transition={{ delay: index * 0.07, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
  className={`group glass-3d-panel p-6 flex flex-col gap-4
- transition-all duration-300 hover:bg-white/8 ${product.glowColor} ${spanClass}`}
+ transition-all duration-300 hover:bg-white/5/8 ${product.glowColor} ${spanClass}`}
  >
  <div className="flex items-start justify-between">
- <div className={`h-11 w-11 rounded-xl bg-navy/5 border border-white/8 flex items-center justify-center
- group-hover:scale-110 transition-transform duration-300`}>
+ <div className={`h-11 w-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center
+ group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)]`}>
  <product.icon className={`h-5 w-5 ${product.color}`} aria-hidden="true" />
  </div>
- <span className={`section-label ${product.color} opacity-60`}>{product.id.toUpperCase()}</span>
+ <span className={`section-label ${product.color} opacity-80 font-bold`}>{product.id.toUpperCase()}</span>
  </div>
 
  <div>
- <h3 className="text-lg font-black tracking-tight text-navy">{product.title}</h3>
- <p className="text-sm text-slate-500 mt-1 leading-relaxed">{product.description}</p>
+ <h3 className="text-lg font-black tracking-tight text-white drop-shadow-sm">{product.title}</h3>
+ <p className="text-sm text-slate-400 mt-1 leading-relaxed font-medium">{product.description}</p>
  </div>
 
  <ul className="space-y-1.5 mt-auto" aria-label={`${product.title} features`}>
  {product.features.map((f) => (
- <li key={f} className="flex items-center gap-2 text-xs text-slate-500">
- <span className={`h-1 w-1 rounded-full ${product.dotColor}`} aria-hidden="true" />
+ <li key={f} className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+ <span className={`h-1.5 w-1.5 rounded-full ${product.dotColor} shadow-[0_0_5px_currentColor]`} aria-hidden="true" />
  {f}
  </li>
  ))}
@@ -117,24 +117,28 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
 
 export function EcosystemSection() {
  return (
- <section id="ecosystem" className="py-28" aria-labelledby="ecosystem-heading">
- <div className="container-brand">
+ <section id="ecosystem" className="py-28 relative" aria-labelledby="ecosystem-heading">
+ {/* Ambient Background Glows */}
+ <div className="absolute top-0 right-0 w-96 h-96 bg-blue filter blur-[150px] opacity-10 pointer-events-none"></div>
+ <div className="absolute bottom-0 left-0 w-96 h-96 bg-aqua filter blur-[150px] opacity-10 pointer-events-none"></div>
+
+ <div className="container-brand relative z-10">
  <div className="text-center mb-16">
- <p className="section-label text-gold mb-3">Product Ecosystem</p>
+ <p className="section-label text-gold mb-3 tracking-widest uppercase font-bold drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]">Product Ecosystem</p>
  <h2
  id="ecosystem-heading"
- className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-navy"
+ className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-white font-display drop-shadow-lg"
  >
  Everything in One
  <br />
- <span className="text-gradient-gold">Sovereign Platform</span>
+ <span className="bg-gradient-to-r from-gold via-[#FFE866] to-[#CFAE00] bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]">Sovereign Platform</span>
  </h2>
- <p className="mt-5 text-lg text-slate-500 max-w-2xl mx-auto">
+ <p className="mt-5 text-lg text-slate-300 max-w-2xl mx-auto font-body">
  Nine fully integrated product domains — no stitching, no sprawl.
  </p>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
  {PRODUCTS.map((p, i) => (
  <ProductCard key={p.id} product={p} index={i} />
  ))}

@@ -112,7 +112,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
  <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0B1221] p-6 shadow-2xl">
  <div className="mb-5 flex items-center justify-between">
- <h3 className="text-lg font-bold text-navy">Create Job Requisition</h3>
+ <h3 className="text-lg font-bold text-white">Create Job Requisition</h3>
  <button onClick={onClose} className="rounded-lg p-1 text-slate-500 hover:bg-white/10 hover:text-white transition">
  <X className="h-5 w-5" />
  </button>
@@ -206,7 +206,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-[#0B1221] shadow-2xl flex flex-col max-h-[90vh]">
  <div className="p-5 border-b border-white/10 flex items-start justify-between">
  <div>
- <h3 className="text-xl font-bold text-navy">{candidate.name}</h3>
+ <h3 className="text-xl font-bold text-white">{candidate.name}</h3>
  <p className="text-sm text-slate-500">{candidate.role} · Applied {candidate.days}d ago via {candidate.source}</p>
  <div className="mt-3 flex items-center gap-3">
  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STAGE_COLORS[candidate.stage]}`}>
@@ -214,7 +214,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  </span>
  <div className="flex items-center gap-1">
  <Star className="h-3 w-3 fill-gold text-gold" />
- <span className="text-xs font-bold text-navy">AI Match: {candidate.score}%</span>
+ <span className="text-xs font-bold text-white">AI Match: {candidate.score}%</span>
  </div>
  </div>
  </div>
@@ -252,14 +252,14 @@ const PRIORITY_COLORS: Record<string, string> = {
  {activeTab === 'profile' && (
  <div className="space-y-4">
  <div>
- <h4 className="text-xs font-bold text-navy uppercase tracking-wider mb-2">AI Summary</h4>
+ <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">AI Summary</h4>
  <div className="p-3 rounded-lg bg-white/5 border border-white/10">
  <p>Strong candidate with extensive experience in scalable architecture. Shows high proficiency in React, Node.js, and AWS. Cultural fit score is exceptional based on previous startup roles.</p>
  </div>
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
- <h4 className="text-xs font-bold text-navy uppercase tracking-wider mb-2">Key Skills</h4>
+ <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Key Skills</h4>
  <div className="flex flex-wrap gap-1">
  {['React', 'TypeScript', 'Node.js', 'System Design'].map(s => (
  <span key={s} className="px-2 py-1 bg-white/10 rounded-md text-[10px] font-medium">{s}</span>
@@ -267,7 +267,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  </div>
  </div>
  <div>
- <h4 className="text-xs font-bold text-navy uppercase tracking-wider mb-2">Experience</h4>
+ <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Experience</h4>
  <p>5+ Years in Full-Stack Development</p>
  </div>
  </div>
@@ -277,7 +277,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  {activeTab === 'interviews' && (
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Interview Schedule</h4>
+ <h4 className="text-xs font-bold text-white uppercase tracking-wider">Interview Schedule</h4>
  <button 
  onClick={() => setScheduling(true)}
  className="flex items-center gap-1 px-2 py-1 rounded bg-aqua/20 text-aqua text-[10px] font-bold hover:bg-aqua/30"
@@ -288,7 +288,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  
  {scheduling ? (
  <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02]">
- <p className="text-xs font-bold text-navy mb-3">Schedule New Interview</p>
+ <p className="text-xs font-bold text-white mb-3">Schedule New Interview</p>
  <input type="datetime-local" className="w-full mb-3 rounded border border-white/10 bg-white/5 px-3 py-2 text-xs outline-none" />
  <select className="w-full mb-3 rounded border border-white/10 bg-white/5 px-3 py-2 text-xs outline-none">
  <option>Technical Round</option>
@@ -303,7 +303,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  ) : (
  <div className="p-3 rounded-lg border border-white/10 bg-white/5 flex items-center justify-between">
  <div>
- <p className="font-bold text-navy">Technical Round</p>
+ <p className="font-bold text-white">Technical Round</p>
  <p className="text-xs text-slate-500">Tomorrow at 2:00 PM · Zoom</p>
  </div>
  <span className="px-2 py-1 rounded bg-gold/20 text-gold text-[10px] font-bold uppercase">Upcoming</span>
@@ -426,7 +426,7 @@ const PRIORITY_COLORS: Record<string, string> = {
  </div>
  <div className="flex items-center gap-1 shrink-0">
  <Star className="h-2.5 w-2.5 fill-gold text-gold" />
- <span className="text-[10px] font-bold text-navy">{candidate.score}</span>
+ <span className="text-[10px] font-bold text-white">{candidate.score}</span>
  </div>
  </div>
  <div className="mt-2 flex items-center justify-between">

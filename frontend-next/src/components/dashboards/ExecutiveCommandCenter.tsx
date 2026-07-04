@@ -532,7 +532,7 @@ export function ExecutiveCommandCenter() {
  <div className="space-y-3">
  {[
  { name: 'John Doe', role: 'Lead Architect', country: 'United States', rate: '$8,500/mo', status: 'Active (USD)', compliance: '100% Compliant', color: 'text-emerald-400 bg-emerald-500/10' },
- { name: 'Elena Rostova', role: 'UI/UX Specialist', country: 'Germany', rate: '€5,200/mo', status: 'Pending Review', compliance: 'Missing W-8BEN', color: 'text-amber-400 bg-slate-50mber-500/10' },
+ { name: 'Elena Rostova', role: 'UI/UX Specialist', country: 'Germany', rate: '€5,200/mo', status: 'Pending Review', compliance: 'Missing W-8BEN', color: 'text-amber-400 bg-amber-500/10' },
  { name: 'David Smith', role: 'Product Manager', country: 'United Kingdom', rate: '£6,800/mo', status: 'Active (GBP)', compliance: '100% Compliant', color: 'text-emerald-400 bg-emerald-500/10' },
  { name: 'Rajesh Kumar', role: 'Senior Developer', country: 'India', rate: '₹1,80,000/mo', status: 'Active (INR)', compliance: '100% Compliant', color: 'text-emerald-400 bg-emerald-500/10' }
  ].map((contractor, i) => (
@@ -762,7 +762,7 @@ export function ExecutiveCommandCenter() {
  {[
  { item: 'Salary Batch (HDFC Corporate Route)', amount: '₹3,10,42,800', type: 'Instant Bank Payout', status: payoutStatus === 'completed' ? 'Disbursed' : payoutStatus === 'processing' ? 'Processing' : 'Approved', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : payoutStatus === 'processing' ? 'text-blue-400 border-blue-500/20 bg-blue-500/5 animate-pulse' : 'text-slate-500 border-slate-200/60 bg-white/60' },
  { item: 'Contractor Invoices (ICICI Bank Direct)', amount: '₹81,20,000', type: 'Fast Settlement', status: payoutStatus === 'completed' ? 'Disbursed' : payoutStatus === 'processing' ? 'Processing' : 'Approved', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : payoutStatus === 'processing' ? 'text-blue-400 border-blue-500/20 bg-blue-500/5 animate-pulse' : 'text-slate-500 border-slate-200/60 bg-white/60' },
- { item: 'Statutory Taxes (PF / ESI / TDS Pool)', amount: '₹42,65,400', type: 'Compliance Escrow', status: payoutStatus === 'completed' ? 'Deposited' : 'Pending Approval', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-amber-400 border-amber-500/20 bg-slate-50mber-500/5' }
+ { item: 'Statutory Taxes (PF / ESI / TDS Pool)', amount: '₹42,65,400', type: 'Compliance Escrow', status: payoutStatus === 'completed' ? 'Deposited' : 'Pending Approval', color: payoutStatus === 'completed' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-amber-400 border-amber-500/20 bg-amber-500/5' }
  ].map((queue, i) => (
  <div key={i} className={`p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-4 transition-colors ${queue.color}`}>
  <div>

@@ -1,25 +1,36 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Job } from 'bullmq';
 import { DataSource } from 'typeorm';
 import { TenantEntity } from '../../database/entities/tenant.entity';
 import { DomainEventService } from '../../common/events/domain-event.service';
 
 @Processor('tenant-provisioning')
 @Injectable()
-export class TenantProvisioningService {
+export class TenantProvisioningService extends WorkerHost {
   private readonly logger = new Logger(TenantProvisioningService.name);
 
   constructor(
     private readonly dataSource: DataSource,
     private readonly eventBus: DomainEventService,
-  ) {}
+  ) {
+    super();
+  }
+
+  async process(job: Job): Promise<any> {
+    switch (job.name) {
+      case 'provision-new-tenant':
+        return this.provisionTenant(job);
+      default:
+        this.logger.warn(`Unknown job name: ${job.name}`);
+        return null;
+    }
+  }
 
   /**
    * Autonomous Tenant Provisioning.
    * "Fully Automatic A2Z" onboarding for enterprise companies.
    */
-  @Process('provision-new-tenant')
   async provisionTenant(job: Job<{ tenantId: string; plan: string; adminEmail: string }>) {
     const { tenantId, plan, adminEmail } = job.data;
     this.logger.log(`PROVISIONING starting for tenant=${tenantId} plan=${plan}`);

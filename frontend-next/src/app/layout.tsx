@@ -85,22 +85,81 @@ import { QueryProvider } from '@/providers/QueryProvider';
 import { BrandingProvider } from '@/providers/BrandingProvider';
 import { headers } from 'next/headers';
 
-export default async function RootLayout({ children }: { children: ReactNode }) {
- const headersList = await headers();
- const domain = headersList.get('x-tenant-domain') || 'localhost';
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Akul Dravin Technologies',
+  url: 'https://hrms.akuldravin.com',
+  logo: 'https://hrms.akuldravin.com/images/logo.png',
+  sameAs: [
+    'https://twitter.com/akuldravin',
+    'https://linkedin.com/company/akuldravin',
+    'https://github.com/akuldravin',
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'Customer Support',
+    email: 'support@akuldravin.com',
+    availableLanguage: ['English', 'Hindi'],
+  },
+};
 
- return (
- <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
- <body className="antialiased font-sans">
- <BrandingProvider domain={domain}>
- <AuthProvider>
- <QueryProvider>
- {children}
- </QueryProvider>
- </AuthProvider>
- <ToastContainer />
- </BrandingProvider>
- </body>
- </html>
- );
+const softwareApplicationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Akul Dravin HRMS AI',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  url: 'https://hrms.akuldravin.com',
+  description:
+    'AI-first enterprise HRMS platform combining workforce management, payroll automation, recruitment, compliance, and AI analytics in a single unified platform.',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'INR',
+    description: 'Free trial available. Enterprise pricing on request.',
+  },
+  featureList: [
+    'Employee Management',
+    'AI-Powered Payroll',
+    'Attendance & Leave Management',
+    'ATS & Recruitment',
+    'Performance OKRs',
+    'AI Copilot & Analytics',
+    'Compliance Engine',
+    'Multi-tenant Architecture',
+  ],
+  screenshot: 'https://hrms.akuldravin.com/images/og-cover.png',
+};
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const headersList = await headers();
+  const domain = headersList.get('x-tenant-domain') || 'localhost';
+
+  return (
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
+      <head>
+        {/* Schema.org Structured Data — Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        {/* Schema.org Structured Data — SoftwareApplication */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
+        />
+      </head>
+      <body className="antialiased font-sans">
+        <BrandingProvider domain={domain}>
+          <AuthProvider>
+            <QueryProvider>
+              {children}
+            </QueryProvider>
+          </AuthProvider>
+          <ToastContainer />
+        </BrandingProvider>
+      </body>
+    </html>
+  );
 }

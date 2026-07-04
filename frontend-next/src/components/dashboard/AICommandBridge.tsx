@@ -126,7 +126,7 @@ export const AICommandBridge = () => {
  <div className="space-y-4">
  <div className="flex justify-between items-center pb-2 border-b border-white/5">
  <span className="text-gray-500 text-sm">Active Employees</span>
- <span className="text-xl font-bold text-navy">{liveMetrics.activeEmployees.toLocaleString()}</span>
+ <span className="text-xl font-bold text-white">{liveMetrics.activeEmployees.toLocaleString()}</span>
  </div>
  <div className="flex justify-between items-center pb-2 border-b border-white/5">
  <span className="text-gray-500 text-sm">Payroll Status</span>

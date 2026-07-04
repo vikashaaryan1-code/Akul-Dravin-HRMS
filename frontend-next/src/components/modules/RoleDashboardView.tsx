@@ -178,7 +178,7 @@ export function RoleDashboardView() {
  className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${
  isLive
  ? 'bg-emerald-100 text-emerald-700 '
- : 'bg-slate-50mber-100 text-amber-700 '
+ : 'bg-amber-100 text-amber-700 '
  }`}
  >
  {isLive ? 'Realtime command mesh' : 'Fallback intelligence'}
@@ -449,7 +449,7 @@ export function RoleDashboardView() {
  <div className="space-y-3">
  {liveInsights.slice(0, 4).map((item) => (
  <div key={item} className="flex gap-3">
- <span className="mt-1.5 h-2 w-2 rounded-full bg-slate-50mber-500" />
+ <span className="mt-1.5 h-2 w-2 rounded-full bg-amber-500" />
  <p className="text-sm leading-6 text-slate-600 ">{item}</p>
  </div>
  ))}

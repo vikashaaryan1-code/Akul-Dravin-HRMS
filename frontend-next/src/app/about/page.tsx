@@ -37,7 +37,7 @@ const PHILOSOPHY_PILLARS = [
 
 export default function AboutPage() {
  return (
- <div className="min-h-screen bg-void text-navy selection:bg-aqua/30">
+ <div className="min-h-screen bg-void text-white selection:bg-aqua/30">
  <LandingNavbar />
 
  <main className="relative pt-24 overflow-hidden">
@@ -90,7 +90,7 @@ export default function AboutPage() {
  <pillar.icon className="w-8 h-8" />
  </div>
  <div className="space-y-2">
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/30">{pillar.subtitle}</span>
+ <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">{pillar.subtitle}</span>
  <h3 className="text-2xl font-bold">{pillar.title}</h3>
  </div>
  <p className="text-sm text-slate-500 leading-7">
@@ -129,7 +129,7 @@ export default function AboutPage() {
  <button className="flex items-center gap-3 px-8 py-4 rounded-full btn-primary font-bold text-xs tracking-widest hover:scale-105 transition-all">
  VIEW CAREERS <ArrowRight className="w-4 h-4" />
  </button>
- <button className="flex items-center gap-3 px-8 py-4 rounded-full border border-navy/10 bg-navy/5 text-navy font-bold text-xs tracking-widest hover:bg-navy/10 transition-all">
+ <button className="flex items-center gap-3 px-8 py-4 rounded-full border border-navy/10 bg-navy/5 text-white font-bold text-xs tracking-widest hover:bg-navy/10 transition-all">
  OUR ROADMAP
  </button>
  </div>

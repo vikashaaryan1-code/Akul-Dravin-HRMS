@@ -18,10 +18,10 @@ export function ExecutiveDashboard() {
  const [activeTab, setActiveTab] = useState<'strategy' | 'risks' | 'simulation'>('strategy');
 
  return (
- <div className="min-h-screen bg-[#020811] text-slate-100 p-6 lg:p-10 selection:bg-slate-50mber/30">
+ <div className="min-h-screen bg-[#020811] text-slate-100 p-6 lg:p-10 selection:bg-amber/30">
  {/* Animated background glow */}
  <div className="fixed inset-0 pointer-events-none overflow-hidden">
- <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] bg-slate-50mber/10 blur-[150px] rounded-full animate-pulse" />
+ <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] bg-amber/10 blur-[150px] rounded-full animate-pulse" />
  <div className="absolute bottom-[10%] right-[20%] w-[40%] h-[40%] bg-aqua/10 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '3s' }} />
  </div>
 
@@ -41,7 +41,7 @@ export function ExecutiveDashboard() {
  <button className="flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-sm font-semibold backdrop-blur-xl group">
  <Zap className="h-4 w-4 text-aqua group-hover:scale-125 transition" /> Run Intelligence Scan
  </button>
- <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-ember to-amber rounded-2xl hover:opacity-90 hover:scale-105 transition-all text-sm font-bold text-navy shadow-2xl shadow-amber/20">
+ <button className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-ember to-amber rounded-2xl hover:opacity-90 hover:scale-105 transition-all text-sm font-bold text-white shadow-2xl shadow-amber/20">
  Execute Q3 Strategy
  </button>
  </div>
@@ -83,7 +83,7 @@ export function ExecutiveDashboard() {
  <span className="text-slate-500 text-sm font-medium">Synced: 12m ago</span>
  </div>
  
- <h2 className="text-3xl font-bold text-navy mb-8 tracking-tight">Autonomous Growth Matrix <span className="text-amber">V4.2</span></h2>
+ <h2 className="text-3xl font-bold text-white mb-8 tracking-tight">Autonomous Growth Matrix <span className="text-amber">V4.2</span></h2>
  
  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
  {[
@@ -100,7 +100,7 @@ export function ExecutiveDashboard() {
 
  <div className="space-y-6">
  <div className="p-8 glass-3d-panel group/item">
- <h3 className="font-bold text-navy mb-3 flex items-center gap-3 text-lg">
+ <h3 className="font-bold text-white mb-3 flex items-center gap-3 text-lg">
  <TrendingUp className="h-5 w-5 text-aqua" /> Workforce Expansion Strategy
  </h3>
  <p className="text-slate-500 text-base leading-relaxed">
@@ -110,7 +110,7 @@ export function ExecutiveDashboard() {
  </div>
  
  <div className="p-8 glass-3d-panel group/item">
- <h3 className="font-bold text-navy mb-3 flex items-center gap-3 text-lg">
+ <h3 className="font-bold text-white mb-3 flex items-center gap-3 text-lg">
  <Zap className="h-5 w-5 text-amber" /> Cost Optimization Path
  </h3>
  <p className="text-slate-500 text-base leading-relaxed">
@@ -128,13 +128,13 @@ export function ExecutiveDashboard() {
 
  <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
  <ThreeDGlassCard className="p-8" intensity={5}>
- <h3 className="font-bold text-navy mb-6 flex items-center gap-3 text-lg">
+ <h3 className="font-bold text-white mb-6 flex items-center gap-3 text-lg">
  <Microscope className="h-6 w-6 text-aqua" /> Attrition Simulation
  </h3>
  <div className="h-32 bg-black/40 rounded-2xl mb-6 flex items-end p-5 gap-3 border border-white/5">
  {[40, 60, 30, 80, 50, 90, 70].map((h, i) => (
  <div key={i} className="flex-1 bg-aqua/20 rounded-t-md relative group/bar">
- <div className="absolute bottom-0 w-full bg-aqua group-hover/bar:bg-slate-50mber transition-all duration-500 rounded-t-md" style={{ height: `${h}%` }} />
+ <div className="absolute bottom-0 w-full bg-aqua group-hover/bar:bg-amber transition-all duration-500 rounded-t-md" style={{ height: `${h}%` }} />
  </div>
  ))}
  </div>
@@ -144,7 +144,7 @@ export function ExecutiveDashboard() {
  </ThreeDGlassCard>
 
  <ThreeDGlassCard className="p-8" intensity={5}>
- <h3 className="font-bold text-navy mb-6 flex items-center gap-3 text-lg">
+ <h3 className="font-bold text-white mb-6 flex items-center gap-3 text-lg">
  <BarChart3 className="h-6 w-6 text-emerald-400" /> Revenue Digital Twin
  </h3>
  <div className="h-32 bg-black/40 rounded-2xl mb-6 flex items-center justify-center border border-white/5">
@@ -162,14 +162,14 @@ export function ExecutiveDashboard() {
 
  <div className="space-y-10">
  <ThreeDGlassCard className="p-8 shadow-3xl" intensity={8}>
- <h3 className="text-xl font-bold text-navy mb-8 flex items-center gap-3">
+ <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
  <ShieldCheck className="h-6 w-6 text-emerald-400" /> Security Posture
  </h3>
  
  <div className="space-y-5">
  <div className="flex items-center justify-between p-5 glass-3d-panel">
  <div>
- <p className="text-sm font-bold text-navy mb-1">Trust Invariant Score</p>
+ <p className="text-sm font-bold text-white mb-1">Trust Invariant Score</p>
  <p className="text-xs text-slate-500 tracking-wide">Org-wide average</p>
  </div>
  <div className="text-3xl font-black text-emerald-400">0.99</div>
@@ -177,7 +177,7 @@ export function ExecutiveDashboard() {
  
  <div className="flex items-center justify-between p-5 glass-3d-panel">
  <div>
- <p className="text-sm font-bold text-navy mb-1">Active Anomalies</p>
+ <p className="text-sm font-bold text-white mb-1">Active Anomalies</p>
  <p className="text-xs text-slate-500 tracking-wide">Behavioral drift detected</p>
  </div>
  <div className="text-3xl font-black text-amber">02</div>
@@ -203,7 +203,7 @@ export function ExecutiveDashboard() {
  </ThreeDGlassCard>
 
  <ThreeDGlassCard className="p-8" intensity={5}>
- <h3 className="text-xl font-bold text-navy mb-8 tracking-tight">Global Compliance</h3>
+ <h3 className="text-xl font-bold text-white mb-8 tracking-tight">Global Compliance</h3>
  <div className="grid grid-cols-2 gap-5">
  {[
  { label: 'INDIA', status: 'OK', color: 'text-emerald-400' },
@@ -217,7 +217,7 @@ export function ExecutiveDashboard() {
  </div>
  ))}
  </div>
- <button className="mt-8 w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-navy hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all backdrop-blur-xl">
+ <button className="mt-8 w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-white hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all backdrop-blur-xl">
  Resolve EU Compliance Drift
  </button>
  </ThreeDGlassCard>

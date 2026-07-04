@@ -40,7 +40,7 @@ export function ComplianceModuleView() {
  return <span className={`text-xs font-medium ${isOverdue ? 'text-red-500' : 'text-slate-600 '}`}>{new Date(v as string).toLocaleDateString('en-IN')}</span>;
  }},
  { key: 'priority', label: 'Priority', sortable: true, render: (v) => {
- const colors: Record<string, string> = { High: 'text-red-600 bg-red-50', Medium: 'text-amber-600 bg-slate-50mber-50', Low: 'text-emerald-600 bg-emerald-50' };
+ const colors: Record<string, string> = { High: 'text-red-600 bg-red-50', Medium: 'text-amber-600 bg-amber-50', Low: 'text-emerald-600 bg-emerald-50' };
  return <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[v as string] ?? ''}`}>{v as string}</span>;
  }},
  { key: 'status', label: 'Status', sortable: true, render: (v) => <StatusPill label={v as string} /> },

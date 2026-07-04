@@ -116,7 +116,7 @@ export function TwoFactorSetupView() {
  <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${
  is2FAEnabled
  ? 'border-emerald-200 bg-emerald-50 '
- : 'border-amber-200 bg-slate-50mber-50 '
+ : 'border-amber-200 bg-amber-50 '
  }`}>
  <Shield className={`h-5 w-5 shrink-0 ${is2FAEnabled ? 'text-emerald-600' : 'text-amber-600'}`} />
  <div>

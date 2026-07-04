@@ -166,7 +166,7 @@ export default function EmployeePortal() {
  </Card>
 
  {/* Alerts */}
- <Card className="!bg-slate-50mber-500/10 border-amber-500/30">
+ <Card className="!bg-amber-500/10 border-amber-500/30">
  <div className="flex gap-3">
  <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
  <div>

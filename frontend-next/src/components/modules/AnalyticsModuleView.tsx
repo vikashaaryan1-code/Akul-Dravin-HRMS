@@ -61,7 +61,7 @@ const REVENUE_FALLBACK: RevenueKpiApiRecord = {
 /* ── Risk Badge ───────────────────────────────────────────────────────────── */ function RiskBadge({ risk }: { risk: string }) {
  const map: Record<string, string> = {
  LOW: 'bg-emerald-500/15 text-emerald-400',
- MEDIUM: 'bg-slate-50mber-500/15 text-amber-400',
+ MEDIUM: 'bg-amber-500/15 text-amber-400',
  HIGH: 'bg-orange-500/15 text-orange-400',
  CRITICAL: 'bg-red-500/15 text-red-400',
  };

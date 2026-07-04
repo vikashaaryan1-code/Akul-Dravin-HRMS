@@ -36,7 +36,7 @@ interface RecruiterRow {
  PLATINUM: { label: 'Platinum', color: 'text-violet-300', bg: 'bg-violet-500/20 border border-violet-500/40', rate: '22% + ₹15K bonus', icon: <Crown className="h-3 w-3" /> },
  GOLD: { label: 'Gold', color: 'text-yellow-300', bg: 'bg-yellow-500/20 border border-yellow-500/40', rate: '18% + ₹5K bonus', icon: <Trophy className="h-3 w-3" /> },
  SILVER: { label: 'Silver', color: 'text-slate-600', bg: 'bg-slate-500/20 border border-slate-500/40', rate: '15%', icon: <Award className="h-3 w-3" /> },
- BRONZE: { label: 'Bronze', color: 'text-amber-600', bg: 'bg-slate-50mber-800/20 border border-amber-700/40', rate: '10%', icon: <Star className="h-3 w-3" /> },
+ BRONZE: { label: 'Bronze', color: 'text-amber-600', bg: 'bg-amber-800/20 border border-amber-700/40', rate: '10%', icon: <Star className="h-3 w-3" /> },
 };
 
 function TierBadge({ tier }: { tier: CommissionTier }) {

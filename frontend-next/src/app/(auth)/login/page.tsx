@@ -224,7 +224,7 @@ const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
 
  {/* Brand */}
  <div className="mb-8 flex flex-col items-center text-center">
- <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 p-0.5 shadow-xl transition-all duration-700 group-hover:scale-110 group-hover:bg-white/10 ${mfaStep ? 'bg-slate-50mber-500/10' : ''}`}>
+ <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 p-0.5 shadow-xl transition-all duration-700 group-hover:scale-110 group-hover:bg-white/10 ${mfaStep ? 'bg-amber-500/10' : ''}`}>
  {mfaStep
  ? <KeyRound className="h-7 w-7 text-amber-400" />
  : <ShieldCheck className="h-7 w-7 text-blue-400" />
@@ -395,7 +395,7 @@ const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
  value={mfaCode}
  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
  placeholder="000000"
- className="w-full rounded-2xl border border-amber-400/20 bg-slate-50mber-400/5 py-3.5 pl-11 pr-4 text-center text-2xl font-mono tracking-[0.5em] text-white outline-none transition-all focus:border-amber-400/50 focus:bg-slate-50mber-400/10 focus:ring-4 focus:ring-amber-400/10"
+ className="w-full rounded-2xl border border-amber-400/20 bg-amber-400/5 py-3.5 pl-11 pr-4 text-center text-2xl font-mono tracking-[0.5em] text-white outline-none transition-all focus:border-amber-400/50 focus:bg-amber-400/10 focus:ring-4 focus:ring-amber-400/10"
  />
  </div>
  <p className="ml-1 text-[10px] text-slate-600">
@@ -414,7 +414,7 @@ const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
  type="submit"
  id="mfa-submit"
  disabled={loading || mfaCode.length !== 6}
- className="group relative mt-2 w-full overflow-hidden rounded-2xl bg-slate-50mber-400 py-4 text-sm font-black text-slate-950 shadow-xl transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+ className="group relative mt-2 w-full overflow-hidden rounded-2xl bg-amber-400 py-4 text-sm font-black text-slate-950 shadow-xl transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
  >
  {loading ? 'Verifying…' : 'Verify Code'}
  </button>
@@ -433,7 +433,7 @@ const GOOGLE_AUTH_URL = `${BACKEND_URL}/auth/google`;
 
  {/* ── MFA Setup Nudge ─────────────────────────────────────────── */}
  {mfaSetupNudge && !nudgeDismissed && (
- <div className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-slate-50mber-400/5 p-4">
+ <div className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/5 p-4">
  <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
  <div className="flex-1 text-xs text-amber-300">
  <p className="font-bold">Secure your account</p>

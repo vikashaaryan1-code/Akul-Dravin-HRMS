@@ -1,0 +1,338 @@
+{
+  "app\\about\\page.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "app\\contact\\page.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "app\\features\\page.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "app\\hr-portal\\onboarding\\page.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\analytics\\AttritionRiskWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\analytics\\SkillGapWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\assistant\\AiChatWindow.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\automation\\DocumentGeneratorWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\benefits\\ActiveCoverageWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\benefits\\RetirementWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\compliance\\RegulatoryAuditWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\dashboards\\AiCopilotWorkspace.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\ess\\TimeOffBalanceWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\A2zPageExperience.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\AutomationSection.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\CtaSection.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\HeroSection.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\LandingFooter.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\LandingLeadHub.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\landing\\LandingNavbar.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\modules\\EmployeeLifecycleModal.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\modules\\RecruitmentModuleView.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-slate-900', 'text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-navy",
+        "text-slate-900",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\modules\\SettingsModuleView.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-slate-900', 'text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-slate-900",
+        "text-slate-900",
+        "text-slate-900",
+        "text-slate-900",
+        "text-slate-900",
+        "text-slate-900",
+        "text-slate-900"
+      ]
+    }
+  ],
+  "components\\navigation\\SideNavigation.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\navigation\\TopNavigation.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\onboarding\\OnboardingTimeline.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\security\\BehavioralThreatWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\security\\GeolocationDriftWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\surveys\\ActivePollsWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy"
+      ]
+    }
+  ],
+  "components\\talent\\TalentMobilityWidget.tsx": [
+    {
+      "type": "contrast",
+      "description": "Found dark text tokens ['text-navy'] on a dark background file.",
+      "matches": [
+        "text-navy",
+        "text-navy",
+        "text-navy"
+      ]
+    }
+  ]
+}

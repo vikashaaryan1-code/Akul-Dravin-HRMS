@@ -5,58 +5,109 @@ interface LogoProps {
   width?: number;
   height?: number;
   showText?: boolean;
+  opacity?: number;
 }
 
 export const AkulDravinLogo: React.FC<LogoProps> = ({ 
   className = '', 
   width = 64, 
   height = 64, 
-  showText = true 
+  showText = true,
+  opacity = 1
 }) => {
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`} style={{ opacity }}>
       {/* 3D Glass Logo Graphic */}
       <div 
         style={{ width, height }} 
-        className="relative flex-shrink-0 flex items-center justify-center drop-shadow-2xl"
+        className="relative flex-shrink-0 flex items-center justify-center drop-shadow-2xl perspective-1000"
       >
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-md">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-lg preserve-3d">
           <defs>
-            <linearGradient id="blueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#11284A" />
-              <stop offset="50%" stopColor="#1E68E5" />
+            {/* Dark Navy / Blue Premium Tone */}
+            <linearGradient id="glassBlueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#1E68E5" stopOpacity="0.9" />
+              <stop offset="50%" stopColor="#00E5AB" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.9" />
+            </linearGradient>
+
+            {/* Deep Glass for back elements */}
+            <linearGradient id="deepGlassGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0A1E3A" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#1E68E5" stopOpacity="0.75" />
+            </linearGradient>
+
+            {/* Premium Gold Accent for Arrow */}
+            <linearGradient id="premiumGoldGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#9A7D00" />
+              <stop offset="30%" stopColor="#CFAE00" />
+              <stop offset="70%" stopColor="#FFD700" />
+              <stop offset="100%" stopColor="#FFF4CC" />
+            </linearGradient>
+
+            <linearGradient id="tealGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0F8B8D" />
               <stop offset="100%" stopColor="#00E5AB" />
             </linearGradient>
-            <linearGradient id="goldGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#CFAE00" />
-              <stop offset="100%" stopColor="#FFD700" />
-            </linearGradient>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+
+            {/* 3D Glass & Bevel Filters */}
+            <filter id="crystalGlass" x="-20%" y="-20%" width="140%" height="140%">
+              {/* Drop Shadow */}
+              <feDropShadow dx="2" dy="6" stdDeviation="4" floodOpacity="0.3" floodColor="#000000" />
+              {/* Inner Bevel for 3D Edge */}
+              <feSpecularLighting surfaceScale="2" specularConstant="1" specularExponent="30" lightingColor="#FFFFFF" in="SourceAlpha" result="specOut">
+                <fePointLight x="20" y="20" z="100" />
+              </feSpecularLighting>
+              <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut2" />
+              <feComposite in="SourceGraphic" in2="specOut2" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
             </filter>
-            <filter id="glass" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="2" dy="4" stdDeviation="4" floodOpacity="0.3" />
+
+            <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.4" floodColor="#9A7D00" />
             </filter>
           </defs>
 
-          {/* Left Leg of A (Blue/Aqua gradient) */}
-          <path d="M40 85 L15 85 L45 20 L55 20 Z" fill="url(#blueGrad)" filter="url(#glass)" />
+          {/* BACKGROUND LAYER: The "D" Bowl & A Right Leg */}
+          <path d="M48 20 L48 80 Q75 80 85 65 Q95 50 85 35 Q75 20 48 20 Z" fill="url(#deepGlassGrad)" filter="url(#crystalGlass)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
           
-          {/* Circuit Lines on the left leg */}
-          <circle cx="28" cy="70" r="2.5" fill="#00E5AB" />
-          <path d="M28 70 L35 60 L40 60" stroke="#00E5AB" strokeWidth="1.5" fill="none" />
-          <circle cx="41" cy="60" r="1.5" fill="#00E5AB" />
+          {/* AI Circuit Pattern inside the D bowl */}
+          <g opacity="0.8">
+            <circle cx="70" cy="40" r="2.5" fill="#00E5AB" />
+            <path d="M70 40 L60 50 L52 50" stroke="#00E5AB" strokeWidth="1.5" fill="none" />
+            <circle cx="50" cy="50" r="1.5" fill="#00E5AB" />
 
-          {/* Golden Arrow (Right Leg of A + Ascending Arrow) */}
-          <path d="M60 85 L35 85 L65 20 L85 20 L75 35 L85 45 Z" fill="url(#goldGrad)" filter="url(#glow)" />
-          <path d="M85 20 L70 15 L75 30 Z" fill="#FFD700" />
+            <circle cx="75" cy="55" r="2" fill="#00E5AB" />
+            <path d="M75 55 L65 65 L55 65" stroke="#00E5AB" strokeWidth="1.5" fill="none" />
+            <circle cx="53" cy="65" r="1.5" fill="#00E5AB" />
+            
+            <circle cx="62" cy="70" r="1.5" fill="#00E5AB" />
+            <path d="M62 70 L55 75 L48 75" stroke="#00E5AB" strokeWidth="1" fill="none" />
+          </g>
 
-          {/* Intersecting crossbar */}
-          <path d="M30 65 L70 65 L65 50 L38 50 Z" fill="url(#blueGrad)" filter="url(#glass)" opacity="0.9" />
+          {/* FRONT LAYER: The "A" Left Leg & Base */}
+          <path d="M48 20 L25 80 L38 80 L44 65 L54 65 L54 80 L65 80 L48 20 Z" fill="url(#glassBlueGrad)" filter="url(#crystalGlass)" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" />
+          
+          {/* The Human Icons (Bottom Left) */}
+          <g fill="url(#tealGrad)" transform="translate(18, 65) scale(0.6)">
+            {/* Center Human */}
+            <circle cx="25" cy="10" r="6" />
+            <path d="M15 25 Q25 15 35 25 L35 30 L15 30 Z" />
+            {/* Left Human */}
+            <circle cx="12" cy="15" r="4.5" opacity="0.8" />
+            <path d="M5 28 Q12 20 18 28 L18 30 L5 30 Z" opacity="0.8" />
+            {/* Right Human */}
+            <circle cx="38" cy="15" r="4.5" opacity="0.8" />
+            <path d="M32 28 Q38 20 45 28 L45 30 L32 30 Z" opacity="0.8" />
+          </g>
 
-          {/* Glowing dot in center */}
-          <circle cx="50" cy="58" r="4" fill="#FFFFFF" filter="url(#glow)" opacity="0.8" />
+          {/* TOP LAYER: The Swooping Growth Arrow (Gold) */}
+          <path d="M20 55 Q40 55 60 40 L85 15 L85 30 L90 30 L90 10 L70 10 L70 15 L80 15 L55 45 Q35 62 20 62 Z" fill="url(#premiumGoldGrad)" filter="url(#goldGlow)" />
+          
+          {/* Subtle Light Reflection on Arrow */}
+          <path d="M85 15 L78 22" stroke="#FFFFFF" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+
         </svg>
       </div>
 
@@ -66,7 +117,7 @@ export const AkulDravinLogo: React.FC<LogoProps> = ({
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white leading-none mb-1 font-display">
             AKUL DRAVIN
           </h1>
-          <p className="text-xs md:text-sm font-semibold tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
+          <p className="text-[0.65rem] md:text-[0.7rem] font-bold tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-aqua to-blue leading-none">
             HRMS AI
           </p>
         </div>

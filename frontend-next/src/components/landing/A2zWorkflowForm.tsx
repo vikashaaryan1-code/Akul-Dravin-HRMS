@@ -25,7 +25,7 @@ type SubmissionState = {
 } | null;
 
 const INPUT_STYLES =
- 'w-full rounded-2xl border border-navy/10 bg-navy/5 px-4 py-3 text-sm text-navy outline-none transition placeholder:text-slate-500 focus:border-amber/60 focus:bg-navy/10';
+ 'w-full rounded-2xl border border-white/10 bg-navy-light/40 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-amber/60 focus:bg-navy-light/60';
 
 const TEXTAREA_STYLES = `${INPUT_STYLES} min-h-[120px] resize-y`;
 
@@ -92,10 +92,10 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
 
  return (
  <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
- <form id="a2z-form" className="grid gap-4 rounded-[2rem] border border-navy/10 bg-navy/5 p-6 shadow-2xl backdrop-blur-xl md:grid-cols-2" onSubmit={submit}>
+ <form id="a2z-form" className="grid gap-4 rounded-[2rem] border border-white/10 bg-navy-light/40 p-6 shadow-2xl backdrop-blur-xl md:grid-cols-2" onSubmit={submit}>
  <div className="md:col-span-2">
  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber/80">A2Z Form</p>
- <h3 className="mt-2 text-2xl font-semibold text-navy">Submit your full workflow requirement</h3>
+ <h3 className="mt-2 text-2xl font-semibold text-white">Submit your full workflow requirement</h3>
  <p className="mt-3 text-sm leading-7 text-slate-600">
  Share your service bundle, rollout model, priority, and implementation intent. We return a workflow-based next-step plan immediately.
  </p>
@@ -129,7 +129,7 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
  <span>Service bundle</span>
  <select className={INPUT_STYLES} value={form.serviceBundle} onChange={(event) => setForm((current) => ({ ...current, serviceBundle: event.target.value }))}>
  {options.serviceBundles.map((item) => (
- <option key={item} className="bg-white text-navy">
+ <option key={item} className="bg-navy-light text-white">
  {item}
  </option>
  ))}
@@ -139,7 +139,7 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
  <span>Deployment model</span>
  <select className={INPUT_STYLES} value={form.deploymentModel} onChange={(event) => setForm((current) => ({ ...current, deploymentModel: event.target.value }))}>
  {options.deploymentModels.map((item) => (
- <option key={item} className="bg-white text-navy">
+ <option key={item} className="bg-navy-light text-white">
  {item}
  </option>
  ))}
@@ -149,7 +149,7 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
  <span>Priority</span>
  <select className={INPUT_STYLES} value={form.priority} onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value }))}>
  {options.priorities.map((item) => (
- <option key={item} className="bg-white text-navy">
+ <option key={item} className="bg-navy-light text-white">
  {item}
  </option>
  ))}
@@ -159,7 +159,7 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
  <span>Timeline</span>
  <select className={INPUT_STYLES} value={form.timeline} onChange={(event) => setForm((current) => ({ ...current, timeline: event.target.value }))}>
  {options.timelines.map((item) => (
- <option key={item} className="bg-white text-navy">
+ <option key={item} className="bg-navy-light text-white">
  {item}
  </option>
  ))}
@@ -178,7 +178,7 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
  <button
  type="submit"
  disabled={isPending}
- className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-semibold text-navy transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+ className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-ember to-amber px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
  >
  {isPending ? 'Starting workflow...' : 'Start A2Z workflow'}
  </button>
@@ -192,26 +192,26 @@ export function A2zWorkflowForm({ options }: A2zWorkflowFormProps) {
  </form>
 
  <div className="space-y-5">
- <div className="rounded-[2rem] border border-navy/10 bg-[#07192e] p-6 shadow-2xl">
+ <div className="rounded-[2rem] border border-navy/10 bg-navy-light/40 p-6 shadow-2xl">
  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-200/80">Workflow Outcome</p>
- <h3 className="mt-2 text-2xl font-semibold text-navy">Your next steps appear here</h3>
+ <h3 className="mt-2 text-2xl font-semibold text-white">Your next steps appear here</h3>
  <p className="mt-3 text-sm leading-7 text-slate-600">
  Once submitted, this panel shows the A2Z workflow reference and the planned implementation sequence.
  </p>
  </div>
 
  {submissionState?.type === 'success' && submissionState.workflowPlan ? (
- <div className="space-y-4 rounded-[2rem] border border-navy/10 bg-navy/5 p-6 backdrop-blur-xl">
+ <div className="space-y-4 rounded-[2rem] border border-white/10 bg-navy-light/40 p-6 backdrop-blur-xl">
  <div>
  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber/80">Reference</p>
- <p className="mt-2 text-lg font-semibold text-navy">{submissionState.referenceId}</p>
+ <p className="mt-2 text-lg font-semibold text-white">{submissionState.referenceId}</p>
  </div>
 
  <div className="space-y-3">
  {submissionState.workflowPlan.map((step) => (
- <article key={step.phase} className="rounded-2xl border border-navy/10 bg-[#04101f] p-4">
+ <article key={step.phase} className="rounded-2xl border border-white/10 bg-navy-light/20 p-4">
  <div className="flex items-center justify-between gap-4">
- <h4 className="text-sm font-semibold text-navy">{step.phase}</h4>
+ <h4 className="text-sm font-semibold text-white">{step.phase}</h4>
  <span className="rounded-full border border-navy/10 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-slate-600">
  {step.status}
  </span>

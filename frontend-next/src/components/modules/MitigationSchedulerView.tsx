@@ -77,7 +77,7 @@ const DEMO_STATS: SchedulerStats = {
 /* ── Styling ─────────────────────────────────────────────────────────────────── */ const REASON_STYLE: Record<DeferralReason, { label: string; color: string; bg: string; border: string; icon: any; desc: string }> = {
  RESOURCE_BUSY: { label: 'Resource Busy', color: 'text-orange-400', bg: 'bg-orange-500/12', border: 'border-orange-500/30', icon: Shield, desc: 'Waiting for owning signal to resolve' },
  STABILIZING: { label: 'Stabilizing', color: 'text-blue-400', bg: 'bg-blue-500/12', border: 'border-blue-500/30', icon: Activity, desc: 'Waiting for stabilization window to expire' },
- BACKOFF: { label: 'Backoff', color: 'text-amber-400', bg: 'bg-slate-50mber-500/12', border: 'border-amber-500/30', icon: RefreshCw, desc: 'Exponential retry backoff in progress' },
+ BACKOFF: { label: 'Backoff', color: 'text-amber-400', bg: 'bg-amber-500/12', border: 'border-amber-500/30', icon: RefreshCw, desc: 'Exponential retry backoff in progress' },
  PENDING_APPROVAL: { label: 'Pending Approval', color: 'text-violet-400', bg: 'bg-violet-500/12', border: 'border-violet-500/30', icon: UserCheck, desc: 'Requires operator approval to proceed' },
  DEPENDENCY_INCOMPLETE: { label: 'Dependency', color: 'text-cyan-400', bg: 'bg-cyan-500/12', border: 'border-cyan-500/30', icon: GitBranch, desc: 'Waiting for dependent signal to complete' },
 };
@@ -90,7 +90,7 @@ function relTime(iso: string) {
 
 function ExpiryBar({ total, max }: { total: number; max: number }) {
  const pct = Math.round((total / max) * 100);
- const color = pct >= 80 ? 'bg-red-500' : pct >= 50 ? 'bg-slate-50mber-500' : 'bg-slate-600';
+ const color = pct >= 80 ? 'bg-red-500' : pct >= 50 ? 'bg-amber-500' : 'bg-slate-600';
  return (
  <div className="flex items-center gap-1.5">
  <div className="h-1 flex-1 rounded-full bg-slate-700/60 overflow-hidden">
@@ -226,7 +226,7 @@ function ExpiryBar({ total, max }: { total: number; max: number }) {
  <span className="font-mono text-slate-500 bg-slate-50/60 px-2 py-0.5 rounded border border-slate-200/30">type={entry.condition.type}</span>
  {entry.condition.resourceKey && <span className="font-mono text-slate-500 bg-slate-50/60 px-2 py-0.5 rounded border border-slate-200/30">resource={entry.condition.resourceKey}</span>}
  {entry.condition.owningSignalId && <span className="font-mono text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">owning={entry.condition.owningSignalId}</span>}
- {entry.condition.nextEligibleAt && <span className="font-mono text-amber-400 bg-slate-50mber-500/10 px-2 py-0.5 rounded border border-amber-500/20">eligible={relTime(entry.condition.nextEligibleAt)}</span>}
+ {entry.condition.nextEligibleAt && <span className="font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">eligible={relTime(entry.condition.nextEligibleAt)}</span>}
  {entry.condition.retryCount !== undefined && <span className="font-mono text-slate-500 bg-slate-50/60 px-2 py-0.5 rounded border border-slate-200/30">retries={entry.condition.retryCount}</span>}
  </div>
  </div>

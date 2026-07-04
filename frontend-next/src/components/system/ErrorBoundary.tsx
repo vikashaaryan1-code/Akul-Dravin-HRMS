@@ -32,7 +32,7 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
  return { hasError: true, error };
  }
 
- componentDidCatch(error: Error, info: React.ErrorInfo) {
+ override componentDidCatch(error: Error, info: React.ErrorInfo) {
  this.props.onError?.(error, info);
  /* Future: ship to Sentry / OpenTelemetry */ if (process.env.NODE_ENV === 'development') {
  console.error(`[ErrorBoundary:${this.props.context ?? 'unknown'}]`, error, info);
@@ -43,7 +43,7 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
  resetQuery?.(); // reset React Query error state
  this.setState({ hasError: false, error: null }); /* reset boundary */ };
 
- render() {
+ override render() {
  if (this.state.hasError) {
  if (this.props.fallback) return this.props.fallback;
 

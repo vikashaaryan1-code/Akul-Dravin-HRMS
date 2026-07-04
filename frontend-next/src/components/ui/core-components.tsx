@@ -34,16 +34,16 @@ export function Button({
  };
 
  const variantClasses = {
- primary: 'bg-gradient-to-r from-indigo-500 to-magenta-500 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5',
- secondary: 'bg-slate-50 text-white border border-slate-600 hover:border-indigo-400 hover:bg-slate-700',
- ghost: 'text-cyan-400 border border-slate-600 hover:bg-slate-50 hover:border-cyan-400',
- danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-lg hover:shadow-xl',
+ primary: 'bg-gradient-to-r from-[#00E5AB] to-[#1E68E5] text-[#051124] shadow-[0_4px_20px_rgba(0,229,171,0.3),inset_0_2px_10px_rgba(255,255,255,0.4)] hover:shadow-[0_8px_30px_rgba(30,104,229,0.5)] hover:-translate-y-0.5 border border-white/20',
+ secondary: 'bg-[#051124]/80 text-white border border-[#1E68E5]/30 hover:border-[#00E5AB]/60 hover:bg-[#0A1E3A] shadow-[0_4px_12px_rgba(0,0,0,0.5)]',
+ ghost: 'text-[#00E5AB] border border-transparent hover:bg-white/5 hover:border-white/10',
+ danger: 'bg-gradient-to-r from-red-600/80 to-rose-600/80 text-white shadow-[0_4px_14px_rgba(220,38,38,0.2)] hover:shadow-[0_8px_22px_rgba(225,29,72,0.4)] border border-red-500/30',
  };
 
  return (
  <button
  className={clsx(
- 'btn rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed',
+ 'btn rounded-lg font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed',
  sizeClasses[size],
  variantClasses[variant],
  className,
@@ -71,12 +71,15 @@ export function Card({ children, className, ...props }: CardProps) {
  return (
  <div
  className={clsx(
- 'glass-card backdrop-blur-xl bg-white/40 border border-slate-200/20 rounded-lg p-6 hover:border-indigo-500/30 transition-all',
+ 'glass-card backdrop-blur-xl bg-[#051124]/80 border border-white/10 rounded-xl p-6 hover:border-[#00E5AB]/40 transition-all shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden',
  className,
  )}
  {...props}
  >
- {children}
+ <div className="absolute inset-0 bg-gradient-to-br from-[#1E68E5]/5 to-transparent pointer-events-none" />
+ <div className="relative z-10">
+   {children}
+ </div>
  </div>
  );
 }
@@ -93,16 +96,16 @@ interface BadgeProps {
  */
 export function Badge({ variant = 'info', children, className }: BadgeProps) {
  const colors = {
- success: 'bg-emerald-950/40 text-emerald-300 border border-emerald-700/30',
- warning: 'bg-slate-50mber-950/40 text-amber-300 border border-amber-700/30',
- error: 'bg-rose-950/40 text-rose-300 border border-rose-700/30',
- info: 'bg-indigo-950/40 text-indigo-300 border border-indigo-700/30',
+ success: 'bg-[#00E5AB]/10 text-[#00E5AB] border border-[#00E5AB]/30 shadow-[0_0_10px_rgba(0,229,171,0.2)]',
+ warning: 'bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/30 shadow-[0_0_10px_rgba(255,215,0,0.2)]',
+ error: 'bg-rose-500/10 text-rose-400 border border-rose-500/30 shadow-[0_0_10px_rgba(244,63,94,0.2)]',
+ info: 'bg-[#1E68E5]/10 text-[#2B7AFF] border border-[#1E68E5]/30 shadow-[0_0_10px_rgba(30,104,229,0.2)]',
  };
 
  return (
  <span
  className={clsx(
- 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider',
+ 'inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md',
  colors[variant],
  className,
  )}
@@ -130,8 +133,8 @@ export function LoadingSpinner({ size = 'md', variant = 'primary', className }: 
  };
 
  const colors = {
- primary: 'border-indigo-500/20 border-t-indigo-500',
- secondary: 'border-slate-600 border-t-cyan-400',
+ primary: 'border-[#1E68E5]/20 border-t-[#00E5AB]',
+ secondary: 'border-white/10 border-t-[#1E68E5]',
  };
 
  return (
@@ -151,7 +154,7 @@ export function SkeletonLoader({ lines = 3, className }: { lines?: number; class
  {Array.from({ length: lines }).map((_, i) => (
  <div
  key={i}
- className="h-4 bg-gradient-to-r from-slate-800 to-slate-700/50 rounded-lg animate-pulse"
+ className="h-4 bg-gradient-to-r from-[#0A1E3A] to-[#11284A] rounded-lg animate-pulse border border-white/5"
  />
  ))}
  </div>

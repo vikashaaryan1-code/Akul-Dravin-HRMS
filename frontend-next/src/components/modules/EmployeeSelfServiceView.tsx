@@ -76,7 +76,7 @@ function LeaveBar({ balance }: { balance: LeaveBalance }) {
 function GoalRow({ goal }: { goal: Goal }) {
  const colors: Record<Goal['status'], string> = {
  'on-track': 'bg-emerald-500',
- 'at-risk': 'bg-slate-50mber-500',
+ 'at-risk': 'bg-amber-500',
  'completed': 'bg-blue-500',
  };
  const pills: Record<Goal['status'], 'success' | 'warning' | 'default'> = {
@@ -221,7 +221,7 @@ function GoalRow({ goal }: { goal: Goal }) {
  { type: 'Casual Leave', total: 12, used: 4, available: 8, color: 'bg-blue-500' },
  { type: 'Sick Leave', total: 8, used: 1, available: 7, color: 'bg-rose-500' },
  { type: 'Earned Leave', total: 18, used: 5, available: 13, color: 'bg-emerald-500' },
- { type: 'Loss of Pay', total: 365, used: 0, available: 365, color: 'bg-slate-50mber-500' },
+ { type: 'Loss of Pay', total: 365, used: 0, available: 365, color: 'bg-amber-500' },
 ];
 
 const MY_GOALS: Goal[] = [
@@ -355,11 +355,11 @@ export function EmployeeSelfServiceView() {
  ].map(ann => (
  <div key={ann.id} className={`rounded-xl p-2.5 border text-xs flex items-start gap-2
  ${ann.type === 'success' ? 'border-emerald-500/30 bg-emerald-500/10' :
- ann.type === 'warning' ? 'border-amber-500/30 bg-slate-50mber-500/10' :
+ ann.type === 'warning' ? 'border-amber-500/30 bg-amber-500/10' :
  'border-blue-500/30 bg-blue-500/10'}`}>
  <div className={`h-1.5 w-1.5 rounded-full mt-1 shrink-0
  ${ann.type === 'success' ? 'bg-emerald-400' :
- ann.type === 'warning' ? 'bg-slate-50mber-400' : 'bg-blue-400'}`} />
+ ann.type === 'warning' ? 'bg-amber-400' : 'bg-blue-400'}`} />
  <div>
  <p className="text-slate-700 font-medium">{ann.title}</p>
  <p className="text-slate-500 text-[10px] mt-0.5">{ann.date}</p>

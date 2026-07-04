@@ -42,7 +42,7 @@ const ENTITY_COLORS: Record<string, string> = {
  employee: 'bg-blue-100 text-blue-600',
  crm_lead: 'bg-violet-100 text-violet-600',
  payroll: 'bg-emerald-100 text-emerald-600',
- recruitment: 'bg-slate-50mber-100 text-amber-600',
+ recruitment: 'bg-amber-100 text-amber-600',
  leave: 'bg-cyan-100 text-cyan-600',
  compliance: 'bg-rose-100 text-rose-600',
  workflow: 'bg-slate-100 text-slate-600',

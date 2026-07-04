@@ -1,0 +1,75 @@
+{
+  "app\\about\\page.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "app\\contact\\page.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "app\\features\\page.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\analytics\\AttritionRiskWidget.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\automation\\DocumentGeneratorWidget.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\dashboards\\AiCopilotWorkspace.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\landing\\AutomationSection.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\landing\\CtaSection.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\landing\\HeroSection.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\landing\\LandingLeadHub.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\modules\\RecruitmentModuleView.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\navigation\\SideNavigation.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ],
+  "components\\navigation\\TopNavigation.tsx": [
+    "Corrected text-navy to text-white for dark backdrop contrast",
+    "Corrected text-navy to text-white for dark backdrop contrast"
+  ]
+}

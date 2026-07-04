@@ -20,13 +20,13 @@ export function ContactSection() {
  <p className="section-label text-gold mb-3">Get Started</p>
  <h2
  id="contact-heading"
- className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-navy"
+ className="text-4xl lg:text-6xl font-black tracking-tighter leading-none text-white"
  >
  Book Your
  <br />
- <span className="text-gradient-gold">Enterprise Demo</span>
+ <span className="bg-gradient-to-r from-gold via-[#FFE866] to-[#CFAE00] bg-clip-text text-transparent drop-shadow-md">Enterprise Demo</span>
  </h2>
- <p className="mt-5 text-lg text-slate-500 max-w-xl mx-auto">
+ <p className="mt-5 text-lg text-slate-400 max-w-xl mx-auto">
  Talk to a senior solutions architect. Response within 1 business day.
  </p>
  </div>
@@ -53,7 +53,7 @@ export function ContactSection() {
  <Link
  href="#contact"
  id="contact-schedule-cta"
- className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl surface-raised border-subtle text-sm font-bold text-navy hover:bg-white/8 transition-all duration-200"
+ className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl surface-raised border-subtle text-sm font-bold text-white hover:bg-white/5/8 transition-all duration-200"
  >
  <CalendarDays className="h-4 w-4 text-gold" aria-hidden="true" />
  Schedule Consultation
@@ -61,7 +61,7 @@ export function ContactSection() {
  <a
  href="tel:+919000000000"
  id="contact-phone-cta"
- className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl surface-raised border-subtle text-sm font-bold text-navy hover:bg-white/8 transition-all duration-200"
+ className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl surface-raised border-subtle text-sm font-bold text-white hover:bg-white/5/8 transition-all duration-200"
  >
  <Phone className="h-4 w-4 text-aqua" aria-hidden="true" />
  Call Enterprise Team
@@ -79,7 +79,7 @@ export function ContactSection() {
  <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
  <div>
  <p className="section-label text-gold mb-2">Launch Consultation</p>
- <h3 className="text-2xl font-black text-navy">Request an A2Z Platform Walkthrough</h3>
+ <h3 className="text-2xl font-black text-white">Request an A2Z Platform Walkthrough</h3>
  </div>
  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-jade/25 bg-jade/8 text-jade text-xs font-bold">
  <span className="h-1.5 w-1.5 rounded-full bg-jade animate-pulse-live" aria-hidden="true" />

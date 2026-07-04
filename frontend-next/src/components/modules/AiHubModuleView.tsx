@@ -89,7 +89,7 @@ function getAuthHeader(): Record<string, string> {
  const map: Record<AttritionRisk, string> = {
  CRITICAL: 'bg-red-500/20 text-red-400 border border-red-500/30',
  HIGH: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
- MEDIUM: 'bg-slate-50mber-500/20 text-amber-400 border border-amber-500/30',
+ MEDIUM: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
  LOW: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
  };
  return (
@@ -299,7 +299,7 @@ function TypingDots() {
  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
  c.recommendation === 'STRONG_FIT' ? 'bg-emerald-500/20 text-emerald-400' :
  c.recommendation === 'GOOD_FIT' ? 'bg-blue-500/20 text-blue-400' :
- c.recommendation === 'PARTIAL_FIT'? 'bg-slate-50mber-500/20 text-amber-400' :
+ c.recommendation === 'PARTIAL_FIT'? 'bg-amber-500/20 text-amber-400' :
  'bg-red-500/20 text-red-400'
  }`}>{c.recommendation.replace('_',' ')}</span>
  </div>

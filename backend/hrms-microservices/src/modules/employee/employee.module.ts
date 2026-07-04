@@ -9,7 +9,7 @@ import { EmployeeImportExportService } from './employee-import-export.service';
 import { LifecycleOrchestratorService } from './lifecycle-orchestrator.service';
 import { RolesGuard } from '../../common/guards/roles.guard';
 
-import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bullmq';
 import { PayrollModule } from '../payroll/payroll.module';
 
 /**

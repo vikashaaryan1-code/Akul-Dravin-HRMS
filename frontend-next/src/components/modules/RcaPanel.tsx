@@ -66,7 +66,7 @@ interface RcaReport {
 /* ── Styling ─────────────────────────────────────────────────────────────────── */ const NODE_STYLE: Record<GraphNodeType, { icon: any; color: string; bg: string }> = {
  INCIDENT: { icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/15' },
  MITIGATION: { icon: Shield, color: 'text-indigo-400', bg: 'bg-indigo-500/15' },
- PROJECTION: { icon: Database, color: 'text-amber-400', bg: 'bg-slate-50mber-500/15' },
+ PROJECTION: { icon: Database, color: 'text-amber-400', bg: 'bg-amber-500/15' },
  QUEUE_JOB: { icon: Inbox, color: 'text-orange-400', bg: 'bg-orange-500/15' },
  DOMAIN_EVENT: { icon: GitBranch, color: 'text-slate-500', bg: 'bg-slate-700/40' },
  REVISION: { icon: Layers, color: 'text-cyan-400', bg: 'bg-cyan-500/15' },
@@ -76,7 +76,7 @@ const CONF_LABEL = (c: number) => c >= 1.0 ? { text: 'Deterministic', color: 'te
 
 function ScoreBar({ score }: { score: number }) {
  const pct = Math.round(score * 100);
- const color = pct >= 75 ? 'bg-red-500' : pct >= 50 ? 'bg-slate-50mber-500' : pct >= 30 ? 'bg-blue-500' : 'bg-slate-500';
+ const color = pct >= 75 ? 'bg-red-500' : pct >= 50 ? 'bg-amber-500' : pct >= 30 ? 'bg-blue-500' : 'bg-slate-500';
  return (
  <div className="flex items-center gap-2">
  <div className="h-1.5 flex-1 rounded-full bg-slate-700/60 overflow-hidden">

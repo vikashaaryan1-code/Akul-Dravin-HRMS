@@ -9,7 +9,7 @@ type StatusState = {
 } | null;
 
 const INPUT_STYLES =
- 'w-full rounded-2xl border border-navy/10 bg-navy/5 px-4 py-3 text-sm text-navy outline-none transition placeholder:text-slate-500 focus:border-amber/60 focus:bg-navy/10';
+ 'w-full rounded-2xl border border-navy/10 bg-navy/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-amber/60 focus:bg-navy/10';
 
 const TEXTAREA_STYLES = `${INPUT_STYLES} min-h-[120px] resize-y`;
 
@@ -118,7 +118,7 @@ export function LandingLeadHub() {
  <div className="mb-6 flex items-center justify-between gap-4">
  <div>
  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber/80">Launch Consultation</p>
- <h3 className="mt-2 text-2xl font-semibold text-navy">Request an A2Z platform walkthrough</h3>
+ <h3 className="mt-2 text-2xl font-semibold text-white">Request an A2Z platform walkthrough</h3>
  </div>
  <div className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
  Response within 1 business day
@@ -236,7 +236,7 @@ export function LandingLeadHub() {
 
  <div className="rounded-[2rem] border border-navy/10 bg-navy/5 p-6 shadow-2xl backdrop-blur-xl">
  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber/80">Product Updates</p>
- <h3 className="mt-2 text-xl font-semibold text-navy">Subscribe to release and rollout updates</h3>
+ <h3 className="mt-2 text-xl font-semibold text-white">Subscribe to release and rollout updates</h3>
  <p className="mt-3 text-sm leading-6 text-slate-600">
  Get product notes, automation templates, deployment insights, and launch guidance in your inbox.
  </p>

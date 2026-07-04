@@ -147,7 +147,7 @@ const EVENT_COLORS: Record<string, string> = {
  {[
  { queue: 'ai-jobs', concurrency: 3, color: 'bg-violet-600' },
  { queue: 'analytics', concurrency: 5, color: 'bg-sky-600' },
- { queue: 'payroll', concurrency: 1, color: 'bg-slate-50mber-600' },
+ { queue: 'payroll', concurrency: 1, color: 'bg-amber-600' },
  { queue: 'notifications', concurrency: 10, color: 'bg-emerald-600' },
  { queue: 'governance', concurrency: 3, color: 'bg-indigo-600' },
  ].map(w => (
@@ -205,7 +205,7 @@ const EVENT_COLORS: Record<string, string> = {
  {panel === 'projections' && (
  <div className="space-y-3">
  {projections.map(p => (
- <div key={p.domain} className={`p-4 rounded-2xl border ${p.isStale ? 'bg-slate-50mber-500/10 border-amber-500/30' : 'bg-slate-50/60 border-slate-200/50'}`}>
+ <div key={p.domain} className={`p-4 rounded-2xl border ${p.isStale ? 'bg-amber-500/10 border-amber-500/30' : 'bg-slate-50/60 border-slate-200/50'}`}>
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
  <BarChart2 className={`h-5 w-5 ${p.isStale ? 'text-amber-400' : 'text-emerald-400'}`} />
@@ -215,7 +215,7 @@ const EVENT_COLORS: Record<string, string> = {
  </div>
  </div>
  <div className="text-right">
- <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${p.isStale ? 'bg-slate-50mber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+ <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${p.isStale ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
  {p.isStale ? 'STALE' : 'HEALTHY'}
  </span>
  <p className="text-[10px] text-slate-500 mt-0.5 flex items-center justify-end gap-1">
@@ -224,7 +224,7 @@ const EVENT_COLORS: Record<string, string> = {
  </div>
  </div>
  {p.isStale && p.staleReason && (
- <p className="mt-2 text-[10px] text-amber-400 font-mono bg-slate-50mber-500/10 px-2 py-1 rounded-lg">
+ <p className="mt-2 text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2 py-1 rounded-lg">
  cause: {p.staleReason}
  </p>
  )}

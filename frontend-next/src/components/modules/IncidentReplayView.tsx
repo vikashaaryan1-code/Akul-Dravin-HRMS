@@ -54,7 +54,7 @@ const DEMO_TIMELINE: IncidentTimeline = {
  SLO_BREACH: { icon: AlertTriangle, color: 'text-red-400', bgColor: 'bg-red-500/15 border-red-500/30', label: 'SLO Breach' },
  SLO_RECOVERY: { icon: CheckCircle, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10 border-emerald-500/20', label: 'SLO Recovery' },
  DLQ_ENTRY: { icon: Inbox, color: 'text-orange-400', bgColor: 'bg-orange-500/12 border-orange-500/25', label: 'DLQ Entry' },
- PROJECTION_STALE: { icon: Database, color: 'text-amber-400', bgColor: 'bg-slate-50mber-500/12 border-amber-500/25', label: 'Projection Stale' },
+ PROJECTION_STALE: { icon: Database, color: 'text-amber-400', bgColor: 'bg-amber-500/12 border-amber-500/25', label: 'Projection Stale' },
  MITIGATION_PROPOSED: { icon: Shield, color: 'text-blue-400', bgColor: 'bg-blue-500/10 border-blue-500/20', label: 'Mitigation Proposed' },
  MITIGATION_EXECUTED: { icon: Zap, color: 'text-indigo-400', bgColor: 'bg-indigo-500/15 border-indigo-500/30', label: 'Mitigation Executed' },
  MITIGATION_STABILIZING: { icon: Activity, color: 'text-purple-400', bgColor: 'bg-purple-500/10 border-purple-500/20', label: 'Stabilizing' },
@@ -64,7 +64,7 @@ const DEMO_TIMELINE: IncidentTimeline = {
 };
 
 const SEV_DOT: Record<Severity, string> = {
- CRITICAL: 'bg-red-500', HIGH: 'bg-orange-500', MEDIUM: 'bg-slate-50mber-500',
+ CRITICAL: 'bg-red-500', HIGH: 'bg-orange-500', MEDIUM: 'bg-amber-500',
  LOW: 'bg-blue-500', INFO: 'bg-slate-500',
 };
 

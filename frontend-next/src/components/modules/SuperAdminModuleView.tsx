@@ -35,7 +35,7 @@ export function SuperAdminModuleView() {
  { key: 'companyName', label: 'Company', sortable: true },
  { key: 'ownerEmail', label: 'Owner Email', sortable: true },
  { key: 'plan', label: 'Plan', sortable: true, render: (v) => {
- const colors: Record<string, string> = { starter: 'text-slate-600 bg-slate-100', growth: 'text-blue-600 bg-blue-50', enterprise: 'text-amber-600 bg-slate-50mber-50', custom: 'text-violet-600 bg-violet-50' };
+ const colors: Record<string, string> = { starter: 'text-slate-600 bg-slate-100', growth: 'text-blue-600 bg-blue-50', enterprise: 'text-amber-600 bg-amber-50', custom: 'text-violet-600 bg-violet-50' };
  return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${colors[v as string] ?? ''}`}>{v as string}</span>;
  }},
  { key: 'status', label: 'Status', sortable: true, render: (v) => <StatusPill label={v as string} /> },

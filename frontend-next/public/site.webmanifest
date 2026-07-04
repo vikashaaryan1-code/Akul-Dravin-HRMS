@@ -1,30 +1,35 @@
 {
-  "name": "Akul Dravin HRMS",
+  "name": "Akul Dravin HRMS AI",
   "short_name": "AD HRMS",
-  "description": "Enterprise HRMS, ERP & CRM Platform — unified workforce, payroll, finance and AI automation.",
+  "description": "AI-First Enterprise HRMS — unified workforce, payroll, attendance, recruitment and AI automation for growing businesses.",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#04101f",
-  "theme_color": "#0f8b8d",
+  "background_color": "#0A1E3A",
+  "theme_color": "#00E5AB",
   "categories": ["business", "productivity", "finance"],
   "lang": "en-IN",
+  "dir": "ltr",
   "icons": [
-    { "src": "/icons/icon-72x72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-96x96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
   ],
   "screenshots": [
-    { "src": "/images/og-cover.png", "sizes": "1200x630", "type": "image/png", "label": "Akul Dravin Dashboard" }
+    {
+      "src": "/images/og-cover.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Akul Dravin HRMS AI Dashboard"
+    }
   ],
   "shortcuts": [
-    { "name": "Dashboard", "url": "/dashboard", "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] },
-    { "name": "Payroll",   "url": "/payroll",   "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] },
-    { "name": "Employees", "url": "/employees", "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] }
-  ]
+    { "name": "Dashboard", "short_name": "Home",      "url": "/dashboard", "description": "Main HRMS Dashboard" },
+    { "name": "Employees", "short_name": "People",    "url": "/employees", "description": "Employee Directory" },
+    { "name": "Payroll",   "short_name": "Pay",       "url": "/payroll",   "description": "Payroll Processing" },
+    { "name": "AI Hub",    "short_name": "AI",        "url": "/ai-hub",    "description": "AI Tools & Automation" }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

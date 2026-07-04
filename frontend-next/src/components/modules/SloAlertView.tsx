@@ -54,7 +54,7 @@ const DEFAULT_CONFIG: SloConfig[] = [
 /* ─── Helpers ────────────────────────────────────────────────────────────────── */ const SEVERITY_COLORS: Record<Severity, string> = {
  CRITICAL: 'text-red-400 bg-red-500/15 border-red-500/30',
  HIGH: 'text-orange-400 bg-orange-500/15 border-orange-500/30',
- MEDIUM: 'text-amber-400 bg-slate-50mber-500/15 border-amber-500/30',
+ MEDIUM: 'text-amber-400 bg-amber-500/15 border-amber-500/30',
  LOW: 'text-blue-400 bg-blue-500/15 border-blue-500/30',
 };
 const STATUS_ICONS: Record<AlertStatus, React.ReactNode> = {

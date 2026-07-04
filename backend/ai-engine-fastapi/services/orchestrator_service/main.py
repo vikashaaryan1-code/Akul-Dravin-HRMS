@@ -14,6 +14,10 @@ from common.schemas import (
     InterviewAnalysisRequest,
     WorkforceIntelligenceRequest,
     WorkforceIntelligenceResponse,
+    HRChatRequest,
+    HRChatResponse,
+    PolicySummaryRequest,
+    PolicySummaryResponse,
 )
 
 app = FastAPI(title='AI Orchestrator Service', version='1.0.0')
@@ -116,3 +120,16 @@ async def workforce_intelligence(payload: WorkforceIntelligenceRequest) -> Workf
         attrition_risks=attrition_result,
         strategic_recommendations=strategic_recommendations,
     )
+
+
+@app.post('/v1/ai/hr-assistant/query', response_model=HRChatResponse)
+async def hr_assistant_query(payload: HRChatRequest) -> HRChatResponse:
+    res = await post_json(f'{settings.hr_assistant_url}/v1/hr-assistant/query', payload.model_dump())
+    return HRChatResponse(**res)
+
+
+@app.post('/v1/ai/policy-summary', response_model=PolicySummaryResponse)
+async def hr_policy_summary(payload: PolicySummaryRequest) -> PolicySummaryResponse:
+    res = await post_json(f'{settings.hr_assistant_url}/v1/hr-assistant/policy-summary', payload.model_dump())
+    return PolicySummaryResponse(**res)
+
