@@ -33,9 +33,17 @@ export class AppraisalService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.appraisalRepository.count();
-    const completed = await this.appraisalRepository.count({ where: { status: 'completed' } });
-    const draft = await this.appraisalRepository.count({ where: { status: 'draft' } });
-    return { total, completed, draft };
+    const stats = await this.appraisalRepository
+      .createQueryBuilder('appraisal')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN appraisal.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .addSelect("SUM(CASE WHEN appraisal.status = 'draft' THEN 1 ELSE 0 END)", 'draft')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      completed: parseInt(stats.completed, 10) || 0,
+      draft: parseInt(stats.draft, 10) || 0,
+    };
   }
 }
