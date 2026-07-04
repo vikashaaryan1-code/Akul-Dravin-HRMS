@@ -28,22 +28,24 @@ const config: Config = {
           4: '#94A3B8', // slate-400
         },
 
-        // Brand Accents (Based on Logo)
-        gold:    '#F2AA3B',
-        'gold-dim': '#C48A30',
-        navy:    '#111B2A',
-        aqua:    '#0F8B8D',
-        cyan:    '#22D3EE',
+        // Brand Accents (Based on Brand Board)
+        gold:    '#FFD700',
+        'gold-dim': '#CFAE00',
+        navy:    '#0A1E3A',
+        'navy-light': '#11284A',
+        blue:    '#1E68E5',
+        aqua:    '#00E5AB',
+        cyan:    '#00E5AB',
         ember:   '#E85A2A',
         jade:    '#10B981',
 
         // Legacy compat tokens
         ink: {
-          DEFAULT: '#111B2A',
+          DEFAULT: '#0A1E3A',
           '950': '#020617',
         },
-        amber:  '#F2AA3B',
-        mist:   '#EEF3F7',
+        amber:  '#FFD700',
+        mist:   '#FFFFFF',
         slateui: '#6E7B90',
 
         // Hologram (legacy)
@@ -56,10 +58,10 @@ const config: Config = {
 
       // ── Typography ───────────────────────────────────────────────────────
       fontFamily: {
-        display: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        body:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        body:    ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
         mono:    ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
-        sans:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans:    ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
       },
 
       fontSize: {
@@ -118,19 +120,19 @@ const config: Config = {
         'sm':       '0 1px 3px rgba(17,27,42,0.05)',
         DEFAULT:    '0 4px 16px rgba(17,27,42,0.06)',
         'md':       '0 4px 16px rgba(17,27,42,0.06)',
-        'lg':       '0 12px 32px rgba(15, 139, 141, 0.08)',
-        'xl':       '0 20px 64px rgba(15, 139, 141, 0.1)',
-        '2xl':      '0 32px 128px rgba(15, 139, 141, 0.12)',
-        'panel':    '0 10px 40px rgba(17,27,42,0.04)',
-        'glass':    '0 12px 40px rgba(15, 139, 141, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
+        'lg':       '0 12px 32px rgba(26, 117, 159, 0.08)',
+        'xl':       '0 20px 64px rgba(26, 117, 159, 0.1)',
+        '2xl':      '0 32px 128px rgba(26, 117, 159, 0.12)',
+        'panel':    '0 10px 40px rgba(11,25,44,0.04)',
+        'glass':    '0 12px 40px rgba(26, 117, 159, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
 
         // Light Theme Accent Glows
-        'gold-sm':  '0 0 20px rgba(242,170,59,0.15)',
-        'gold-md':  '0 10px 40px rgba(242,170,59,0.2)',
-        'gold-lg':  '0 20px 80px rgba(242,170,59,0.25)',
-        'aqua-sm':  '0 0 20px rgba(15,139,141,0.1)',
-        'aqua-md':  '0 10px 40px rgba(15,139,141,0.15)',
-        'aqua-lg':  '0 20px 80px rgba(15,139,141,0.2)',
+        'gold-sm':  '0 0 20px rgba(197,160,89,0.15)',
+        'gold-md':  '0 10px 40px rgba(197,160,89,0.2)',
+        'gold-lg':  '0 20px 80px rgba(197,160,89,0.25)',
+        'aqua-sm':  '0 0 20px rgba(26,117,159,0.1)',
+        'aqua-md':  '0 10px 40px rgba(26,117,159,0.15)',
+        'aqua-lg':  '0 20px 80px rgba(26,117,159,0.2)',
       },
 
       // ── Max Width ────────────────────────────────────────────────────────
@@ -297,19 +299,19 @@ const config: Config = {
 
         // Text Gradients
         '.text-gradient-gold': {
-          background: 'linear-gradient(135deg, #F2AA3B 0%, #C48A30 100%)',
+          background: 'linear-gradient(135deg, #FFD700 0%, #CFAE00 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
         },
         '.text-gradient-aqua': {
-          background: 'linear-gradient(135deg, #0F8B8D 0%, #22D3EE 100%)',
+          background: 'linear-gradient(135deg, #1E68E5 0%, #00E5AB 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
         },
         '.text-gradient-brand': {
-          background: 'linear-gradient(135deg, #0F8B8D 0%, #F2AA3B 100%)',
+          background: 'linear-gradient(135deg, #1E68E5 0%, #FFD700 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -364,7 +366,7 @@ const config: Config = {
 
         '.border-subtle': {
           borderWidth: '1px',
-          borderColor: 'rgba(15, 139, 141, 0.1)',
+          borderColor: 'rgba(26, 117, 159, 0.1)',
         },
 
         // Primary button
@@ -374,7 +376,7 @@ const config: Config = {
           gap: '8px',
           padding: '12px 28px',
           borderRadius: '9999px',
-          background: 'linear-gradient(135deg, #0F8B8D 0%, #17A2B8 100%)',
+          background: 'linear-gradient(135deg, #78C0E0 0%, #1A759F 100%)',
           color: '#ffffff',
           fontSize: '0.75rem',
           fontWeight: '900',
@@ -383,7 +385,7 @@ const config: Config = {
           transition: 'all 250ms cubic-bezier(0.16, 1, 0.3, 1)',
           cursor: 'pointer',
           border: 'none',
-          boxShadow: '0 8px 24px rgba(15, 139, 141, 0.3), inset 0 2px 4px rgba(255,255,255,0.2)',
+          boxShadow: '0 8px 24px rgba(26, 117, 159, 0.3), inset 0 2px 4px rgba(255,255,255,0.2)',
         },
 
         // Secondary button
@@ -394,16 +396,16 @@ const config: Config = {
           padding: '12px 28px',
           borderRadius: '9999px',
           background: 'rgba(255,255,255,0.7)',
-          border: '1px solid rgba(15, 139, 141, 0.2)',
+          border: '1px solid rgba(26, 117, 159, 0.2)',
           backdropFilter: 'blur(16px)',
-          color: '#111B2A',
+          color: '#0B192C',
           fontSize: '0.75rem',
           fontWeight: '700',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
           transition: 'all 250ms cubic-bezier(0.16, 1, 0.3, 1)',
           cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(17,27,42,0.03)',
+          boxShadow: '0 4px 12px rgba(11,25,44,0.03)',
         },
       });
     }),

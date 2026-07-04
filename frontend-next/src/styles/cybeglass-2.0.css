@@ -11,35 +11,35 @@
 
 /* ==== ROOT CSS VARIABLES ==== */
 :root {
-  /* ---- Slate Dark Core ---- */
-  --bg-primary: hsl(224, 25%, 6%);
-  --bg-secondary: hsl(223, 20%, 9%);
-  --bg-tertiary: hsl(222, 18%, 13%);
+  /* ---- Brand Core ---- */
+  --bg-primary: #0A1E3A;
+  --bg-secondary: #11284A;
+  --bg-tertiary: #1E68E5;
   
   /* ---- Borders & Dividers ---- */
-  --border-glass: hsla(220, 20%, 30%, 0.15);
-  --border-focus: hsl(250, 85%, 65%);
+  --border-glass: hsla(0, 0%, 100%, 0.15);
+  --border-focus: #00E5AB;
   
   /* ---- Text Layers ---- */
-  --text-primary: hsl(210, 20%, 98%);
-  --text-secondary: hsl(215, 15%, 75%);
-  --text-tertiary: hsl(220, 10%, 55%);
+  --text-primary: #FFFFFF;
+  --text-secondary: hsla(0, 0%, 100%, 0.7);
+  --text-tertiary: hsla(0, 0%, 100%, 0.5);
   
   /* ---- Vibrant Accents ---- */
-  --accent-cyan: hsl(186, 100%, 48%);
-  --accent-indigo: hsl(250, 89%, 65%);
-  --accent-magenta: hsl(315, 95%, 60%);
-  --accent-emerald: hsl(150, 85%, 45%);
-  --accent-amber: hsl(38, 95%, 55%);
-  --accent-rose: hsl(350, 85%, 58%);
+  --accent-cyan: #00E5AB;
+  --accent-indigo: #1E68E5;
+  --accent-magenta: #FFD700;
+  --accent-emerald: #10B981;
+  --accent-amber: #FFD700;
+  --accent-rose: #E85A2A;
   
   /* ---- Neon Glow Backdrops ---- */
-  --glow-cyan: hsla(186, 100%, 48%, 0.15);
-  --glow-indigo: hsla(250, 89%, 65%, 0.2);
-  --glow-magenta: hsla(315, 95%, 60%, 0.15);
+  --glow-cyan: hsla(165, 100%, 45%, 0.15);
+  --glow-indigo: hsla(218, 79%, 51%, 0.2);
+  --glow-magenta: hsla(51, 100%, 50%, 0.15);
   
   /* ---- Typography ---- */
-  --font-primary: 'Outfit', 'Inter', sans-serif;
+  --font-primary: 'Poppins', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
   /* ---- Spacing ---- */
@@ -124,7 +124,7 @@ p {
 
 /* ==== GLASSMORPHISM BASE ==== */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(17, 40, 74, 0.45);
   backdrop-filter: blur(12px) saturate(190%);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
@@ -133,27 +133,28 @@ p {
 }
 
 .glass-panel:hover {
-  border-color: hsla(250, 85%, 65%, 0.25);
-  box-shadow: 0 12px 40px 0 rgba(100, 80, 250, 0.15);
+  border-color: rgba(30, 104, 229, 0.5);
+  box-shadow: 0 12px 40px 0 rgba(30, 104, 229, 0.25);
   transform: translateY(-2px);
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(10px) saturate(180%);
+  background: rgba(17, 40, 74, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
+  box-shadow: 0 8px 32px 0 rgba(10, 30, 58, 0.5), inset 0 1px 0 hsla(0,0%,100%,0.1);
   transition: all var(--transition-standard);
 }
 
 .glass-card:hover {
-  border-color: hsla(186, 100%, 48%, 0.15);
-  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.3);
+  border-color: rgba(0, 229, 171, 0.4);
+  box-shadow: 0 12px 32px 0 rgba(0, 229, 171, 0.15), inset 0 1px 0 hsla(0,0%,100%,0.15);
 }
 
 .glass-input {
-  background: rgba(15, 23, 42, 0.3);
+  background: rgba(10, 30, 58, 0.6);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
@@ -161,13 +162,14 @@ p {
   padding: var(--spacing-md);
   transition: all var(--transition-fast);
   font-family: var(--font-primary);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .glass-input:focus {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 16px rgba(100, 80, 250, 0.2);
-  background: rgba(15, 23, 42, 0.4);
+  box-shadow: 0 0 16px rgba(0, 229, 171, 0.2), inset 0 1px 3px rgba(0,0,0,0.1);
+  background: rgba(17, 40, 74, 0.8);
 }
 
 .glass-input::placeholder {
