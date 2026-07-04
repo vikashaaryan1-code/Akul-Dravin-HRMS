@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/15</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>3/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.53% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/13</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
@@ -184,19 +184,14 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -207,8 +202,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable } from '@nestjs/common';
@@ -257,19 +257,19 @@ export class AuditProjectionHandler implements ProjectionHandler {
 &nbsp;
   constructor(private readonly auditLog: AuditLogService) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  async </span>handle(envelope: DomainEventEnvelope): Promise&lt;void&gt; {
-    const payload = <span class="cstat-no" title="statement not covered" >envelope.payload as Record&lt;string, unknown&gt;;</span>
+  async handle(envelope: DomainEventEnvelope): Promise&lt;void&gt; {
+    const payload = envelope.payload as Record&lt;string, unknown&gt;;
 &nbsp;
     // Map canonical domain event name to AuditAction convention
     // Domain events use '&lt;context&gt;.&lt;aggregate&gt;.&lt;verb&gt;' format
     // AuditLog uses SCREAMING_SNAKE_CASE — convert on entry
-    const auditAction = <span class="cstat-no" title="statement not covered" >envelope.event.toUpperCase().replace(/\./g, '_') as any;</span>
+    const auditAction = envelope.event.toUpperCase().replace(/\./g, '_') as any;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    await this.auditLog.log(auditAction, {</span>
+    await this.auditLog.log(auditAction, {
       tenantId: envelope.tenantId,
-      actorId: envelope.actorId ?? null,
+      actorId: envelope.actorId ?? <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
       resourceType: this.extractResourceType(envelope.event),
-      resourceId: (payload['entityId'] as string | undefined) ?? null,
+      resourceId: (payload['entityId'] as string | undefined) ?? <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
       metadata: {
         correlationId: envelope.correlationId,
         occurredAt: envelope.occurredAt,
@@ -279,10 +279,10 @@ export class AuditProjectionHandler implements ProjectionHandler {
     });
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >extractResourceType(</span>event: string): string {
+  private extractResourceType(event: string): string {
     // Extract '&lt;context&gt;.&lt;aggregate&gt;' from '&lt;context&gt;.&lt;aggregate&gt;.&lt;event&gt;'
-    const parts = <span class="cstat-no" title="statement not covered" >event.split('.');</span>
-<span class="cstat-no" title="statement not covered" >    return parts.slice(0, 2).join('.') ?? event;</span>
+    const parts = event.split('.');
+    return parts.slice(0, 2).join('.') ?? <span class="branch-1 cbranch-no" title="branch not covered" >event;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -292,7 +292,7 @@ export class AuditProjectionHandler implements ProjectionHandler {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-02T14:33:08.587Z
+                at 2026-07-04T01:16:48.816Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

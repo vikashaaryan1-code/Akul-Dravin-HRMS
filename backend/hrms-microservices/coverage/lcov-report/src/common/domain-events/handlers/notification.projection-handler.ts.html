@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/20</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.44% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/18</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
@@ -184,18 +184,16 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -207,12 +205,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -229,7 +227,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -270,17 +270,17 @@ export class NotificationProjectionHandler implements ProjectionHandler {
 &nbsp;
   constructor(private readonly notificationService: NotificationService) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  async </span>handle(envelope: DomainEventEnvelope): Promise&lt;void&gt; {
-    const payload = <span class="cstat-no" title="statement not covered" >envelope.payload as Record&lt;string, unknown&gt;;</span>
-    const recipientId = <span class="cstat-no" title="statement not covered" >payload['assigneeId'] ?? payload['employeeId'] ?? payload['recipientId'];</span>
+  async handle(envelope: DomainEventEnvelope): Promise&lt;void&gt; {
+    const payload = envelope.payload as Record&lt;string, unknown&gt;;
+    const recipientId = payload['assigneeId'] ?? payload['employeeId'] ?? payload['recipientId'];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!recipientId) {</span>
-<span class="cstat-no" title="statement not covered" >      return; </span>// No recipient resolved — silent skip (best_effort)
+    if (!recipientId) {
+      return; // No recipient resolved — silent skip (best_effort)
     }
 &nbsp;
-    const { title, message } = <span class="cstat-no" title="statement not covered" >this.buildNotificationCopy(envelope);</span>
+    const { title, message } = this.buildNotificationCopy(envelope);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    await this.notificationService.createAndPush({</span>
+    await this.notificationService.createAndPush({
       tenantId: envelope.tenantId,
       userId: recipientId as string,
       type: envelope.event,
@@ -290,14 +290,14 @@ export class NotificationProjectionHandler implements ProjectionHandler {
     });
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >buildNotificationCopy(</span>envelope: DomainEventEnvelope): {
+  private buildNotificationCopy(envelope: DomainEventEnvelope): {
     title: string;
     message: string;
   } {
-    const payload = <span class="cstat-no" title="statement not covered" >envelope.payload as Record&lt;string, unknown&gt;;</span>
-    const entityTitle = (<span class="cstat-no" title="statement not covered" >payload['title'] as string | undefined) ?? 'An item';</span>
+    const payload = envelope.payload as Record&lt;string, unknown&gt;;
+    const entityTitle = (payload['title'] as string | undefined) ?? <span class="branch-1 cbranch-no" title="branch not covered" >'An item';</span>
 &nbsp;
-    const copyMap: Record&lt;string, { title: string; message: string }&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+    const copyMap: Record&lt;string, { title: string; message: string }&gt; = {
       [TASK_EVENTS.CREATED]: {
         title: 'New Task Assigned',
         message: `You have been assigned: "${entityTitle}"`,
@@ -316,8 +316,8 @@ export class NotificationProjectionHandler implements ProjectionHandler {
       },
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return (</span>
-      copyMap[envelope.event] ?? {
+    return (
+      copyMap[envelope.event] ?? <span class="branch-1 cbranch-no" title="branch not covered" >{</span>
         title: 'Platform Update',
         message: `An update occurred: ${envelope.event}`,
       }
@@ -331,7 +331,7 @@ export class NotificationProjectionHandler implements ProjectionHandler {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-02T14:33:05.040Z
+                at 2026-07-04T01:16:45.966Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

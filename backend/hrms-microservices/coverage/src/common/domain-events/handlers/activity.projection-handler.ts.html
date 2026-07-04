@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/16</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>4/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -171,11 +171,9 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -190,13 +188,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable } from '@nestjs/common';
@@ -238,14 +238,14 @@ export class ActivityProjectionHandler implements ProjectionHandler {
 &nbsp;
   constructor(private readonly activityFeed: ActivityFeedService) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  async </span>handle(envelope: DomainEventEnvelope): Promise&lt;void&gt; {
-    const payload = <span class="cstat-no" title="statement not covered" >envelope.payload as Record&lt;string, unknown&gt;;</span>
+  async handle(envelope: DomainEventEnvelope): Promise&lt;void&gt; {
+    const payload = envelope.payload as Record&lt;string, unknown&gt;;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    await this.activityFeed.record({</span>
+    await this.activityFeed.record({
       tenantId: envelope.tenantId,
-      actorId: envelope.actorId ?? null,
+      actorId: envelope.actorId ?? <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
       entityType: this.extractEntityType(envelope.event),
-      entityId: (payload['entityId'] as string | undefined) ?? null,
+      entityId: (payload['entityId'] as string | undefined) ?? <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
       action: envelope.event,
       description: this.buildDescription(envelope),
       metadata: {
@@ -256,15 +256,15 @@ export class ActivityProjectionHandler implements ProjectionHandler {
     });
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >extractEntityType(</span>event: string): string {
+  private extractEntityType(event: string): string {
     // Extract context from '&lt;context&gt;.&lt;aggregate&gt;.&lt;event&gt;'
-<span class="cstat-no" title="statement not covered" >    return event.split('.')[0] ?? event;</span>
+    return event.split('.')[0] ?? <span class="branch-1 cbranch-no" title="branch not covered" >event;</span>
   }
 &nbsp;
-  private <span class="fstat-no" title="function not covered" >buildDescription(</span>envelope: DomainEventEnvelope): string {
-    const payload = <span class="cstat-no" title="statement not covered" >envelope.payload as Record&lt;string, unknown&gt;;</span>
-    const title = <span class="cstat-no" title="statement not covered" >payload['title'] ?? payload['name'] ?? payload['entityId'] ?? 'entity';</span>
-<span class="cstat-no" title="statement not covered" >    return `${envelope.event}: ${String(title)}`;</span>
+  private buildDescription(envelope: DomainEventEnvelope): string {
+    const payload = envelope.payload as Record&lt;string, unknown&gt;;
+    const title = payload['title'] ?? <span class="branch-1 cbranch-no" title="branch not covered" >payload['name'] </span>?? <span class="branch-2 cbranch-no" title="branch not covered" >payload['entityId'] </span>?? <span class="branch-3 cbranch-no" title="branch not covered" >'entity';</span>
+    return `${envelope.event}: ${String(title)}`;
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -274,7 +274,7 @@ export class ActivityProjectionHandler implements ProjectionHandler {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-02T14:33:08.587Z
+                at 2026-07-04T01:16:48.816Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

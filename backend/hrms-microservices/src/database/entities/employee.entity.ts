@@ -96,6 +96,6 @@ export class EmployeeEntity extends TenantScopedEntity {
 
   leaveRequests?: import('./leave-request.entity').LeaveRequestEntity[];
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   leaveBalances?: any;
 }
