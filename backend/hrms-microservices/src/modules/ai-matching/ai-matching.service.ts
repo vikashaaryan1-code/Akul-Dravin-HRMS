@@ -124,9 +124,15 @@ export class AiMatchingService {
   }
 
   async getStats(): Promise<any> {
-    const total = await this.repo.count();
-    const highMatch = await this.repo.count({ where: { status: 'active' } });
-    
-    return { total, highMatch };
+    const stats = await this.repo
+      .createQueryBuilder('ai_match')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN ai_match.status = 'active' THEN 1 ELSE 0 END)", 'highMatch')
+      .getRawOne();
+
+    return {
+      total: parseInt(stats.total, 10) || 0,
+      highMatch: parseInt(stats.highMatch, 10) || 0,
+    };
   }
 }
