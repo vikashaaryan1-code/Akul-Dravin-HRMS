@@ -26,10 +26,22 @@ export class CareerGrowthController {
 
   @Get('stats')
   async getStats() {
+    const tenantId = TenantContext.getRequiredTenantId();
     const repo = TenantContext.getRepository(CareerGrowthEntity);
-    const total = await repo.count();
-    const executed = await repo.count({ where: { status: 'executed' as any } });
-    const gated = await repo.count({ where: { status: 'gated' as any } });
+
+    // Optimized: Consolidate 3 counts into a single query using conditional aggregation
+    // This reduces DB round-trips from 3 to 1.
+    const stats = await repo
+      .createQueryBuilder('event')
+      .where('event.tenantId = :tenantId', { tenantId })
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN event.status = 'executed' THEN 1 ELSE 0 END)", 'executed')
+      .addSelect("SUM(CASE WHEN event.status = 'gated' THEN 1 ELSE 0 END)", 'gated')
+      .getRawOne();
+
+    const total = parseInt(stats.total, 10) || 0;
+    const executed = parseInt(stats.executed, 10) || 0;
+    const gated = parseInt(stats.gated, 10) || 0;
 
     return {
       totalEvents: total,
