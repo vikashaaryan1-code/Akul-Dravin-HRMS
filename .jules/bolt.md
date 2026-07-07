@@ -1,0 +1,3 @@
+## 2025-05-15 - [Consolidating Stats Queries]
+**Learning:** Sequential `repo.count()` calls for dashboard statistics create unnecessary database round-trips. Using `createQueryBuilder` with conditional aggregation (`SUM(CASE WHEN ... THEN 1 ELSE 0 END)`) reduces this to a single query. However, QueryBuilder bypasses some high-level repository abstractions, making manual tenant isolation via `TenantQueryPolicy.enforce` mandatory. Additionally, results from `getRawOne()` for aggregates are returned as strings by the driver and must be explicitly parsed.
+**Action:** Always prefer single-query aggregation for stats endpoints, and verify tenant isolation using `TenantQueryPolicy.enforce` when using QueryBuilder.
