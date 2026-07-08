@@ -9,6 +9,7 @@ import { FacePunchDto } from './dto/face-punch.dto';
 import { TenantContext } from '../../common/context/tenant-context';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { ShiftEntity } from '../../database/entities/shift.entity';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 
 @Injectable()
 export class AttendanceService {
@@ -146,12 +147,23 @@ export class AttendanceService {
   }
 
   async getSummary() {
-    const total = await this.attendanceRepo.count();
+    const tenantId = TenantContext.getRequiredTenantId();
+    const qb = this.attendanceRepo.createQueryBuilder('attendance');
+    TenantQueryPolicy.enforce(qb, tenantId, 'attendance', 'AttendanceService', 'getSummary');
+
+    const result = await qb
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN attendance.status = 'present' THEN 1 ELSE 0 END)", 'present')
+      .addSelect("SUM(CASE WHEN attendance.status = 'absent' THEN 1 ELSE 0 END)", 'absent')
+      .addSelect("SUM(CASE WHEN attendance.status = 'leave' THEN 1 ELSE 0 END)", 'leave')
+      .getRawOne();
+
+    const total = parseInt(result.total, 10) || 0;
     if (total === 0) return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
 
-    const present = await this.attendanceRepo.count({ where: { status: 'present' } });
-    const absent = await this.attendanceRepo.count({ where: { status: 'absent' } });
-    const leave = await this.attendanceRepo.count({ where: { status: 'leave' } });
+    const present = parseInt(result.present, 10) || 0;
+    const absent = parseInt(result.absent, 10) || 0;
+    const leave = parseInt(result.leave, 10) || 0;
 
     const presentRate = Math.round((present / total) * 100);
     return {
