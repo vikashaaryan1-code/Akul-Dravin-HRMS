@@ -35,7 +35,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend-next
-        run: npm ci --frozen-lockfile
+        run: npm install --legacy-peer-deps
 
       - name: Lint
         working-directory: frontend-next
