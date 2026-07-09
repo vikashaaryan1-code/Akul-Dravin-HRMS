@@ -1,5 +1,6 @@
 import { Controller, Get, Query, Param } from '@nestjs/common';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { PolicyAuditEntity } from './entities/policy-audit.entity';
 import { PolicyDefinitionEntity } from './entities/policy.entity';
 
@@ -27,13 +28,22 @@ export class PolicyEngineController {
   @Get('stats')
   @ApiOperation({ summary: 'Policy Mesh Health' })
   async getStats() {
+    const tenantId = TenantContext.getTenantId();
     const repo = TenantContext.getRepository(PolicyDefinitionEntity);
-    const total = await repo.count();
-    const active = await repo.count({ where: { isActive: true } });
+
+    // Optimization: Reduces DB round-trips from 2 to 1 by using conditional aggregation.
+    // Enforces tenant isolation via TenantQueryPolicy as required by governance.
+    const qb = repo.createQueryBuilder('policy');
+    TenantQueryPolicy.enforce(qb, tenantId, 'policy', 'PolicyEngineController', 'getStats');
+
+    const result = await qb
+      .select('COUNT(*)', 'total')
+      .addSelect('SUM(CASE WHEN policy.is_active = true THEN 1 ELSE 0 END)', 'active')
+      .getRawOne();
     
     return {
-      totalPolicies: total,
-      activePolicies: active,
+      totalPolicies: parseInt(result?.total || '0', 10),
+      activePolicies: parseInt(result?.active || '0', 10),
       systemStatus: 'SHIELDED',
       meshIntegrity: '100%',
     };
