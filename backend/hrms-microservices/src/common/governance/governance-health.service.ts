@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan, IsNull, Not } from 'typeorm';
+import { Repository } from 'typeorm';
+import { TenantQueryPolicy } from './tenant/tenant-query-policy';
 import {
   OutboxEventEntity,
   OutboxEventStatus,
@@ -152,38 +153,35 @@ export class GovernanceHealthService {
   // ── Outbox Health ──────────────────────────────────────────────────────────
 
   async getOutboxHealth(tenantId: string | null): Promise<OutboxHealth> {
-    const where = tenantId ? { tenantId } : {};
-    const now   = new Date();
-    const overdueThreshold = new Date(
-      now.getTime() - GovernanceHealthService.OVERDUE_THRESHOLD_MINUTES * 60 * 1000,
-    );
+    const now = new Date();
 
-    const [pending, dispatching, delivered, failed] = await Promise.all([
-      this.outboxRepo.count({ where: { ...where, status: OutboxEventStatus.PENDING } }),
-      this.outboxRepo.count({ where: { ...where, status: OutboxEventStatus.DISPATCHING } }),
-      this.outboxRepo.count({ where: { ...where, status: OutboxEventStatus.DELIVERED } }),
-      this.outboxRepo.count({ where: { ...where, status: OutboxEventStatus.FAILED } }),
-    ]);
+    // Optimization: Consolidate 6 separate database queries into one using conditional aggregation.
+    // Reduces database round-trips from 6 down to 1.
+    const qb = this.outboxRepo.createQueryBuilder('o')
+      .select("SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END)", 'pending')
+      .addSelect("SUM(CASE WHEN o.status = 'DISPATCHING' THEN 1 ELSE 0 END)", 'dispatching')
+      .addSelect("SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END)", 'delivered')
+      .addSelect("SUM(CASE WHEN o.status = 'FAILED' THEN 1 ELSE 0 END)", 'failed')
+      .addSelect("SUM(CASE WHEN o.status = 'PENDING' AND o.next_retry_at < :now THEN 1 ELSE 0 END)", 'overdue')
+      .addSelect("MIN(CASE WHEN o.status = 'PENDING' THEN o.created_at END)", 'oldestPendingAt')
+      .setParameter('now', now);
 
-    // Oldest PENDING entry — for replay lag estimation
-    const oldestPending = await this.outboxRepo.findOne({
-      where: { ...where, status: OutboxEventStatus.PENDING },
-      order: { createdAt: 'ASC' },
-      select: ['id', 'createdAt'],
-    });
+    if (tenantId) {
+      TenantQueryPolicy.enforce(qb, tenantId, 'o', 'GovernanceHealthService', 'getOutboxHealth');
+    }
 
-    const oldestPendingAgeSeconds = oldestPending
-      ? Math.floor((now.getTime() - oldestPending.createdAt.getTime()) / 1000)
+    const raw = await qb.getRawOne();
+
+    const pending = parseInt(raw.pending, 10) || 0;
+    const dispatching = parseInt(raw.dispatching, 10) || 0;
+    const delivered = parseInt(raw.delivered, 10) || 0;
+    const failed = parseInt(raw.failed, 10) || 0;
+    const overdueEntries = parseInt(raw.overdue, 10) || 0;
+    const oldestPendingAt = raw.oldestPendingAt ? new Date(raw.oldestPendingAt) : null;
+
+    const oldestPendingAgeSeconds = oldestPendingAt
+      ? Math.floor((now.getTime() - oldestPendingAt.getTime()) / 1000)
       : null;
-
-    // Overdue: PENDING entries with nextRetryAt in the past
-    const overdueEntries = await this.outboxRepo.count({
-      where: {
-        ...where,
-        status: OutboxEventStatus.PENDING,
-        nextRetryAt: LessThan(now),
-      },
-    });
 
     return { pending, dispatching, delivered, failed, oldestPendingAgeSeconds, overdueEntries };
   }
