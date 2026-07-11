@@ -5,7 +5,6 @@ import { AttendanceEntity } from '../../database/entities/attendance.entity';
 import { TaskEntity } from '../../database/entities/task.entity';
 import { PerformanceEntity } from '../../database/entities/performance.entity';
 import { TenantContext } from '../../common/context/tenant-context';
-import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { CreatePerformanceReviewDto } from './dto/create-performance-review.dto';
 import { ExecutionGatekeeperService } from '../policy-engine/gatekeeper/execution-gatekeeper.service';
 import { CareerGrowthService } from '../career-growth/career-growth.service';
@@ -38,87 +37,26 @@ export class PerformanceManagementService {
     return TenantContext.getRepository(PerformanceEntity);
   }
 
-  /**
-   * Optimized getScores uses a single query with subqueries and conditional aggregation
-   * to fetch all employee metrics in a single database round-trip (1 query vs 3N+1 queries).
-   *
-   * Performance Impact:
-   * - 10 employees: 1 query vs 31 queries (~96% reduction)
-   * - 100 employees: 1 query vs 301 queries (~99.6% reduction)
-   */
   async getScores(period?: string) {
     const currentPeriod = period || new Date().toISOString().substring(0, 7);
-    const tenantId = TenantContext.getRequiredTenantId();
-
-    const qb = this.employeeRepo.createQueryBuilder('employee')
-      .leftJoinAndSelect(
-        PerformanceEntity,
-        'review',
-        'review.employeeId = employee.id AND review.reviewPeriod = :period AND review.tenant_id = :tenantId',
-        { period: currentPeriod, tenantId }
-      )
-      .select([
-        'employee.id',
-        'employee.firstName',
-        'employee.lastName',
-        'employee.designation',
-        'employee.departmentId',
-        'review.subjectiveScore',
-      ])
-      // Subquery for attendance stats
-      .addSelect(subQuery => {
-        return subQuery
-          .select('COUNT(*)', 'total_attendance')
-          .from(AttendanceEntity, 'a')
-          .where('a.employeeId = employee.id AND a.tenant_id = :tenantId', { tenantId });
-      }, 'total_attendance')
-      .addSelect(subQuery => {
-        return subQuery
-          .select('COUNT(*)', 'present_attendance')
-          .from(AttendanceEntity, 'a')
-          .where('a.employeeId = employee.id AND a.status = :present AND a.tenant_id = :tenantId', {
-            present: 'present',
-            tenantId
-          });
-      }, 'present_attendance')
-      // Subquery for tasks delivered
-      .addSelect(subQuery => {
-        return subQuery
-          .select('COUNT(*)', 'tasks_delivered')
-          .from(TaskEntity, 't')
-          .where('t.assigneeId = employee.id AND t.status = :completed AND t.tenant_id = :tenantId', {
-            completed: 'completed',
-            tenantId
-          });
-      }, 'tasks_delivered');
-
-    TenantQueryPolicy.enforce(qb, tenantId, 'employee', 'PerformanceManagementService', 'getScores');
-
-    const rawResults = await qb.getRawMany();
+    const employees = await this.employeeRepo.find();
     const scores = [];
 
-    for (const res of rawResults) {
-      const totalAttendance = parseInt(res.total_attendance, 10) || 0;
-      const presentAttendance = parseInt(res.present_attendance, 10) || 0;
-      const attendanceRate = totalAttendance > 0 ? Math.round((presentAttendance / totalAttendance) * 100) : 0;
+    for (const emp of employees) {
+      const stats = await this.calculateEmployeeStats(emp.id, 30);
+      const tasksDelivered = await this.taskRepo.count({
+        where: { assigneeId: emp.id, status: 'completed' }
+      });
 
-      const tasksDelivered = parseInt(res.tasks_delivered, 10) || 0;
       const taskScore = Math.min(100, (tasksDelivered / 10) * 100);
+      const objectiveScore = Math.round(stats.score * 0.5 + taskScore * 0.5);
       
-      // Objective score is based on attendance rate (simplified) and task completion
-      const objectiveScore = Math.round(attendanceRate * 0.5 + taskScore * 0.5);
+      const review = await this.performanceRepo.findOne({
+        where: { employeeId: emp.id, reviewPeriod: currentPeriod }
+      });
 
-      const subjectiveScore = res.review_subjective_score ? Number(res.review_subjective_score) : 80;
+      const subjectiveScore = review ? Number(review.subjectiveScore) : 80;
       const finalScore = Math.round(objectiveScore * 0.7 + subjectiveScore * 0.3);
-
-      // Reconstruct employee object for triggerPromotionCheck
-      const emp = {
-        id: res.employee_id,
-        firstName: res.employee_first_name,
-        lastName: res.employee_last_name,
-        designation: res.employee_designation,
-        departmentId: res.employee_department_id,
-      } as EmployeeEntity;
 
       // --- PDE Integration: Trigger Promotion Check ---
       if (finalScore >= 85) {
@@ -131,7 +69,7 @@ export class PerformanceManagementService {
         performanceScore: finalScore,
         objectiveScore,
         subjectiveScore,
-        targetAchievement: attendanceRate,
+        targetAchievement: stats.attendanceRate,
         tasksDelivered,
         status: finalScore > 85 ? 'healthy' : finalScore > 75 ? 'warning' : 'critical'
       });
@@ -200,6 +138,21 @@ export class PerformanceManagementService {
     return this.performanceRepo.save(review);
   }
 
+  private async calculateEmployeeStats(employeeId: string, days: number) {
+    const records = await this.attendanceRepo.find({
+      where: { employeeId }
+    });
+
+    const total = records.length || 1;
+    const present = records.filter(r => r.status === 'present').length;
+    const attendanceRate = (present / total) * 100;
+
+    return {
+      attendanceRate: Math.round(attendanceRate),
+      score: Math.round(attendanceRate), // Simplified for brevity
+      consistency: 100
+    };
+  }
 
   async getLeaderboard(days: number = 30) {
     const scores = await this.getScores();
