@@ -147,10 +147,10 @@ export class PerformanceManagementService {
     const present = records.filter(r => r.status === 'present').length;
     const attendanceRate = (present / total) * 100;
 
-    return { 
-      attendanceRate: Math.round(attendanceRate), 
+    return {
+      attendanceRate: Math.round(attendanceRate),
       score: Math.round(attendanceRate), // Simplified for brevity
-      consistency: 100 
+      consistency: 100
     };
   }
 
