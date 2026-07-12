@@ -110,12 +110,16 @@ export class GovernanceSloService {
    * Generate the full SLO report for a tenant (or platform-wide if null).
    */
   async generateReport(tenantId: string | null): Promise<GovernanceSloReport> {
+    // ⚡ Bolt Optimization: Consolidate 7 sequential counts for SLOs 1, 2, 3, and 5
+    // into a single database round-trip using conditional aggregation.
+    const stats = await this.fetchSloStats(tenantId);
+
     const [slo1, slo2, slo3, slo4, slo5, trend, chronic] = await Promise.all([
-      this.measureSlo1CriticalResolution(tenantId),
-      this.measureSlo2HighResolution(tenantId),
-      this.measureSlo3ViolationStability(tenantId),
+      this.measureSlo1CriticalResolution(tenantId, stats.allCritical, stats.breachedSla1),
+      this.measureSlo2HighResolution(tenantId, stats.allHigh, stats.breachedSla2),
+      this.measureSlo3ViolationStability(tenantId, stats.recent, stats.prior),
       this.measureSlo4ScanFrequency(tenantId),
-      this.measureSlo5HandlerCompliance(tenantId),
+      this.measureSlo5HandlerCompliance(tenantId, stats.openCount5),
       this.computeViolationTrend(tenantId),
       this.findChronicViolations(tenantId),
     ]);
@@ -133,18 +137,56 @@ export class GovernanceSloService {
     };
   }
 
+  /**
+   * ⚡ Bolt Optimization: Fetches all counts for SLOs 1, 2, 3, and 5 in one query.
+   */
+  private async fetchSloStats(tenantId: string | null) {
+    const cutoff1 = new Date(Date.now() - GovernanceSloService.CRITICAL_SLO_HOURS * 3600 * 1000);
+    const cutoff2 = new Date(Date.now() - GovernanceSloService.HIGH_SLO_HOURS * 3600 * 1000);
+    const week1   = new Date(Date.now() - 7 * 24 * 3600 * 1000);
+
+    const qb = this.violationRepo.createQueryBuilder('v');
+    if (tenantId) {
+      qb.where('v.tenant_id = :tenantId', { tenantId });
+    }
+
+    const raw = await qb
+      .select("SUM(CASE WHEN v.severity = :crit THEN 1 ELSE 0 END)", 'allCritical')
+      .addSelect("SUM(CASE WHEN v.severity = :crit AND v.resolved_at IS NULL AND v.first_seen_at < :cutoff1 THEN 1 ELSE 0 END)", 'breachedSla1')
+      .addSelect("SUM(CASE WHEN v.severity = :high THEN 1 ELSE 0 END)", 'allHigh')
+      .addSelect("SUM(CASE WHEN v.severity = :high AND v.resolved_at IS NULL AND v.first_seen_at < :cutoff2 THEN 1 ELSE 0 END)", 'breachedSla2')
+      .addSelect("SUM(CASE WHEN v.first_seen_at < :now THEN 1 ELSE 0 END)", 'recent')
+      .addSelect("SUM(CASE WHEN v.first_seen_at < :week1 THEN 1 ELSE 0 END)", 'prior')
+      .addSelect("SUM(CASE WHEN v.violation_type = :vType AND v.resolved_at IS NULL THEN 1 ELSE 0 END)", 'openCount5')
+      .setParameters({
+        crit: ViolationSeverity.CRITICAL,
+        high: ViolationSeverity.HIGH,
+        cutoff1,
+        cutoff2,
+        now: new Date(),
+        week1,
+        vType: ViolationType.HANDLER_ENTITY_INJECTION,
+      })
+      .getRawOne();
+
+    return {
+      allCritical:  parseInt(raw.allCritical, 10) || 0,
+      breachedSla1: parseInt(raw.breachedSla1, 10) || 0,
+      allHigh:      parseInt(raw.allHigh, 10) || 0,
+      breachedSla2: parseInt(raw.breachedSla2, 10) || 0,
+      recent:       parseInt(raw.recent, 10) || 0,
+      prior:        parseInt(raw.prior, 10) || 0,
+      openCount5:   parseInt(raw.openCount5, 10) || 0,
+    };
+  }
+
   // ── SLO-1: Critical Violation Resolution ──────────────────────────────────
 
-  private async measureSlo1CriticalResolution(tenantId: string | null): Promise<SloResult> {
-    const windowMs     = GovernanceSloService.CRITICAL_SLO_HOURS * 3600 * 1000;
-    const cutoff       = new Date(Date.now() - windowMs);
-    const where        = this.buildWhere(tenantId, { severity: ViolationSeverity.CRITICAL });
-
-    const allCritical  = await this.violationRepo.count({ where });
-    const breachedSla  = await this.violationRepo.count({
-      where: { ...where, resolvedAt: IsNull(), firstSeenAt: LessThan(cutoff) },
-    });
-
+  private async measureSlo1CriticalResolution(
+    tenantId: string | null,
+    allCritical: number,
+    breachedSla: number,
+  ): Promise<SloResult> {
     const compliance = allCritical === 0 ? 1 : 1 - breachedSla / allCritical;
     const status: SloStatus = compliance === 1 ? 'COMPLIANT'
       : compliance >= 0.9 ? 'AT_RISK' : 'BREACHED';
@@ -164,16 +206,11 @@ export class GovernanceSloService {
 
   // ── SLO-2: High Violation Resolution ──────────────────────────────────────
 
-  private async measureSlo2HighResolution(tenantId: string | null): Promise<SloResult> {
-    const windowMs    = GovernanceSloService.HIGH_SLO_HOURS * 3600 * 1000;
-    const cutoff      = new Date(Date.now() - windowMs);
-    const where       = this.buildWhere(tenantId, { severity: ViolationSeverity.HIGH });
-
-    const allHigh     = await this.violationRepo.count({ where });
-    const breachedSla = await this.violationRepo.count({
-      where: { ...where, resolvedAt: IsNull(), firstSeenAt: LessThan(cutoff) },
-    });
-
+  private async measureSlo2HighResolution(
+    tenantId: string | null,
+    allHigh: number,
+    breachedSla: number,
+  ): Promise<SloResult> {
     const compliance = allHigh === 0 ? 1 : 1 - breachedSla / allHigh;
     const target     = 0.95; // 95% SLO target
     const status: SloStatus = compliance >= target ? 'COMPLIANT'
@@ -194,18 +231,11 @@ export class GovernanceSloService {
 
   // ── SLO-3: Violation Rate Stability ───────────────────────────────────────
 
-  private async measureSlo3ViolationStability(tenantId: string | null): Promise<SloResult> {
-    // Proxy: count violations created in last 7 days vs previous 7 days
-    const now     = Date.now();
-    const week1   = new Date(now - 7 * 24 * 3600 * 1000);
-    const week2   = new Date(now - 14 * 24 * 3600 * 1000);
-    const where   = tenantId ? { tenantId } : {};
-
-    const [recent, prior] = await Promise.all([
-      this.violationRepo.count({ where: { ...where, firstSeenAt: LessThan(new Date()) } }),
-      this.violationRepo.count({ where: { ...where, firstSeenAt: LessThan(week1) } }),
-    ]);
-
+  private async measureSlo3ViolationStability(
+    tenantId: string | null,
+    recent: number,
+    prior: number,
+  ): Promise<SloResult> {
     // Growth rate: (recent - prior) / max(prior, 1)
     const growth    = prior === 0 ? 0 : (recent - prior) / prior;
     const threshold = 0.1; // 10% tolerance
@@ -261,13 +291,10 @@ export class GovernanceSloService {
 
   // ── SLO-5: Handler Mutation Compliance (Zero-Tolerance) ───────────────────
 
-  private async measureSlo5HandlerCompliance(tenantId: string | null): Promise<SloResult> {
-    const where     = this.buildWhere(tenantId, {
-      violationType: ViolationType.HANDLER_ENTITY_INJECTION,
-      resolvedAt:    IsNull() as any,
-    });
-
-    const openCount = await this.violationRepo.count({ where });
+  private async measureSlo5HandlerCompliance(
+    tenantId: string | null,
+    openCount: number,
+  ): Promise<SloResult> {
     const compliant = openCount === 0;
 
     return {
@@ -286,23 +313,36 @@ export class GovernanceSloService {
   // ── Trend + Chronic ───────────────────────────────────────────────────────
 
   private async computeViolationTrend(tenantId: string | null): Promise<number[]> {
-    // Return daily violation counts for the last 7 days (oldest first)
+    // ⚡ Bolt Optimization: Consolidate 7 individual queries into a single GROUP BY query.
+    // Return daily violation counts for the last 7 days (oldest first).
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - 6);
+
+    const results = await this.violationRepo
+      .createQueryBuilder('v')
+      .select("DATE_TRUNC('day', v.occurred_at)", 'day')
+      .addSelect('COUNT(*)', 'count')
+      .where(tenantId ? 'v.tenant_id = :tenantId' : '1=1', { tenantId })
+      .andWhere('v.occurred_at >= :startDate', { startDate })
+      .groupBy('day')
+      .orderBy('day', 'ASC')
+      .getRawMany();
+
+    const trendMap = new Map<string, number>();
+    results.forEach(r => {
+      const dayKey = new Date(r.day).toISOString().split('T')[0];
+      trendMap.set(dayKey, parseInt(r.count, 10));
+    });
+
     const trend: number[] = [];
-    const where = tenantId ? { tenantId } : {};
-
-    for (let dayOffset = 6; dayOffset >= 0; dayOffset--) {
-      const dayStart = new Date(Date.now() - (dayOffset + 1) * 24 * 3600 * 1000);
-      const dayEnd   = new Date(Date.now() - dayOffset * 24 * 3600 * 1000);
-
-      const count = await this.violationRepo
-        .createQueryBuilder('v')
-        .where(tenantId ? 'v.tenant_id = :tenantId' : '1=1', { tenantId })
-        .andWhere('v.occurred_at >= :dayStart', { dayStart })
-        .andWhere('v.occurred_at < :dayEnd', { dayEnd })
-        .getCount();
-
-      trend.push(count);
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + i);
+      const key = d.toISOString().split('T')[0];
+      trend.push(trendMap.get(key) || 0);
     }
+
     return trend;
   }
 
