@@ -1,3 +1,0 @@
-## 2026-07-12 - Consolidating Governance SLO Queries
-**Learning:** The `GovernanceSloService` was performing 16 database queries per report, including a loop for daily trends. Consolidating these into 2 main queries (one for multiple counts using `SUM(CASE...)` and one for trends using `GROUP BY DATE_TRUNC`) significantly reduces database round-trips from 14+ to 2. Using `DATE_TRUNC` is a powerful way to handle time-series bucketing in PostgreSQL within a single query.
-**Action:** Always look for loops performing database counts or find operations, and consolidate them using conditional aggregation or grouping.
