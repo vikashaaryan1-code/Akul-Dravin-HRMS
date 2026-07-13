@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FindOptionsWhere, ILike } from 'typeorm';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { CrmLeadEntity } from '../../database/entities/crm-lead.entity';
 import { CrmCustomerEntity } from '../../database/entities/crm-customer.entity';
 import { CrmInteractionEntity } from '../../database/entities/crm-interaction.entity';
@@ -188,29 +189,45 @@ export class CrmService {
   // ── Analytics ─────────────────────────────────────────────────────────────────
 
   async getPipelineSummary() {
-    const tenantId   = TenantContext.getRequiredTenantId();
-    const leads       = await this.leadRepo.find({ where: { tenantId }, take: 2000 });
-    const stageCounts: Record<string, number> = {};
-    let   totalPipelineValue = 0;
+    const tenantId = TenantContext.getRequiredTenantId();
 
-    for (const lead of leads) {
-      stageCounts[lead.stage] = (stageCounts[lead.stage] ?? 0) + 1;
-      totalPipelineValue += Number(lead.expectedValue ?? 0);
-    }
+    // ⚡ Bolt Optimization: Replace in-memory aggregation with database-level GROUP BY.
+    // This avoids fetching up to 2000 full lead entities into memory and improves accuracy for large datasets.
+    const leadStatsQuery = this.leadRepo.createQueryBuilder('lead')
+      .select('lead.stage', 'stage')
+      .addSelect('COUNT(*)', 'count')
+      .addSelect('SUM(lead.expected_value)', 'totalValue')
+      .groupBy('lead.stage');
 
-    const customerCount     = await this.customerRepo.count({ where: { tenantId } });
-    const totalAnnualValue  = await this.customerRepo
-      .createQueryBuilder('c')
-      .select('SUM(c.annual_value)', 'total')
-      .where('c.tenant_id = :tenantId', { tenantId })
-      .getRawOne<{ total: string }>();
+    TenantQueryPolicy.enforce(leadStatsQuery, tenantId, 'lead', 'CrmService', 'getPipelineSummary');
+
+    const leadStats = await leadStatsQuery.getRawMany<{ stage: string; count: string; totalValue: string | null }>();
+
+    let totalLeadCount = 0;
+    let totalPipelineValue = 0;
+    const stageCounts = leadStats.map(stat => {
+      const count = parseInt(stat.count, 10) || 0;
+      const value = parseFloat(stat.totalValue || '0') || 0;
+      totalLeadCount += count;
+      totalPipelineValue += value;
+      return { stage: stat.stage, count };
+    });
+
+    // ⚡ Bolt Optimization: Consolidate customer count and annual value into a single database query.
+    const customerStatsQuery = this.customerRepo.createQueryBuilder('customer')
+      .select('COUNT(*)', 'count')
+      .addSelect('SUM(customer.annual_value)', 'totalAnnualValue');
+
+    TenantQueryPolicy.enforce(customerStatsQuery, tenantId, 'customer', 'CrmService', 'getPipelineSummary');
+
+    const customerStats = await customerStatsQuery.getRawOne<{ count: string; totalAnnualValue: string | null }>();
 
     return {
-      leadCount:          leads.length,
-      customerCount,
+      leadCount:          totalLeadCount,
+      customerCount:      parseInt(customerStats?.count || '0', 10),
       totalPipelineValue,
-      totalAnnualValue:   Number(totalAnnualValue?.total ?? 0),
-      stageCounts:        Object.entries(stageCounts).map(([stage, count]) => ({ stage, count })),
+      totalAnnualValue:   parseFloat(customerStats?.totalAnnualValue || '0'),
+      stageCounts,
     };
   }
 }
