@@ -168,7 +168,19 @@ export class AttendanceService {
     if (record.tenantId !== tenantId) {
       throw new BadRequestException('TENANT_ISOLATION_VIOLATION: Cross-tenant modification not allowed');
     }
-    const merged = this.attendanceRepo.merge(record, dto as Partial<AttendanceEntity>);
+
+    const updateData: any = {
+      ...dto,
+    };
+
+    if (dto.checkInAt) {
+      updateData.checkInAt = new Date(dto.checkInAt);
+    }
+    if (dto.checkOutAt) {
+      updateData.checkOutAt = new Date(dto.checkOutAt);
+    }
+
+    const merged = this.attendanceRepo.merge(record, updateData);
     return this.attendanceRepo.save(merged);
   }
 
