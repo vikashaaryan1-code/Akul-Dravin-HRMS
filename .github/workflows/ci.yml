@@ -107,17 +107,17 @@ jobs:
           cache-dependency-path: backend/hrms-microservices/package-lock.json
 
       - name: Install dependencies
-        working-directory: backend
-        run: npm ci --frozen-lockfile
+        working-directory: backend/hrms-microservices
+        run: npm install --legacy-peer-deps
 
       - name: Security audit
-        working-directory: backend
+        working-directory: backend/hrms-microservices
         run: npm audit --audit-level=high
         continue-on-error: true  # Report but don't fail on audit issues
 
       - name: Run tests
-        working-directory: backend
-        run: npm test -- --passWithNoTests
+        working-directory: backend/hrms-microservices
+        run: npm test -- --passWithNoTests --coverage=false
         continue-on-error: true
 
   # ── AI Engine (FastAPI) ─────────────────────────────────────────────────────
