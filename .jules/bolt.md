@@ -1,0 +1,3 @@
+## 2026-07-14 - [AttendanceService Query Consolidation]
+**Learning:** Found that `AttendanceService.getSummary` was performing four sequential `count()` queries, which can be consolidated into a single database round-trip using TypeORM's `createQueryBuilder` and conditional aggregation (`SUM(CASE WHEN ...)`). Also discovered that the original code might have been missing proper tenant isolation, which was addressed by applying `TenantQueryPolicy.enforce`.
+**Action:** Always look for sequential `count()` or `find()` operations on the same entity and consolidate them into a single QueryBuilder execution using conditional aggregation or subqueries where possible. Ensure `TenantQueryPolicy` is enforced for all QueryBuilder-based optimizations.

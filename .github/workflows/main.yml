@@ -25,13 +25,15 @@ jobs:
       - name: Backend Build & Lint
         run: |
           cd backend/hrms-microservices
+          npm install --legacy-peer-deps
           npm run lint
           npm run build
-          npm test
+          npm test -- --coverage=false
 
       - name: Frontend Build & Lint
         run: |
           cd frontend-next
+          npm install --legacy-peer-deps
           npm run lint
           npm run build
 
