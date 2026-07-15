@@ -106,18 +106,35 @@ export class SuperAdminService {
     return saved;
   }
 
+  /**
+   * Returns global system statistics across all tenants.
+   * Optimized to use conditional aggregation to reduce database round-trips.
+   */
   async getGlobalStats() {
-    const [total, active, trial, suspended] = await Promise.all([
-      this.tenantRepo.count(),
-      this.tenantRepo.count({ where: { status: 'active' } }),
-      this.tenantRepo.count({ where: { status: 'trial' } }),
-      this.tenantRepo.count({ where: { status: 'suspended' } }),
-    ]);
+    // 1. Get status counts in a single query using conditional aggregation
+    // Optimization: Reduces 4 sequential count queries to 1 single-pass aggregation
+    const statusCounts = await this.tenantRepo
+      .createQueryBuilder('t')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN t.status = 'active' THEN 1 ELSE 0 END)", 'active')
+      .addSelect("SUM(CASE WHEN t.status = 'trial' THEN 1 ELSE 0 END)", 'trial')
+      .addSelect("SUM(CASE WHEN t.status = 'suspended' THEN 1 ELSE 0 END)", 'suspended')
+      .getRawOne();
+
+    // 2. Get plan breakdown (remains a separate query due to GROUP BY requirements)
     const planBreakdown = await this.tenantRepo
       .createQueryBuilder('t')
-      .select('t.plan, COUNT(*) as count')
+      .select('t.plan', 'plan')
+      .addSelect('COUNT(*)', 'count')
       .groupBy('t.plan')
       .getRawMany();
-    return { total, active, trial, suspended, planBreakdown };
+
+    return {
+      total:     parseInt(statusCounts?.total, 10) || 0,
+      active:    parseInt(statusCounts?.active, 10) || 0,
+      trial:     parseInt(statusCounts?.trial, 10) || 0,
+      suspended: parseInt(statusCounts?.suspended, 10) || 0,
+      planBreakdown,
+    };
   }
 }
