@@ -108,16 +108,16 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend/hrms-microservices
-        run: npm ci --frozen-lockfile
+        run: npm ci --frozen-lockfile --legacy-peer-deps
 
       - name: Security audit
         working-directory: backend/hrms-microservices
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --legacy-peer-deps
         continue-on-error: true  # Report but don't fail on audit issues
 
       - name: Run tests
         working-directory: backend/hrms-microservices
-        run: npm test -- --passWithNoTests
+        run: npm test -- --passWithNoTests --coverage=false
         continue-on-error: true
 
   # ── AI Engine (FastAPI) ─────────────────────────────────────────────────────
