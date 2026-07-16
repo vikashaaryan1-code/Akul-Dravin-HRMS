@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/ai-engine</a> autonomous-executive-brain.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/42</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/14</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/9</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/39</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -359,7 +359,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     // 1. Aggregate Real Data for Context
     const employees = <span class="cstat-no" title="statement not covered" >await this.employeeService.findAll();</span>
     const payrolls = <span class="cstat-no" title="statement not covered" >await this.payrollService.findAll();</span>
-    
+
     const context = <span class="cstat-no" title="statement not covered" >{</span>
       headcount: employees.length,
       activeEmployees: employees.filter(<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >e.status === 'active')</span>.length,
@@ -370,8 +370,8 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     const prompt = <span class="cstat-no" title="statement not covered" >`Act as an AI CEO/CFO for tenant ${tenantId}. </span>
     Current Workforce Context: ${JSON.stringify(context)}
-    
-    Analyze workforce data, revenue trends, and market conditions. 
+
+    Analyze workforce data, revenue trends, and market conditions.
     Provide:
     1. Workforce Expansion Plan
     2. Cost Optimization Recommendations
@@ -407,7 +407,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>detectOperationalRisks(tenantId: string) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`AI Brain: Scanning for operational risks in tenant=${tenantId}`);</span>
-    
+
     const employees = <span class="cstat-no" title="statement not covered" >await this.employeeService.findAll();</span>
     const attritionRisk = <span class="cstat-no" title="statement not covered" >employees.filter(<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >e.status === 'on_notice')</span>.length;</span>
 &nbsp;
@@ -444,9 +444,9 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     const prompt = <span class="cstat-no" title="statement not covered" >`Allocate a budget of ${budget} across departments to maximize ROI. </span>
     Current distribution: ${JSON.stringify(deptHeadcount)}`;
-    
+
     const { content } = <span class="cstat-no" title="statement not covered" >await this.aiEngine.generateReport(tenantId, prompt);</span>
-    
+
     const insight = <span class="cstat-no" title="statement not covered" >await this.insightRepo.save(this.insightRepo.create({</span>
       tenantId,
       module: 'EXECUTIVE_BRAIN',
@@ -481,4 +481,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

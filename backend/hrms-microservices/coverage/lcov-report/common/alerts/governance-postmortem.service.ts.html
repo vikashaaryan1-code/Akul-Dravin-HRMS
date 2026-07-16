@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">common/alerts</a> governance-postmortem.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/0</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/10</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -162,10 +162,10 @@ export interface GovernanceIncident {
 &nbsp;
 /**
  * GOVERNANCE POSTMORTEM SERVICE — Phase Ω-Final
- * 
- * The "Ritual Ledger." 
- * Provides the protocol for metabolizing institutional failure. 
- * Allows humans to name, explain, and remediate deterministic 
+ *
+ * The "Ritual Ledger."
+ * Provides the protocol for metabolizing institutional failure.
+ * Allows humans to name, explain, and remediate deterministic
  * decisions that failed to align with intent.
  */
 @Injectable()
@@ -179,7 +179,7 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
 <span class="fstat-no" title="function not covered" >  recordPostmortem(</span>incident: Omit&lt;GovernanceIncident, 'timestamp'&gt;) {
     const record = <span class="cstat-no" title="statement not covered" >{ ...incident, timestamp: new Date().toISOString() };</span>
 <span class="cstat-no" title="statement not covered" >    this.incidents.set(incident.id, record);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    this.logger.error(`[Metabolism] FAILURE RITUAL COMPLETED for Incident ${incident.id}. Target Hash: ${incident.targetHash}`);</span>
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`[Metabolism] Causal Narrative: ${incident.narrative}`);</span>
   }
@@ -211,4 +211,3 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/alerts</a> stability-replay.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/45</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/19</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/10</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/37</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -333,8 +333,8 @@ export interface TuningRecommendation {
 &nbsp;
 /**
  * STABILITY REPLAY &amp; POLICY ADVISOR — Phase AV-Final
- * 
- * Reconstructs the causality of topology evolution and suggests 
+ *
+ * Reconstructs the causality of topology evolution and suggests
  * regulator tuning based on counter-factual analysis.
  */
 @Injectable()
@@ -354,7 +354,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     const incidents: StabilityIncident[] = <span class="cstat-no" title="statement not covered" >[];</span>
     let currentChain: CoordinationEvent[] = <span class="cstat-no" title="statement not covered" >[];</span>
-    
+
     // Simple temporal clustering (events within 2 minutes of each other)
 <span class="cstat-no" title="statement not covered" >    events.forEach(<span class="fstat-no" title="function not covered" >(e</span>, i) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (currentChain.length === 0) {</span>
@@ -424,7 +424,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
   private <span class="fstat-no" title="function not covered" >summarizeIncident(</span>chain: CoordinationEvent[]): StabilityIncident {
     const hasBreaker = <span class="cstat-no" title="statement not covered" >chain.some(<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >e.type === 'BREAKER_ACTIVATION')</span>;</span>
     const hasRecovery = <span class="cstat-no" title="statement not covered" >chain.some(<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >e.type === 'STARVATION_RECOVERY')</span>;</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return {</span>
       startTime: chain[0].timestamp,
       endTime:   chain[chain.length - 1].timestamp,
@@ -454,4 +454,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

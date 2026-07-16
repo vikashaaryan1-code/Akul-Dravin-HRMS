@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/admin</a> saas-provisioning.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/40</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/10</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/38</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -367,7 +367,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>handleSubscriptionLifecycle(tenantId: string, action: 'RENEW' | 'CANCEL' | 'UPGRADE') {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Handling ${action} for tenant=${tenantId}`);</span>
-    
+
     // Integration with Stripe/Razorpay logic
     // ...
   }
@@ -377,10 +377,10 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>provisionNewTenant(data: { companyName: string; adminEmail: string; plan: string }) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`AI-Triggered Auto-Provisioning for ${data.companyName}`);</span>
-    
+
     // Convert string plan to enum
     const plan = (<span class="cstat-no" title="statement not covered" >data.plan.toUpperCase().includes('SOVEREIGN') ? SaaSPlan.SOVEREIGN : SaaSPlan.ENTERPRISE)</span> as SaaSPlan;
-    
+
 <span class="cstat-no" title="statement not covered" >    return this.provisionTenant(data.companyName, data.adminEmail, plan);</span>
   }
 &nbsp;
@@ -412,4 +412,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

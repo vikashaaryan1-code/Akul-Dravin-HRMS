@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/communication</a> communication-hub.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/18</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/4</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/16</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -227,7 +227,7 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
    */
 <span class="fstat-no" title="function not covered" >  async </span>sendSlackAlert(webhookUrl: string, message: string, channel?: string) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Dispatching Slack alert to channel="${channel || 'default'}"`);</span>
-    
+
     // Stub for actual HTTP call
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // await axios.post(webhookUrl, { text: message, channel });
@@ -244,7 +244,7 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
    */
 <span class="fstat-no" title="function not covered" >  async </span>sendWhatsAppAlert(phone: string, templateName: string, variables: Record&lt;string, string&gt;) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Dispatching WhatsApp alert to phone="${phone}" template="${templateName}"`);</span>
-    
+
     // Stub for Twilio/Infobip integration
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
@@ -260,7 +260,7 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
    */
 <span class="fstat-no" title="function not covered" >  async </span>sendEnterpriseEmail(to: string, subject: string, html: string) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Dispatching Enterprise Email to="${to}" subject="${subject}"`);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
       platform: 'EMAIL',
@@ -310,4 +310,3 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

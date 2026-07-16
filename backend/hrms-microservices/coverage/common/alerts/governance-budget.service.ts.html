@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">common/alerts</a> governance-budget.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/18</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/3</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/3</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/14</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -152,9 +152,9 @@
 &nbsp;
 /**
  * GOVERNANCE BUDGET SERVICE — Phase Σ
- * 
+ *
  * Enforces operational quotas for the governance layer.
- * Implements "Governance Throttling" to prevent the regulator 
+ * Implements "Governance Throttling" to prevent the regulator
  * from consuming excessive system resources.
  */
 @Injectable()
@@ -168,7 +168,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  isTaskAllowed(</span>type: 'REPLAY' | 'FUZZ' | 'SNAPSHOT'): boolean {
     const report = <span class="cstat-no" title="statement not covered" >this.economics.getEconomicsReport();</span>
-    
+
     // 1. Latency Protection
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (report.avgArbitrationLatencyNs &gt; 10_000_000) { // &gt; 10ms</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.warn(`[Budget] Throttling ${type}: Kernel latency is exceeding sustainability budget.`);</span>
@@ -208,4 +208,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

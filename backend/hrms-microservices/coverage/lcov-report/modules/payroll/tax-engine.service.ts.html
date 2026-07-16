@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/payroll</a> tax-engine.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">16.66% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>5/30</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/3</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">10.71% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>3/28</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -308,7 +308,7 @@ export <span class="fstat-no" title="function not covered" >class T</span>axEngi
    */
 <span class="fstat-no" title="function not covered" >  calculateIndianTax(</span>monthlyGross: string, regime: 'OLD' | 'NEW' = <span class="branch-0 cbranch-no" title="branch not covered" >'NEW')</span>: TaxCalculationResult {
     const gross = <span class="cstat-no" title="statement not covered" >new BigNumber(monthlyGross);</span>
-    
+
     // 1. Provident Fund (PF) - 12% of Basic (Assuming Basic is 50% of Gross)
     const basic = <span class="cstat-no" title="statement not covered" >gross.multipliedBy(0.5);</span>
     const pf = <span class="cstat-no" title="statement not covered" >basic.multipliedBy(0.12).decimalPlaces(2, this.ROUND_MODE);</span>
@@ -363,17 +363,17 @@ export <span class="fstat-no" title="function not covered" >class T</span>axEngi
    */
 <span class="fstat-no" title="function not covered" >  calculateInternationalContractorPayout(</span>amount: string, currency: string, countryCode: string) {
     const baseAmount = <span class="cstat-no" title="statement not covered" >new BigNumber(amount);</span>
-    
+
     // Stub exchange rates vs INR (for demo)
     const rates: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{ USD: 83.5, EUR: 90.2, GBP: 105.1, AED: 22.7 };</span>
     const rate = <span class="cstat-no" title="statement not covered" >rates[currency] || 1.0;</span>
-    
+
     const inrEquivalent = <span class="cstat-no" title="statement not covered" >baseAmount.multipliedBy(rate).decimalPlaces(2, this.ROUND_MODE);</span>
 &nbsp;
     // Compliance fee based on country risk (stub)
     const complianceFeePercent = <span class="cstat-no" title="statement not covered" >countryCode === 'US' ? 0.02 : 0.05;</span> // 2% for US, 5% others
     const complianceFee = <span class="cstat-no" title="statement not covered" >baseAmount.multipliedBy(complianceFeePercent).decimalPlaces(2, this.ROUND_MODE);</span>
-    
+
     const netPayout = <span class="cstat-no" title="statement not covered" >baseAmount.minus(complianceFee).decimalPlaces(2, this.ROUND_MODE);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
@@ -409,4 +409,3 @@ export <span class="fstat-no" title="function not covered" >class T</span>axEngi
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

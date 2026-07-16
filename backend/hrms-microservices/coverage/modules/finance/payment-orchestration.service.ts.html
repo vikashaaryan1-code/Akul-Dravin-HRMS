@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/finance</a> payment-orchestration.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/25</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/9</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/22</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -325,15 +325,15 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     // 3. Reconcile with Ledger via WalletService
     const result = <span class="cstat-no" title="statement not covered" >await this.walletService.rechargeTenantCredits(</span>
-      tenantId, 
-      amount, 
-      gateway, 
+      tenantId,
+      amount,
+      gateway,
       reference
     );
 &nbsp;
     // 4. Dispatch Confirmation Notification
 <span class="cstat-no" title="statement not covered" >    await this.commsHub.sendSlackAlert(</span>
-      process.env.FINANCE_ALERTS_WEBHOOK || '', 
+      process.env.FINANCE_ALERTS_WEBHOOK || '',
       `💰 PAYMENT SUCCESS: Tenant ${tenantId} recharged ${amount} via ${gateway}. Ref: ${reference}`
     );
 &nbsp;
@@ -357,9 +357,9 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return { </span>
-      success: true, 
-      chargeId: result.sessionId, 
-      status: 'PENDING_WEBHOOK' 
+      success: true,
+      chargeId: result.sessionId,
+      status: 'PENDING_WEBHOOK'
     };
   }
 &nbsp;
@@ -391,4 +391,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

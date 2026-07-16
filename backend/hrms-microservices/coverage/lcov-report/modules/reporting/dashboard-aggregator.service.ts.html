@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/reporting</a> dashboard-aggregator.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/40</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/26</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/4</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/35</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -301,7 +301,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
     // 2. Compute Segment Statuses
     const delta = <span class="cstat-no" title="statement not covered" >new BigNumber(tb.totalDebit).minus(tb.totalCredit);</span>
     const trialBalanceStatus: 'PASS' | 'FAIL' = <span class="cstat-no" title="statement not covered" >delta.isZero() ? 'PASS' : 'FAIL';</span>
-    
+
     // Reconciliation Status logic (PASS/WARN/FAIL)
     let reconStatus: 'PASS' | 'WARN' | 'FAIL' = <span class="cstat-no" title="statement not covered" >'PASS';</span>
 <span class="cstat-no" title="statement not covered" >    if (recon.anomalies.length &gt; 0 || forensicAnomalies.some(<span class="fstat-no" title="function not covered" >(a</span>: { type: string }) =&gt; <span class="cstat-no" title="statement not covered" >a.type === 'STALE_RECONCILIATION')</span> || slaDetails.breachedSla &gt; 0) {</span>
@@ -351,7 +351,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
         balance: o.closingBalance,
       })),
       payroll: {
-        activeBatchesCount: 0, 
+        activeBatchesCount: 0,
         totalPendingNet: '0.0000',
       }
     };
@@ -376,4 +376,3 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

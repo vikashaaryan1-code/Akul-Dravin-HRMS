@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/finance</a> reporting.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/41</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/8</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/39</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -424,7 +424,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
   private <span class="fstat-no" title="function not covered" >async </span>calculateAccountTotals(accountId: string): Promise&lt;{ debitTotal: string, creditTotal: string }&gt; {
     const entryRepo = <span class="cstat-no" title="statement not covered" >this.dataSource.getRepository(LedgerEntryEntity);</span>
-    
+
     // Calculate total debits to this account
     const debitRes = <span class="cstat-no" title="statement not covered" >await entryRepo</span>
         .createQueryBuilder('entry')
@@ -448,7 +448,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
   private <span class="fstat-no" title="function not covered" >calculateClosingBalance(</span>type: LedgerAccountType, debit: string, credit: string): string {
     const d = <span class="cstat-no" title="statement not covered" >new BigNumber(debit);</span>
     const c = <span class="cstat-no" title="statement not covered" >new BigNumber(credit);</span>
-    
+
     // Normal Balance Rules
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (type === LedgerAccountType.ASSET || type === LedgerAccountType.EXPENSE) {</span>
 <span class="cstat-no" title="statement not covered" >        return d.minus(c).toFixed(4);</span>
@@ -475,4 +475,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

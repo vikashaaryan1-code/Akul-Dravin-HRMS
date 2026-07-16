@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/document-center</a> document-generation.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/29</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/27</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -259,9 +259,9 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    * "Fully Autonomous" Ultra Enterprise Document Engine.
    */
 <span class="fstat-no" title="function not covered" >  async </span>generateHRDocument(
-    tenantId: string, 
-    type: DocumentType, 
-    data: any, 
+    tenantId: string,
+    type: DocumentType,
+    data: any,
     style: TemplateStyle = <span class="branch-0 cbranch-no" title="branch not covered" >TemplateStyle.CORPORATE,</span>
     tone: 'formal' | 'friendly' | 'institutional' = <span class="branch-0 cbranch-no" title="branch not covered" >'formal'</span>
   ) {
@@ -270,7 +270,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     // 1. AI-Powered Content Generation with Style &amp; Tone injection
     const prompt = <span class="cstat-no" title="statement not covered" >`Generate a ${tone} ${type} in a ${style} style for an employee with the following details: ${JSON.stringify(data)}. </span>
     Ensure the branding reflects ${style} standards. Include placeholders for digital signatures and watermarks.`;
-    
+
     const { content } = <span class="cstat-no" title="statement not covered" >await this.aiEngine.generateReport(tenantId, prompt);</span>
 &nbsp;
     // 2. Add QR Verification (Unique Hash for document integrity)
@@ -297,7 +297,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>generateIDCard(tenantId: string, employeeId: string, name: string, photoUrl: string) {
     const qrData = <span class="cstat-no" title="statement not covered" >await QRCode.toDataURL(JSON.stringify({ tenantId, employeeId, name }));</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return {</span>
       id: `ID-${employeeId.slice(0, 8)}`,
       name,
@@ -328,4 +328,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

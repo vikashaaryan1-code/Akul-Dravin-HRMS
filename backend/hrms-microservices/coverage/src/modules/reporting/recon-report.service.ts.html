@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/reporting</a> recon-report.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/29</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/24</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -282,7 +282,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>getReconReport(accountId: string, startDate: Date, endDate: Date): Promise&lt;ReconReportRow[]&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
-    
+
     // 1. Get Internal Bank Entries
     const internalEntries = <span class="cstat-no" title="statement not covered" >await this.dataSource.getRepository(LedgerEntryEntity).find({</span>
         where: [
@@ -302,7 +302,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
     // Mapping logic (simplified for proof of concept)
     // In a real system, this would use the ReconciliationService's link mapping.
     const report: ReconReportRow[] = <span class="cstat-no" title="statement not covered" >[];</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    for (const entry of internalEntries) {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (entry.createdAt &lt; startDate || entry.createdAt &gt; endDate) <span class="cstat-no" title="statement not covered" >continue;</span></span>
 &nbsp;
@@ -373,4 +373,3 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

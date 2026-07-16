@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/ai-engine</a> autonomous-copilot.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/0</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/3</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/11</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -213,11 +213,11 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Copilot Interaction: "${request.query}" for tenant=${request.tenantId}`);</span>
 &nbsp;
     const prompt = <span class="cstat-no" title="statement not covered" >`</span>
-      You are the PUERI Autonomous Workforce Copilot. 
+      You are the PUERI Autonomous Workforce Copilot.
       You have access to HRMS, ATS, Payroll, and Analytics data for tenant ${request.tenantId}.
       User query: "${request.query}"
-      
-      Respond in a professional, enterprise-grade tone. 
+
+      Respond in a professional, enterprise-grade tone.
       If the user asks for data analysis, provide executive summaries and actionable insights.
       Format: "Insight: [text] \nAction: [text] \nConfidence: [percentage]"
     `;
@@ -244,7 +244,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>generateMorningBriefing(tenantId: string) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Generating autonomous morning briefing for tenant=${tenantId}`);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return this.interact({</span>
       tenantId,
       userId: 'system',
@@ -271,4 +271,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

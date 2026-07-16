@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/finance</a> ledger.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">9.23% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>12/130</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/38</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/21</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">8.4% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>10/119</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -924,7 +924,7 @@ export class LedgerService {
 &nbsp;
       // 6. Aggregate Transaction Seal
       const txMetadataStr = <span class="cstat-no" title="statement not covered" >JSON.stringify(command.metadata || {});</span>
-      
+
       // FORENSIC FX SNAPSHOT: Lock in the rates used at execution.
 <span class="cstat-no" title="statement not covered" >      transaction.policySnapshot = {</span>
           ...settings,
@@ -942,7 +942,7 @@ export class LedgerService {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      transaction.transactionHash = transactionHash;</span>
 <span class="cstat-no" title="statement not covered" >      transaction.status = LedgerTransactionStatus.COMMITTED;</span>
-      
+
 <span class="cstat-no" title="statement not covered" >      return await manager.save(transaction);</span>
     });
   }
@@ -973,8 +973,8 @@ export class LedgerService {
    * Pessimistic Lock Acquisition
    */
   private <span class="fstat-no" title="function not covered" >async </span>lockAndResolveAccounts(
-    manager: EntityManager, 
-    tenantId: string, 
+    manager: EntityManager,
+    tenantId: string,
     command: FinancialCommand
   ): Promise&lt;Map&lt;string, LedgerAccountEntity&gt;&gt; {
     const codes = <span class="cstat-no" title="statement not covered" >new Set&lt;string&gt;();</span>
@@ -1050,10 +1050,10 @@ export class LedgerService {
 <span class="fstat-no" title="function not covered" >  async </span>ensureAllReconciled(transactionIds: string[]): Promise&lt;void&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
     const unreconciled = <span class="cstat-no" title="statement not covered" >await this.dataSource.getRepository(LedgerTransactionEntity).count({</span>
-        where: { 
-            id: In(transactionIds), 
-            tenantId, 
-            status: Not(LedgerTransactionStatus.RECONCILED) 
+        where: {
+            id: In(transactionIds),
+            tenantId,
+            status: Not(LedgerTransactionStatus.RECONCILED)
         }
     });
 &nbsp;
@@ -1064,13 +1064,13 @@ export class LedgerService {
 &nbsp;
   /**
    * SETTLEMENT GATING
-   * Moves a transaction from COMMITTED to SETTLEMENT_PENDING once it is 
+   * Moves a transaction from COMMITTED to SETTLEMENT_PENDING once it is
    * officially dispatched to an external provider (bank/gateway).
    */
 <span class="fstat-no" title="function not covered" >  async </span>markAsSettlementPending(transactionId: string): Promise&lt;LedgerTransactionEntity&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
     const repo = <span class="cstat-no" title="statement not covered" >this.dataSource.getRepository(LedgerTransactionEntity);</span>
-    
+
     const tx = <span class="cstat-no" title="statement not covered" >await repo.findOne({ where: { id: transactionId, tenantId } });</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!tx) <span class="cstat-no" title="statement not covered" >throw new BadRequestException(`Transaction ${transactionId} not found.`);</span></span>
 &nbsp;
@@ -1144,7 +1144,7 @@ export class LedgerService {
         reference: `REVERSAL_OF_${originalTx.reference || originalTx.id}`,
         type: 'REVERSAL',
         description: `Mirror Reversal of Transaction ${originalTx.id}`,
-        metadata: { 
+        metadata: {
             reversalOfTransactionId: originalTx.id,
             reason: 'Correction',
             originalPolicy: originalTx.policySnapshot?.forensicTrace
@@ -1154,7 +1154,7 @@ export class LedgerService {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return await this.dataSource.transaction(<span class="fstat-no" title="function not covered" >async </span>(manager) =&gt; {</span>
         const reversalTx = <span class="cstat-no" title="statement not covered" >await this.executeTransaction(command);</span>
-        
+
         // Link parent
 <span class="cstat-no" title="statement not covered" >        reversalTx.reversalOfTransactionId = originalTx.id;</span>
 <span class="cstat-no" title="statement not covered" >        await manager.save(reversalTx);</span>
@@ -1186,4 +1186,3 @@ export class LedgerService {
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

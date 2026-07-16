@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SurveyEntity } from '../../database/entities/survey.entity';
 import { SurveyResponseEntity } from '../../database/entities/survey-response.entity';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 
 @Injectable()
 export class SurveysService {
@@ -13,22 +14,32 @@ export class SurveysService {
     private readonly responseRepo: Repository<SurveyResponseEntity>,
   ) {}
 
+  /**
+   * Fetches all surveys for a tenant with respondent counts.
+   * Optimized to resolve N+1 query bottleneck using a subquery in a single database round-trip.
+   */
   async getSurveys(tenantId: string) {
-    const surveys = await this.surveyRepo.find({
-      where: { tenantId },
-      order: { createdAt: 'DESC' }
-    });
+    const qb = this.surveyRepo.createQueryBuilder('s');
 
-    const results = [];
-    for (const s of surveys) {
-      const respCount = await this.responseRepo.count({ where: { surveyId: s.id } });
-      results.push({
-        ...s,
-        respondents: respCount
-      });
-    }
+    // Enforce tenant isolation via governance policy
+    TenantQueryPolicy.enforce(qb, tenantId, 's', 'SurveysService', 'getSurveys');
 
-    return results;
+    // Subquery to count respondents per survey
+    qb.addSelect((subQuery) => {
+      return subQuery
+        .select('COUNT(sr.id)', 'count')
+        .from(SurveyResponseEntity, 'sr')
+        .where('sr.surveyId = s.id');
+    }, 'respondentsCount');
+
+    qb.orderBy('s.createdAt', 'DESC');
+
+    const { entities, raw } = await qb.getRawAndEntities();
+
+    return entities.map((survey, index) => ({
+      ...survey,
+      respondents: parseInt(raw[index].respondentsCount, 10) || 0,
+    }));
   }
 
   async getEnpsMetrics(tenantId: string) {

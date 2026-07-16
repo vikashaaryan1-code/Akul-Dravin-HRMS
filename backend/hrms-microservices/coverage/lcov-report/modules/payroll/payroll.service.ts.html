@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/payroll</a> payroll.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">19% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>57/300</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">4.23% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>5/118</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">22.72% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>10/44</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">19.48% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>53/272</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -2214,7 +2214,7 @@ export class PayrollService {
 &nbsp;
         // 4. Update Batch Totals
 <span class="cstat-no" title="statement not covered" >        await this.updateBatchTotals(manager, savedBatch.id);</span>
-        
+
 <span class="cstat-no" title="statement not covered" >        return await manager.findOne(PayrollBatchEntity, {</span>
             where: { id: savedBatch.id },
             relations: ['items']
@@ -2277,13 +2277,13 @@ export class PayrollService {
   private <span class="fstat-no" title="function not covered" >computeBatchSeal(</span>items: PayrollItemEntity[]): string {
     // Sort items by employeeId to ensure deterministic hashing regardless of storage order.
     const sortedItems = <span class="cstat-no" title="statement not covered" >[...items].sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a.employeeId.localeCompare(b.employeeId))</span>;</span>
-    
+
     const hasher = <span class="cstat-no" title="statement not covered" >createHash('sha256');</span>
 <span class="cstat-no" title="statement not covered" >    for (const item of sortedItems) {</span>
         const itemBody = <span class="cstat-no" title="statement not covered" >`${item.employeeId}|${item.grossSalary}|${item.deductions}|${item.netPayable}|${item.currency}`;</span>
 <span class="cstat-no" title="statement not covered" >        hasher.update(itemBody);</span>
     }
-    
+
 <span class="cstat-no" title="statement not covered" >    return hasher.digest('hex');</span>
   }
 &nbsp;
@@ -2346,7 +2346,7 @@ export class PayrollService {
    */
   private <span class="fstat-no" title="function not covered" >async </span>executeSingleItemTransactionally(itemId: string, batch: PayrollBatchEntity): Promise&lt;void&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    await this.dataSource.transaction(<span class="fstat-no" title="function not covered" >async </span>(manager) =&gt; {</span>
         const item = <span class="cstat-no" title="statement not covered" >await manager.findOne(PayrollItemEntity, { where: { id: itemId, tenantId } });</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!item) <span class="cstat-no" title="statement not covered" >return;</span></span>
@@ -2357,12 +2357,12 @@ export class PayrollService {
             const itemSeal = <span class="cstat-no" title="statement not covered" >createHash('sha256')</span>
                 .update(`${item.employeeId}|${item.grossSalary}|${item.deductions}|${item.netPayable}|${item.currency}`)
                 .digest('hex');
-            
+
             // STEP 0: IDEMPOTENCY RECOVERY
             // Check if this specific item has already been committed to the Truth Layer.
             const existingTx = <span class="cstat-no" title="statement not covered" >await this.ledgerService.findTransactionByIdempotencyKey(tenantId, item.idempotencyKey!);</span>
 &nbsp;
-            
+
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (existingTx) {</span>
 <span class="cstat-no" title="statement not covered" >                item.linkedTransactionId = existingTx.id;</span>
 <span class="cstat-no" title="statement not covered" >                item.executionStatus = PayrollItemExecutionStatus.SUCCESS;</span>
@@ -2412,8 +2412,8 @@ export class PayrollService {
                         description: 'Net Payout Dispatched to Employee',
                     }
                 ],
-                metadata: { 
-                    batchId: batch.id, 
+                metadata: {
+                    batchId: batch.id,
                     itemId: item.id,
                     breakdown: item.metadata?.breakdown
                 }
@@ -2490,8 +2490,8 @@ export class PayrollService {
       deductions: taxResult.deductions.total,
       netPayable: taxResult.netPayable,
       currency: taxResult.currency,
-      metadata: { 
-        calculationVersion: '3.0', 
+      metadata: {
+        calculationVersion: '3.0',
         baseSalary: employee.monthlyCtc,
         taxRegime: taxResult.taxRegime,
         breakdown: {
@@ -2517,7 +2517,7 @@ export class PayrollService {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!batch) <span class="cstat-no" title="statement not covered" >throw new NotFoundException('Batch not found');</span></span>
 &nbsp;
     const csvLines = <span class="cstat-no" title="statement not covered" >['EmployeeId,NetPayable,Currency,BankCode'];</span>
-    
+
     // Sort items by ID for bitwise deterministic output
     const sortedItems = <span class="cstat-no" title="statement not covered" >[...batch.items].sort(<span class="fstat-no" title="function not covered" >(a</span>,b) =&gt; <span class="cstat-no" title="statement not covered" >a.id.localeCompare(b.id))</span>;</span>
 &nbsp;
@@ -2642,8 +2642,8 @@ export class PayrollService {
     const batchRepo = <span class="cstat-no" title="statement not covered" >this.dataSource.getRepository(PayrollBatchEntity);</span>
 &nbsp;
     const batch = <span class="cstat-no" title="statement not covered" >await batchRepo.findOne({ </span>
-        where: { id: batchId, tenantId }, 
-        relations: ['items'] 
+        where: { id: batchId, tenantId },
+        relations: ['items']
     });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!batch) <span class="cstat-no" title="statement not covered" >throw new NotFoundException('Batch not found');</span></span>
@@ -3154,4 +3154,3 @@ export class PayrollService {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

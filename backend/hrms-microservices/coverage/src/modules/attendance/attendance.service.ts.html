@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/attendance</a> attendance.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">7.01% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>8/114</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/54</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/12</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">5.45% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>6/110</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -840,7 +840,7 @@ export class AttendanceService {
   /**
    * Enterprise Biometric Hardware Sync Endpoint
    * Handles batch sync logs from physical biometric devices (e.g. ZKTeco, Matrix, Essl)
-   * Resolves cardId/biometricId to employee, handles punch direction (IN/OUT), 
+   * Resolves cardId/biometricId to employee, handles punch direction (IN/OUT),
    * and marks present status.
    */
 <span class="fstat-no" title="function not covered" >  async </span>syncBiometric(dto: BiometricSyncDto): Promise&lt;{ processed: number; matched: number; errors: string[] }&gt; {
@@ -904,7 +904,7 @@ export class AttendanceService {
 &nbsp;
   /**
    * Face Recognition Punch-In/Out
-   * Real production AI flow: maps image payload using face embedding search, 
+   * Real production AI flow: maps image payload using face embedding search,
    * matches against registered employee templates, and executes punchIn/punchOut.
    */
 <span class="fstat-no" title="function not covered" >  async </span>punchFace(dto: FacePunchDto): Promise&lt;AttendanceEntity&gt; {
@@ -982,4 +982,3 @@ export class AttendanceService {
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

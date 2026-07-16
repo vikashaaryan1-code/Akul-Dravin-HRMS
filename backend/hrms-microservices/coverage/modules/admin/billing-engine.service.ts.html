@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/admin</a> billing-engine.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/38</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/7</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/3</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/36</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -256,7 +256,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     // 2. Calculate Usage Charges (AI, Marketplace, etc.)
     const usage = <span class="cstat-no" title="statement not covered" >await this.usageMeter.getTenantUsage(tenantId);</span>
     let usageTotal = <span class="cstat-no" title="statement not covered" >0;</span>
-    
+
     // Example: $0.05 per AI Action
 <span class="cstat-no" title="statement not covered" >    usageTotal += (parseInt(usage[MeteredMetric.AI_TOKENS] || '0') * 0.05);</span>
     // Example: $399 per Marketplace Hire
@@ -268,7 +268,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     // 3. Attempt Payment (Wallet first, then Gateway)
     const deduction = <span class="cstat-no" title="statement not covered" >await this.wallet.deductTenantCredits(tenantId, grandTotal, `Monthly Subscription Renewal: ${subscription.plan.name}`);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    if (deduction.success) {</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.log(`Billing successful via Wallet for tenant=${tenantId}`);</span>
 <span class="cstat-no" title="statement not covered" >      await this.updateSubscriptionPeriod(subscription);</span>
@@ -307,4 +307,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

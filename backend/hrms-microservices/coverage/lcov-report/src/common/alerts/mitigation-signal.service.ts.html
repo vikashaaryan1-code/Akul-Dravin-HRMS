@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/alerts</a> mitigation-signal.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/154</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/36</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/31</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/137</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -902,11 +902,11 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     const s = <span class="cstat-no" title="statement not covered" >this.find(id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!s) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 <span class="cstat-no" title="statement not covered" >    await this.coord.clearStabilizing(`${s.sloId}:${s.targetResource}`);</span>
-    
+
     // Phase AT-4: Record lifecycle for adaptive TTL
     const durationMs = <span class="cstat-no" title="statement not covered" >Date.now() - new Date(s.generatedAt).getTime();</span>
 <span class="cstat-no" title="statement not covered" >    this.ttlService.recordLifecycle(s.targetResource, durationMs);</span>
-    
+
     // Release reservation
 <span class="cstat-no" title="statement not covered" >    this.reservation.release(s.targetResource, id);</span>
 &nbsp;
@@ -917,7 +917,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     const s = <span class="cstat-no" title="statement not covered" >this.find(id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!s) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 <span class="cstat-no" title="statement not covered" >    await this.coord.clearStabilizing(`${s.sloId}:${s.targetResource}`);</span>
-    
+
     // Release reservation on rollback
 <span class="cstat-no" title="statement not covered" >    this.reservation.release(s.targetResource, id);</span>
 &nbsp;
@@ -997,4 +997,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

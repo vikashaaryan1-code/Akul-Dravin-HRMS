@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/alerts</a> governance-skepticism.engine.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/10</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/3</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/8</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -165,9 +165,9 @@ export interface EpistemicConfidence {
 &nbsp;
 /**
  * GOVERNANCE SKEPTICISM ENGINE — Phase ∞-Terminal
- * 
- * The "Humility Guard." 
- * Instead of absolute "Truth," it communicates "Confidence." 
+ *
+ * The "Humility Guard."
+ * Instead of absolute "Truth," it communicates "Confidence."
  * Flags boundaries where determinism relies on unproven environmental factors.
  */
 @Injectable()
@@ -180,15 +180,15 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
    */
 <span class="fstat-no" title="function not covered" >  evaluateConfidence(</span>domain: string, isAdversarial: boolean = <span class="branch-0 cbranch-no" title="branch not covered" >false)</span>: EpistemicConfidence {
     const score = <span class="cstat-no" title="statement not covered" >isAdversarial ? 0.65 : 0.94;</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (isAdversarial) {</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.warn(`[Skepticism] Confidence Downgrade: Adversarial environment detected for ${domain}`);</span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       score,
-      caveat: score &gt; 0.9 
-        ? 'High probability under bounded assumptions; assumes toolchain integrity.' 
+      caveat: score &gt; 0.9
+        ? 'High probability under bounded assumptions; assumes toolchain integrity.'
         : 'Bounded confidence; unmodeled environmental jitter detected.',
       residualRisk: 'Environmental race windows and asynchronous non-determinism are unmodeled.',
     };
@@ -220,4 +220,3 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

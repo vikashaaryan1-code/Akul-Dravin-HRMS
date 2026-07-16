@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/finance</a> finance.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">76.66% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>23/30</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>1/2</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">71.42% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>10/14</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">74.07% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>20/27</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -280,24 +280,24 @@ export class FinanceService {
 &nbsp;
   async getSummary(): Promise&lt;FinanceSummaryRecord&gt; {
     const invoices = await this.invoiceRepository.find();
-    
+
     // Revenue from Invoices
     const totalRevenue = invoices
       .filter((invoice) =&gt; invoice.status.toLowerCase().includes('paid'))
       .reduce((sum, invoice) =&gt; sum + Number(invoice.amount), 0);
-    
+
     const receivables = invoices
       .filter((invoice) =&gt; !invoice.status.toLowerCase().includes('paid'))
       .reduce((sum, invoice) =&gt; sum + Number(invoice.amount), 0);
-    
+
     // Expenses from Transactions
     const expenseRecords = await this.transactionRepository.find({
       where: { type: 'DEBIT' }
     });
     const totalExpenses = expenseRecords.reduce((sum, tx) =&gt; sum + Number(tx.amount), 0);
-    
+
     const gstPayable = Math.round(totalRevenue * 0.18);
-    
+
     const operatingMarginPercent = totalRevenue &gt; 0
       ? Number((((totalRevenue - totalExpenses) / totalRevenue) * 100).toFixed(1))
       : <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
@@ -346,4 +346,3 @@ export class FinanceService {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

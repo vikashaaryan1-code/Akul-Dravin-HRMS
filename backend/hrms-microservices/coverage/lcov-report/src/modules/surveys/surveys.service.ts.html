@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/surveys</a> surveys.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/33</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/4</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/29</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -224,7 +224,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
 &nbsp;
 <span class="fstat-no" title="function not covered" >  async </span>getEnpsMetrics(tenantId: string) {
     const responses = <span class="cstat-no" title="statement not covered" >await this.responseRepo.find({ where: { tenantId } });</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (responses.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return { score: 0, promoters: 0, passives: 0, detractors: 0 };</span>
     }
@@ -243,7 +243,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
     const promoterPct = <span class="cstat-no" title="statement not covered" >Math.round((promoters / total) * 100);</span>
     const passivePct = <span class="cstat-no" title="statement not covered" >Math.round((passives / total) * 100);</span>
     const detractorPct = <span class="cstat-no" title="statement not covered" >Math.round((detractors / total) * 100);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return {</span>
       score: promoterPct - detractorPct,
       promoters: promoterPct,
@@ -271,4 +271,3 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

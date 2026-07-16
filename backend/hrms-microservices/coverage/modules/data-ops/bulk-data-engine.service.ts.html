@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/data-ops</a> bulk-data-engine.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/50</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/28</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/4</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/47</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -338,7 +338,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>importEmployees(tenantId: string, data: any[]) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Starting bulk import for ${data.length} records in tenant=${tenantId}`);</span>
-    
+
     const queryRunner = <span class="cstat-no" title="statement not covered" >this.dataSource.createQueryRunner();</span>
 <span class="cstat-no" title="statement not covered" >    await queryRunner.connect();</span>
 <span class="cstat-no" title="statement not covered" >    await queryRunner.startTransaction();</span>
@@ -397,7 +397,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
       }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      await queryRunner.commitTransaction();</span>
-      
+
       // 4. Publish Event for downstream cascades (e.g., auto-onboarding)
 <span class="cstat-no" title="statement not covered" >      await this.eventBus.publish('BULK_IMPORT_COMPLETED', tenantId, {</span>
         type: 'EMPLOYEE',
@@ -437,7 +437,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     // CSV Stub logic
     const headers = <span class="cstat-no" title="statement not covered" >Object.keys(data[0] || {}).join(',');</span>
     const rows = <span class="cstat-no" title="statement not covered" >data.map(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >Object.values(r).join(','))</span>.join('\n');</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return {</span>
       fileName: `${entity}_export_${Date.now()}.csv`,
       content: `${headers}\n${rows}`,
@@ -463,4 +463,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

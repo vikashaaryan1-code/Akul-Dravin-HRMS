@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/reporting</a> statutory-report.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/32</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/8</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/4</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/30</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -294,7 +294,7 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>getComplianceSummary(startDate: Date, endDate: Date): Promise&lt;StatutoryAccountSummary[]&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
-    
+
     // Identify Liability Accounts
     const accounts = <span class="cstat-no" title="statement not covered" >await this.dataSource.getRepository(LedgerAccountEntity).find({</span>
         where: [
@@ -308,10 +308,10 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    for (const account of accounts) {</span>
         const openingBalance = <span class="cstat-no" title="statement not covered" >await this.calculateOpeningBalance(account.id, startDate);</span>
-        
+
         // Additions are where this account was CREDITED (Increasing the Liability)
         const additions = <span class="cstat-no" title="statement not covered" >await this.calculateActivity(account.id, startDate, endDate, 'CREDIT');</span>
-        
+
         // Payments are where this account was DEBITED (Decreasing the Liability via Payment)
         const payments = <span class="cstat-no" title="statement not covered" >await this.calculateActivity(account.id, startDate, endDate, 'DEBIT');</span>
 &nbsp;
@@ -388,4 +388,3 @@ export <span class="cstat-no" title="statement not covered" >class <span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/modules/policy-engine/evaluator</a> rule-evaluator.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">7.93% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>5/63</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/42</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/9</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">5.08% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>3/59</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -412,12 +412,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable, Logger } from '@nestjs/common';
-import { 
-  PolicyRule, 
-  PolicyRuleType, 
-  EvaluationContext, 
+import {
+  PolicyRule,
+  PolicyRuleType,
+  EvaluationContext,
   ExecutionMode,
-  EvaluationResult 
+  EvaluationResult
 } from '../types/policy.types';
 &nbsp;
 @Injectable()
@@ -485,7 +485,7 @@ export <span class="fstat-no" title="function not covered" >class R</span>uleEva
 &nbsp;
     const currentVal = <span class="cstat-no" title="statement not covered" >Number(context.currentValue || 0);</span>
     const proposedVal = <span class="cstat-no" title="statement not covered" >Number(context.proposedValue);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentVal === 0) <span class="cstat-no" title="statement not covered" >return { allowed: true };</span></span>
 &nbsp;
     const incrementPercent = <span class="cstat-no" title="statement not covered" >((proposedVal - currentVal) / currentVal) * 100;</span>
@@ -529,7 +529,7 @@ export <span class="fstat-no" title="function not covered" >class R</span>uleEva
 &nbsp;
   private <span class="fstat-no" title="function not covered" >evaluateExecutionPolicy(</span>rule: PolicyRule, context: EvaluationContext): Partial&lt;EvaluationResult&gt; {
     const { risk_level } = <span class="cstat-no" title="statement not covered" >rule.condition;</span>
-    
+
     // Simple logic for now: High risk requires review
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (risk_level === 'HIGH') {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
@@ -577,10 +577,10 @@ export <span class="fstat-no" title="function not covered" >class R</span>uleEva
 &nbsp;
   private <span class="fstat-no" title="function not covered" >escalateMode(</span>current: ExecutionMode, target: ExecutionMode): ExecutionMode {
     const weight = <span class="cstat-no" title="statement not covered" >{ </span>
-        [ExecutionMode.ALLOW_AUTO]: 1, 
-        [ExecutionMode.ALLOW_WITH_LIMIT]: 2, 
-        [ExecutionMode.REQUIRES_APPROVAL]: 3, 
-        [ExecutionMode.BLOCK]: 4 
+        [ExecutionMode.ALLOW_AUTO]: 1,
+        [ExecutionMode.ALLOW_WITH_LIMIT]: 2,
+        [ExecutionMode.REQUIRES_APPROVAL]: 3,
+        [ExecutionMode.BLOCK]: 4
     };
 <span class="cstat-no" title="statement not covered" >    return weight[target] &gt; weight[current] ? target : current;</span>
   }
@@ -604,4 +604,3 @@ export <span class="fstat-no" title="function not covered" >class R</span>uleEva
         <script src="../../../../block-navigation.js"></script>
     </body>
 </html>
-    

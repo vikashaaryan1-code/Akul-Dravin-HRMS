@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/alerts</a> workflow-dependency-analyzer.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/179</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/89</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/30</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/153</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -1027,7 +1027,7 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
 <span class="cstat-no" title="statement not covered" >        nodes.set(resId, { id: resId, type: 'RESOURCE', label: reserv.resourceKey, meta: { resource: reserv.resourceKey } });</span>
       }
 <span class="cstat-no" title="statement not covered" >      edges.push({ from: reservId, to: resId, type: 'HOLDS', label: reserv.status });</span>
-      
+
       // Phase AT-1: Lineage - Supersession edge
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (reserv.supersededReservationId) {</span>
 <span class="cstat-no" title="statement not covered" >        edges.push({ from: reservId, to: `reserv:${reserv.supersededReservationId}`, type: 'SUPERSEDES', label: 'higher urgency' });</span>
@@ -1041,10 +1041,10 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
             // Differentiate between parent OWNER and child BORROWER
             const isBorrower = <span class="cstat-no" title="statement not covered" >reserv.status === 'BORROWED';</span>
 <span class="cstat-no" title="statement not covered" >            edges.push({ </span>
-              from: `step:${exec.id}:${step.stepId}`, 
-              to: reservId, 
-              type: isBorrower ? 'BORROWS' : 'HOLDS', 
-              label: isBorrower ? 'borrowed' : 'reservation' 
+              from: `step:${exec.id}:${step.stepId}`,
+              to: reservId,
+              type: isBorrower ? 'BORROWS' : 'HOLDS',
+              label: isBorrower ? 'borrowed' : 'reservation'
             });
 <span class="cstat-no" title="statement not covered" >            break;</span>
           }
@@ -1339,4 +1339,3 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

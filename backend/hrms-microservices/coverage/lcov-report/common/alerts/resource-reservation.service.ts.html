@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">common/alerts</a> resource-reservation.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/293</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/147</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/39</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/267</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -1337,13 +1337,13 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     const totalEnergy = <span class="cstat-no" title="statement not covered" >[...this.active.values()].reduce(<span class="fstat-no" title="function not covered" >(s</span>, r) =&gt; <span class="cstat-no" title="statement not covered" >s + r.coordinationEnergy,</span> 0);</span>
     const energyPercent = <span class="cstat-no" title="statement not covered" >totalEnergy / MAX_GLOBAL_ENERGY;</span>
     const rejections = <span class="cstat-no" title="statement not covered" >this.criticalRejections.get(`${resourceKey}:${ownerId}`) ?? 0;</span>
-    
+
     const constitutionCheck = <span class="cstat-no" title="statement not covered" >this.constitution?.verify(urgency, mode, this.currentMode.startedAt, energyPercent, rejections);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (constitutionCheck &amp;&amp; !constitutionCheck.isAllowed) {</span>
 <span class="cstat-no" title="statement not covered" >      this.telemetry?.recordEvent('CONSTITUTIONAL_REJECTION', resourceKey, ownerLabel, { </span>
         invariant: constitutionCheck.invariant,
-        reason: constitutionCheck.reason 
+        reason: constitutionCheck.reason
       });
 <span class="cstat-no" title="statement not covered" >      this.logger.warn(`[Reservation] CONSTITUTIONAL REJECT: ${ownerLabel} on ${resourceKey} — ${constitutionCheck.reason}`);</span>
 <span class="cstat-no" title="statement not covered" >      return existing || null as any;</span>
@@ -1371,7 +1371,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     const callerRank   = <span class="cstat-no" title="statement not covered" >URGENCY_RANK[urgency] ?? 1;</span>
     const existingRank = <span class="cstat-no" title="statement not covered" >URGENCY_RANK[existing.urgency] ?? 1;</span>
-    
+
     // Phase AU-5: Use EMA for threshold hysteresis
     const pressure = <span class="cstat-no" title="statement not covered" >this.computeCoordinationPressure(resourceKey);</span>
     const smoothedPressure = <span class="cstat-no" title="statement not covered" >existing.emaPressure ?? pressure;</span>
@@ -1381,7 +1381,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (mode === KernelMode.STABILITY) {</span>
 <span class="cstat-no" title="statement not covered" >      displacementThreshold *= 2; </span>// Double friction to discourage churn
     }
-    
+
     const scoreDelta   = <span class="cstat-no" title="statement not covered" >utilityScore - existing.utilityScore;</span>
 &nbsp;
     // Phase AU-5: Coordination Circuit Breaker
@@ -1398,7 +1398,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (now.getTime() - lastChange &lt; SUPERSESSION_COOLDOWN_MS &amp;&amp; callerRank &lt; 3) {</span>
 <span class="cstat-no" title="statement not covered" >        this.telemetry?.recordEvent('COOLDOWN_REJECTION', resourceKey, ownerLabel, { </span>
           lastChange: new Date(lastChange).toISOString(),
-          msSinceChange: now.getTime() - lastChange 
+          msSinceChange: now.getTime() - lastChange
         });
 <span class="cstat-no" title="statement not covered" >        this.logger.warn(`[Reservation] COOLDOWN: Rejecting supersession for ${resourceKey} — within anti-thrash window`);</span>
 <span class="cstat-no" title="statement not covered" >        return existing;</span>
@@ -1423,14 +1423,14 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      this.telemetry?.recordEvent('SUPERSESSION', resourceKey, ownerLabel, { </span>
         displacedOwner: existing.ownerLabel,
-        chainLength: chainLength + 1 
+        chainLength: chainLength + 1
       });
 &nbsp;
       const queue = <span class="cstat-no" title="statement not covered" >this.waiting.get(resourceKey) ?? [];</span>
-      
+
       // Phase AU-3: Record "skips" for starvation detection
 <span class="cstat-no" title="statement not covered" >      queue.forEach(<span class="fstat-no" title="function not covered" >q </span>=&gt; { <span class="cstat-no" title="statement not covered" >q.skipCount++; </span>});</span>
-      
+
 <span class="cstat-no" title="statement not covered" >      queue.unshift(displaced);</span>
 <span class="cstat-no" title="statement not covered" >      this.waiting.set(resourceKey, queue);</span>
       const res = <span class="cstat-no" title="statement not covered" >this.grantActive(resourceKey, ownerId, ownerType, ownerLabel, urgency, utilityScore, resolvedTtl, now, planStepId, parentReservationId);</span>
@@ -1553,14 +1553,14 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (current.ownerId === ownerId) <span class="cstat-no" title="statement not covered" >return true;</span></span>
     // Phase AT-1: borrow right check
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((this.borrows.get(current.id) ?? []).includes(ownerId)) <span class="cstat-no" title="statement not covered" >return true;</span></span>
-    
+
     const callerRank  = <span class="cstat-no" title="statement not covered" >URGENCY_RANK[urgency] ?? 1;</span>
     const currentRank = <span class="cstat-no" title="statement not covered" >URGENCY_RANK[current.urgency] ?? 1;</span>
-    
+
     // Phase AU-2: Pressure-aware bypass
     const pressure = <span class="cstat-no" title="statement not covered" >this.computeCoordinationPressure(resourceKey);</span>
     const threshold = <span class="cstat-no" title="statement not covered" >Math.max(0.05, 0.20 - (pressure * 0.15));</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    return callerRank &gt; currentRank &amp;&amp; (utilityScore - current.utilityScore) &gt;= threshold;</span>
   }
 &nbsp;
@@ -1653,7 +1653,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
   private <span class="fstat-no" title="function not covered" >generateGovernanceHash(</span>mode: KernelMode, entropy: number, energyPercent: number): string | undefined {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.snapshotService || !this.registry) <span class="cstat-no" title="statement not covered" >return undefined;</span></span>
-    
+
     const startTime = <span class="cstat-no" title="statement not covered" >Date.now();</span>
     const snapshot = <span class="cstat-no" title="statement not covered" >this.snapshotService.captureEpoch(</span>
       this.registry.getEffectiveConfig().criticalLivenessMaxRejections, // Simplified versioning ref
@@ -1662,7 +1662,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
       energyPercent,
       [...this.active.keys()]
     );
-    
+
 <span class="cstat-no" title="statement not covered" >    this.economics?.recordHashing(Date.now() - startTime);</span>
 <span class="cstat-no" title="statement not covered" >    return snapshot.governanceHash;</span>
   }
@@ -1719,8 +1719,8 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     const waitMs = <span class="cstat-no" title="statement not covered" >nowTimestamp - new Date(next.requestedAt).getTime();</span>
 <span class="cstat-no" title="statement not covered" >    this.telemetry?.recordEvent('STARVATION_RECOVERY', resourceKey, next.ownerLabel, { </span>
-      waitMs, 
-      skipCount: next.skipCount 
+      waitMs,
+      skipCount: next.skipCount
     });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`[Reservation] PROMOTED ${next.ownerLabel} on ${resourceKey} (waited for ${next.skipCount} skips)`);</span>
@@ -1752,8 +1752,8 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
   /**
    * Computes coordination pressure for a resource.
-   * score = (borrowDepth / MAX_BORROW_DEPTH) * 0.4 
-   *       + (waiterCount / 5) * 0.4 
+   * score = (borrowDepth / MAX_BORROW_DEPTH) * 0.4
+   *       + (waiterCount / 5) * 0.4
    *       + (ageMs / TTL) * 0.2
    */
   private <span class="fstat-no" title="function not covered" >computeCoordinationPressure(</span>resourceKey: string): number {
@@ -1774,7 +1774,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     const ageComp   = <span class="cstat-no" title="statement not covered" >Math.min(1, age / (ttl || 1)) * 0.2;</span>
 &nbsp;
     const rawPressure = <span class="cstat-no" title="statement not covered" >Math.min(1.0, depthComp + waitComp + ageComp);</span>
-    
+
     // Phase AU-5: EMA Smoothing (Hysteresis)
     const prevEma = <span class="cstat-no" title="statement not covered" >r.emaPressure ?? rawPressure;</span>
     const smoothed = <span class="cstat-no" title="statement not covered" >(rawPressure * EMA_ALPHA) + (prevEma * (1 - EMA_ALPHA));</span>
@@ -1790,7 +1790,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     const totalWaiting = <span class="cstat-no" title="statement not covered" >[...this.waiting.values()].reduce(<span class="fstat-no" title="function not covered" >(s</span>, q) =&gt; <span class="cstat-no" title="statement not covered" >s + q.length,</span> 0);</span>
     const totalBorrows = <span class="cstat-no" title="statement not covered" >active.filter(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >r.status === 'BORROWED')</span>.length;</span>
     const avgChain = <span class="cstat-no" title="statement not covered" >active.length &gt; 0 ? active.reduce(<span class="fstat-no" title="function not covered" >(s</span>, r) =&gt; <span class="cstat-no" title="statement not covered" >s + r.supersessionCount,</span> 0) / active.length : 0;</span>
-    
+
     // Phase AW: Energy contribution to entropy
     const totalEnergy = <span class="cstat-no" title="statement not covered" >active.reduce(<span class="fstat-no" title="function not covered" >(s</span>, r) =&gt; <span class="cstat-no" title="statement not covered" >s + r.coordinationEnergy,</span> 0);</span>
     const energyRisk = <span class="cstat-no" title="statement not covered" >Math.min(0.2, (totalEnergy / MAX_GLOBAL_ENERGY) * 0.2);</span>
@@ -1843,4 +1843,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

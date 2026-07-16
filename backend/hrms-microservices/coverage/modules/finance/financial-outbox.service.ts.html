@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">modules/finance</a> financial-outbox.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">21.05% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>8/38</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">17.14% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>6/35</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -279,7 +279,7 @@ export class FinancialOutboxService {
    */
 <span class="fstat-no" title="function not covered" >  async </span>emit(manager: EntityManager, command: any, aggregateId: string): Promise&lt;void&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
-    
+
     const outbox = <span class="cstat-no" title="statement not covered" >manager.create(FinancialOutboxEntity, {</span>
       tenantId,
       aggregateId,
@@ -299,7 +299,7 @@ export class FinancialOutboxService {
    */
 <span class="fstat-no" title="function not covered" >  async </span>processPending(): Promise&lt;void&gt; {
     const tenantId = <span class="cstat-no" title="statement not covered" >TenantContext.getRequiredTenantId();</span>
-    
+
     // We use a separate transaction per item processing
     const pendingItems = <span class="cstat-no" title="statement not covered" >await this.dataSource.getRepository(FinancialOutboxEntity).find({</span>
         where: { tenantId, status: FinancialOutboxStatus.PENDING },
@@ -330,7 +330,7 @@ export class FinancialOutboxService {
 <span class="cstat-no" title="statement not covered" >        try {</span>
             // HANDSHAKE WITH TRUTH LAYER
             const tx = <span class="cstat-no" title="statement not covered" >await this.ledgerService.executeTransaction(item.payload);</span>
-            
+
             // Mark as completed
 <span class="cstat-no" title="statement not covered" >            item.status = FinancialOutboxStatus.COMPLETED;</span>
 <span class="cstat-no" title="statement not covered" >            item.processedAt = new Date();</span>
@@ -342,7 +342,7 @@ export class FinancialOutboxService {
 <span class="cstat-no" title="statement not covered" >            item.status = FinancialOutboxStatus.FAILED;</span>
 <span class="cstat-no" title="statement not covered" >            item.errorLog = message;</span>
 <span class="cstat-no" title="statement not covered" >            item.retryCount += 1;</span>
-            
+
             // If retry count is low, we might move back to PENDING for automatic retry.
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (item.retryCount &lt; 3) {</span>
 <span class="cstat-no" title="statement not covered" >                item.status = FinancialOutboxStatus.PENDING;</span>
@@ -373,4 +373,3 @@ export class FinancialOutboxService {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

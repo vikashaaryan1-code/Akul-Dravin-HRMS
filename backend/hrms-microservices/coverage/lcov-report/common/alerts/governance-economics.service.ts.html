@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">common/alerts</a> governance-economics.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/14</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/10</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -180,9 +180,9 @@ export interface GovernanceEconomicsReport {
 &nbsp;
 /**
  * GOVERNANCE ECONOMICS SERVICE — Phase Σ
- * 
+ *
  * Measures the "Thermodynamic Cost" of the governance kernel.
- * Ensures that the coordination layer does not destabilize the system 
+ * Ensures that the coordination layer does not destabilize the system
  * through excessive computational or storage overhead.
  */
 @Injectable()
@@ -208,7 +208,7 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
 <span class="fstat-no" title="function not covered" >  getEconomicsReport(</span>): GovernanceEconomicsReport {
     const avgLat = <span class="cstat-no" title="statement not covered" >this.metrics.arbitrationLatencies.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a + b,</span> 0) / </span>
                    (this.metrics.arbitrationLatencies.length || 1);
-    
+
 <span class="cstat-no" title="statement not covered" >    return {</span>
       timestamp: new Date().toISOString(),
       avgArbitrationLatencyNs: Math.round(avgLat),
@@ -238,4 +238,3 @@ export <span class="fstat-no" title="function not covered" >class <span class="c
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

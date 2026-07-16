@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/automation</a> workflow-executor.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/34</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/5</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/7</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/32</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -313,7 +313,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>execute(job: WorkflowExecutionJob) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Enqueuing workflow execution workflowId=${job.workflowId} event=${job.triggerEvent}`);</span>
-    
+
     // In a real system, we would fetch the workflow definition here to validate.
     // For the Enterprise SaaS core, we enqueue the raw execution intent.
     const bullJob = <span class="cstat-no" title="statement not covered" >await this.workflowQueue.add('execute-steps', job, {</span>
@@ -331,7 +331,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    */
 <span class="fstat-no" title="function not covered" >  async </span>processStep(step: any, context: any) {
 <span class="cstat-no" title="statement not covered" >    this.logger.debug(`Processing workflow step type=${step.type} name="${step.name}"`);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    switch (step.type) {</span>
       case 'email':
 <span class="cstat-no" title="statement not covered" >        return this.sendEmail(step.config, context);</span>
@@ -412,4 +412,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

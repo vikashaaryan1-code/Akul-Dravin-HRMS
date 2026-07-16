@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/alerts</a> replay-equivalence-tester.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/18</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/2</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/2</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/16</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -166,9 +166,9 @@ import { AlgorithmManifest } from './governance-algorithm-registry';
 &nbsp;
 /**
  * REPLAY EQUIVALENCE TESTER — Phase Ω
- * 
+ *
  * Automates the verification of "Semantic Consistency."
- * Verifies that replaying a historical state results in the 
+ * Verifies that replaying a historical state results in the
  * exact same cryptographic hash, proving zero semantic drift.
  */
 @Injectable()
@@ -184,10 +184,10 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
    * Verifies that a historical snapshot is still deterministic.
    */
 <span class="fstat-no" title="function not covered" >  async </span>verifyEquivalence(
-    snapshot: GovernanceEpochSnapshot, 
+    snapshot: GovernanceEpochSnapshot,
     currentManifest: AlgorithmManifest
   ): Promise&lt;{ isValid: boolean; driftDetails?: string }&gt; {
-    
+
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`[Verification] Starting Equivalence Test for Epoch ${snapshot.epochId}`);</span>
 &nbsp;
     // 1. Verify Original Hash Integrity
@@ -198,7 +198,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
     // 2. Perform Sandbox Replay
     const replayResult = <span class="cstat-no" title="statement not covered" >this.sandbox.replayEpoch(snapshot, currentManifest);</span>
-    
+
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!replayResult) {</span>
 <span class="cstat-no" title="statement not covered" >      return { isValid: false, driftDetails: 'Replay produced a different coordination outcome.' };</span>
     }
@@ -226,4 +226,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    

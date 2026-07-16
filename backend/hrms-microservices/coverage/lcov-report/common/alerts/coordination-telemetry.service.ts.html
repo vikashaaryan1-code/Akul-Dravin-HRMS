@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">common/alerts</a> coordination-telemetry.service.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/41</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/14</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/33</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -348,10 +348,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Injectable, Logger, OnModuleInit, OnModuleDestroy, Inject, forwardRef } from '@nestjs/common';</span>
 <span class="cstat-no" title="statement not covered" >import { ResourceReservationService } from './resource-reservation.service';</span>
 &nbsp;
-export type CoordinationEventType = 
-  | 'SUPERSESSION' 
-  | 'COOLDOWN_REJECTION' 
-  | 'BREAKER_ACTIVATION' 
+export type CoordinationEventType =
+  | 'SUPERSESSION'
+  | 'COOLDOWN_REJECTION'
+  | 'BREAKER_ACTIVATION'
   | 'STARVATION_RECOVERY'
   | 'MAX_DEPTH_REJECTION'
   | 'CONSTITUTIONAL_REJECTION'
@@ -382,8 +382,8 @@ export interface StabilitySnapshot {
 &nbsp;
 /**
  * COORDINATION DYNAMICS OBSERVATORY — Phase AV
- * 
- * Provides high-fidelity telemetry for the governance kernel's 
+ *
+ * Provides high-fidelity telemetry for the governance kernel's
  * self-regulation dynamics (Entropy, Pressure, Starvation).
  */
 @Injectable()
@@ -414,7 +414,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
       const report = <span class="cstat-no" title="statement not covered" >this.reservation.getReport();</span>
       const snapshots = <span class="cstat-no" title="statement not covered" >report.activeReservations.map(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >r.coordinationPressure)</span>;</span>
       const avgPressure = <span class="cstat-no" title="statement not covered" >snapshots.length &gt; 0 </span>
-        ? snapshots.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a + b,</span> 0) / snapshots.length 
+        ? snapshots.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a + b,</span> 0) / snapshots.length
         : 0;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      this.takeSnapshot(</span>
@@ -430,8 +430,8 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
 <span class="fstat-no" title="function not covered" >  recordEvent(</span>type: CoordinationEventType, resourceKey?: string, ownerLabel?: string, metadata: Record&lt;string, any&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span>: void {
     const isIntervention = <span class="cstat-no" title="statement not covered" >[</span>
-      'BREAKER_ACTIVATION', 
-      'COOLDOWN_REJECTION', 
+      'BREAKER_ACTIVATION',
+      'COOLDOWN_REJECTION',
       'MAX_DEPTH_REJECTION'
     ].includes(type);
 &nbsp;
@@ -444,10 +444,10 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
       metadata,
       isIntervention,
     };
-    
+
 <span class="cstat-no" title="statement not covered" >    this.events.push(event);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.events.length &gt; this.MAX_EVENTS) <span class="cstat-no" title="statement not covered" >this.events.shift();</span></span>
-    
+
 <span class="cstat-no" title="statement not covered" >    if (type === 'BREAKER_ACTIVATION') {</span>
 <span class="cstat-no" title="statement not covered" >      this.logger.error(`[Governance] CIRCUIT BREAKER ACTIVATED: ${JSON.stringify(metadata)}`);</span>
     } else {
@@ -463,7 +463,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
       activeCount,
       waiterCount,
     };
-    
+
 <span class="cstat-no" title="statement not covered" >    this.snapshots.push(snapshot);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.snapshots.length &gt; this.MAX_SNAPSHOTS) <span class="cstat-no" title="statement not covered" >this.snapshots.shift();</span></span>
   }
@@ -505,4 +505,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/modules/ai-engine</a> command-bridge.gateway.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>0/29</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>0/6</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>0/27</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -256,11 +256,11 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
 <span class="fstat-no" title="function not covered" >  async </span>handleConnection(client: Socket) {
 <span class="cstat-no" title="statement not covered" >    this.logger.log(`Client connected: ${client.id}`);</span>
-    
+
     // Fetch real metrics
     const empCountResult = <span class="cstat-no" title="statement not covered" >await this.dataSource.query(`SELECT COUNT(*) as count FROM employees WHERE is_active = true`);</span>
     const activeEmployees = <span class="cstat-no" title="statement not covered" >parseInt(empCountResult[0]?.count || '0', 10);</span>
-    
+
     // Fetch anomalies from alerts or set to 0 (no dummy)
     // Assume anomalies table or similar logic, for now default to 0 as we only report real ones
     const anomalies = <span class="cstat-no" title="statement not covered" >0;</span>
@@ -271,7 +271,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
       systemLoad: 'Optimized',
       payrollStatus: 'Processing',
     });
-    
+
 <span class="cstat-no" title="statement not covered" >    client.emit('system-log', 'WebSocket securely connected to AI Master Engine.');</span>
   }
 &nbsp;
@@ -283,7 +283,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="fstat-no" title="function not covered" >  async <span class="cstat-no" title="statement not covered" ></span>broadcastLiveMetrics() {</span>
     const empCountResult = <span class="cstat-no" title="statement not covered" >await this.dataSource.query(`SELECT COUNT(*) as count FROM employees WHERE is_active = true`);</span>
     const activeEmployees = <span class="cstat-no" title="statement not covered" >parseInt(empCountResult[0]?.count || '0', 10);</span>
-    
+
     // No more random mock fluctuations
     const anomalies = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
@@ -325,4 +325,3 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
         <script src="../../../block-navigation.js"></script>
     </body>
 </html>
-    
