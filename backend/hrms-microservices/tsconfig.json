@@ -17,6 +17,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
+    "rootDir": "src",
+    "ignoreDeprecations": "5.0",
     "types": ["node", "jest"]
   },
   "include": ["src/**/*.ts"],
