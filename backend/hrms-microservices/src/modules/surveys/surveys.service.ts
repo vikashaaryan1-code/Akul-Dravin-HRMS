@@ -31,7 +31,7 @@ export class SurveysService {
     const countQb = this.responseRepo.createQueryBuilder('response');
     TenantQueryPolicy.enforce(countQb, tenantId, 'response', 'SurveysService', 'getSurveysCounts');
     countQb
-      .select('response.survey_id', 'surveyId')
+      .select('response.survey_id', '"surveyId"')
       .addSelect('COUNT(response.id)', 'count')
       .groupBy('response.survey_id');
 

@@ -88,7 +88,7 @@ describe('SurveysService', () => {
 
       expect(surveyRepoMock.createQueryBuilder).toHaveBeenCalledWith('survey');
       expect(responseRepoMock.createQueryBuilder).toHaveBeenCalledWith('response');
-      expect(responseBuilder.select).toHaveBeenCalledWith('response.survey_id', 'surveyId');
+      expect(responseBuilder.select).toHaveBeenCalledWith('response.survey_id', '"surveyId"');
       expect(responseBuilder.addSelect).toHaveBeenCalledWith('COUNT(response.id)', 'count');
       expect(responseBuilder.groupBy).toHaveBeenCalledWith('response.survey_id');
     });
