@@ -66,6 +66,7 @@ export class ReconReportService {
   /**
    * ANOMALY SUMMARY
    * Quick status snapshot for DashboardAggregatorService.
+   * Highly optimized: replaces 3 sequential database round-trips with a single aggregation query.
    */
   async getAnomalySummary(_snapshotAt?: Date): Promise<{
     anomalies: Array<{ type: string; id: string }>;
@@ -74,23 +75,40 @@ export class ReconReportService {
   }> {
     const tenantId = TenantContext.getRequiredTenantId();
     const { ReconciliationStatus } = await import('../../database/entities/external-transaction.entity');
+    const { TenantQueryPolicy } = await import('../../common/governance/tenant/tenant-query-policy');
     const repo = this.dataSource.getRepository(ExternalTransactionEntity);
 
-    const unmatchedCount = await repo.count({ where: { tenantId, reconciliationStatus: ReconciliationStatus.UNMATCHED } });
-    const mismatchCount = await repo.count({ where: { tenantId, reconciliationStatus: ReconciliationStatus.MISMATCH } });
+    // Build optimized single-query aggregation via QueryBuilder
+    const qb = repo.createQueryBuilder('et');
 
-    const anomalies = Array.from({ length: mismatchCount }, (_, i) => ({ type: 'AMOUNT_MISMATCH', id: `ANOMALY-${i}` }));
+    // Enforce multi-tenant isolation policy on query builder
+    TenantQueryPolicy.enforce(qb, tenantId, 'et', 'ReconReportService', 'getAnomalySummary');
 
-    // Last reconciled timestamp
-    const lastMatched = await repo.findOne({
-      where: { tenantId, reconciliationStatus: ReconciliationStatus.MATCHED },
-      order: { eventDate: 'DESC' }
-    });
+    // Aggregate unmatched count, mismatch count, and retrieve latest matched eventDate in one trip
+    const result = await qb
+      .select("SUM(CASE WHEN et.reconciliationStatus = :unmatchedStatus THEN 1 ELSE 0 END)", 'unmatchedCount')
+      .addSelect("SUM(CASE WHEN et.reconciliationStatus = :mismatchStatus THEN 1 ELSE 0 END)", 'mismatchCount')
+      .addSelect("MAX(CASE WHEN et.reconciliationStatus = :matchedStatus THEN et.eventDate ELSE NULL END)", 'lastMatchedDate')
+      .setParameters({
+        unmatchedStatus: ReconciliationStatus.UNMATCHED,
+        mismatchStatus: ReconciliationStatus.MISMATCH,
+        matchedStatus: ReconciliationStatus.MATCHED,
+      })
+      .getRawOne();
+
+    const unmatchedCount = parseInt(result?.unmatchedCount, 10) || 0;
+    const mismatchCount = parseInt(result?.mismatchCount, 10) || 0;
+    const lastMatchedDate = result?.lastMatchedDate ? new Date(result.lastMatchedDate) : null;
+
+    const anomalies = Array.from({ length: mismatchCount }, (_, i) => ({
+      type: 'AMOUNT_MISMATCH',
+      id: `ANOMALY-${i}`,
+    }));
 
     return {
       anomalies,
       pendingExternalCount: unmatchedCount,
-      lastReconciledAt: lastMatched?.eventDate ?? null,
+      lastReconciledAt: lastMatchedDate,
     };
   }
 }
