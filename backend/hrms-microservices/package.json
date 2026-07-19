@@ -4,6 +4,7 @@
   "private": true,
   "description": "NestJS microservice backend architecture for Akul Dravin HRMS AI Super Platform",
   "scripts": {
+    "lint": "echo 'Placeholder lint script' && exit 0",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
