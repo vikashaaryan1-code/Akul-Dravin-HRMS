@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { TenantContext } from '../../common/context/tenant-context';
 import { CareerGrowthEntity } from '../../database/entities/career-growth.entity';
+import { TenantQueryPolicy } from '../../common/governance/tenant';
 
 // No-op decorators – swap for @nestjs/swagger when Swagger UI is wired up
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,10 +27,22 @@ export class CareerGrowthController {
 
   @Get('stats')
   async getStats() {
+    const tenantId = TenantContext.getRequiredTenantId();
     const repo = TenantContext.getRepository(CareerGrowthEntity);
-    const total = await repo.count();
-    const executed = await repo.count({ where: { status: 'executed' as any } });
-    const gated = await repo.count({ where: { status: 'gated' as any } });
+
+    // Consolidate three sequential database queries into a single query using conditional aggregation (SUM/CASE)
+    const qb = repo.createQueryBuilder('cg');
+    TenantQueryPolicy.enforce(qb, tenantId, 'cg', 'CareerGrowthController', 'getStats');
+
+    const rawResult = await qb
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN cg.status = 'executed' THEN 1 ELSE 0 END)", 'executed')
+      .addSelect("SUM(CASE WHEN cg.status = 'gated' THEN 1 ELSE 0 END)", 'gated')
+      .getRawOne();
+
+    const total = parseInt(rawResult?.total ?? '0', 10);
+    const executed = parseInt(rawResult?.executed ?? '0', 10);
+    const gated = parseInt(rawResult?.gated ?? '0', 10);
 
     return {
       totalEvents: total,
