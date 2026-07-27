@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { TenantContext } from '../../common/context/tenant-context';
 import { CareerGrowthEntity } from '../../database/entities/career-growth.entity';
 import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
@@ -50,11 +50,5 @@ export class CareerGrowthController {
       gatedDecisions: gated,
       autonomyRate: total > 0 ? ((executed / total) * 100).toFixed(1) + '%' : '0%',
     };
-  }
-
-  @Get('rules/:scope')
-  async getRulesByScope(@Param('scope') scope: string) {
-    const repo = TenantContext.getRepository(CareerGrowthEntity);
-    return repo.find({ where: { scope: scope as any, isActive: true } });
   }
 }
