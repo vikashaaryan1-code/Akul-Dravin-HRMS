@@ -108,7 +108,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend/hrms-microservices
-        run: npm ci --frozen-lockfile
+        run: npm ci --legacy-peer-deps
 
       - name: Security audit
         working-directory: backend/hrms-microservices
