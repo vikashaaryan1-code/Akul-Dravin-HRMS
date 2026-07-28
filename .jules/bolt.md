@@ -1,0 +1,3 @@
+## 2026-07-28 - Consolidating Sequential Counts into Single Conditional Aggregation Query
+**Learning:** Doing multiple sequential count queries in TypeORM (or any ORM) creates unnecessary database round-trips. Each `.count()` or `.count({ where: ... })` incurs connection, serialization, network, and execution overheads. We can use TypeORM's `createQueryBuilder` with conditional aggregation (`SUM(CASE WHEN status = 'val' THEN 1 ELSE 0 END)`) to fetch all needed metrics in a single SQL query, reducing round-trips from N to 1.
+**Action:** Always scan for sequential count queries on the same table or repository and consolidate them using conditional aggregation, ensuring to enforce runtime multi-tenant isolation via `TenantQueryPolicy` if query builders are utilized.
