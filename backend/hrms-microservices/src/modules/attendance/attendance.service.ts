@@ -9,6 +9,7 @@ import { FacePunchDto } from './dto/face-punch.dto';
 import { TenantContext } from '../../common/context/tenant-context';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { ShiftEntity } from '../../database/entities/shift.entity';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 
 @Injectable()
 export class AttendanceService {
@@ -145,13 +146,34 @@ export class AttendanceService {
     return this.attendanceRepo.save(record);
   }
 
+  /**
+   * Performance Optimization: Consolidate 4 separate COUNT queries on attendance status into
+   * exactly 1 query with conditional aggregation, saving 3 database round-trips.
+   * Multi-tenant isolation is strictly governed using TenantQueryPolicy.enforce.
+   */
   async getSummary() {
-    const total = await this.attendanceRepo.count();
-    if (total === 0) return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
+    const tenantId = TenantContext.getRequiredTenantId();
+    const qb = this.attendanceRepo.createQueryBuilder('attendance');
+    TenantQueryPolicy.enforce(qb, tenantId, 'attendance', 'AttendanceService', 'getSummary');
 
-    const present = await this.attendanceRepo.count({ where: { status: 'present' } });
-    const absent = await this.attendanceRepo.count({ where: { status: 'absent' } });
-    const leave = await this.attendanceRepo.count({ where: { status: 'leave' } });
+    qb.select([
+      'COUNT(attendance.id) AS total',
+      `SUM(CASE WHEN attendance.status = 'present' THEN 1 ELSE 0 END) AS present`,
+      `SUM(CASE WHEN attendance.status = 'absent' THEN 1 ELSE 0 END) AS absent`,
+      `SUM(CASE WHEN attendance.status = 'leave' THEN 1 ELSE 0 END) AS leave`
+    ]);
+
+    const rawResult = await qb.getRawOne();
+
+    // TypeORM returns raw query results as strings or numbers depending on driver
+    const total = parseInt(rawResult?.total || '0', 10);
+    if (total === 0) {
+      return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
+    }
+
+    const present = parseInt(rawResult?.present || '0', 10);
+    const absent = parseInt(rawResult?.absent || '0', 10);
+    const leave = parseInt(rawResult?.leave || '0', 10);
 
     const presentRate = Math.round((present / total) * 100);
     return {
