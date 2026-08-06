@@ -19,13 +19,22 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Root Dependencies
+        run: npm install --legacy-peer-deps
 
-      - name: Backend Build & Lint
+      - name: Install Backend Dependencies
         run: |
           cd backend/hrms-microservices
-          npm run lint
+          npm install --legacy-peer-deps
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend-next
+          npm install --legacy-peer-deps
+
+      - name: Backend Build & Test
+        run: |
+          cd backend/hrms-microservices
           npm run build
           npm test
 
