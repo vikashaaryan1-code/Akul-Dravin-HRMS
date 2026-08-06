@@ -6,6 +6,7 @@ import { TaskEntity } from '../../database/entities/task.entity';
 import { PerformanceEntity } from '../../database/entities/performance.entity';
 import { TenantContext } from '../../common/context/tenant-context';
 import { CreatePerformanceReviewDto } from './dto/create-performance-review.dto';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { ExecutionGatekeeperService } from '../policy-engine/gatekeeper/execution-gatekeeper.service';
 import { CareerGrowthService } from '../career-growth/career-growth.service';
 import { CareerEventStatus } from '../../database/entities/career-growth.entity';
@@ -39,24 +40,74 @@ export class PerformanceManagementService {
 
   async getScores(period?: string) {
     const currentPeriod = period || new Date().toISOString().substring(0, 7);
-    const employees = await this.employeeRepo.find();
+    const tenantId = TenantContext.getRequiredTenantId();
+
+    // ⚡ Bolt Optimization: Consolidate 3N + 1 database queries into a single SQL query
+    // using subqueries in select and a left join, reducing database round-trips from O(N) to O(1).
+    const qb = this.employeeRepo.createQueryBuilder('emp');
+    TenantQueryPolicy.enforce(qb, tenantId, 'emp', 'PerformanceManagementService', 'getScores');
+
+    qb.select('emp.id', 'id')
+      .addSelect('emp.firstName', 'firstName')
+      .addSelect('emp.lastName', 'lastName')
+      .addSelect('emp.designation', 'designation')
+      .addSelect('emp.departmentId', 'departmentId')
+      .addSelect((sub) => {
+        return sub
+          .select('COUNT(*)')
+          .from(AttendanceEntity, 'att')
+          .where('att.employeeId = emp.id')
+          .andWhere('att.tenantId = :tenantId', { tenantId });
+      }, 'totalAttendance')
+      .addSelect((sub) => {
+        return sub
+          .select("COUNT(CASE WHEN att_p.status = 'present' THEN 1 END)")
+          .from(AttendanceEntity, 'att_p')
+          .where('att_p.employeeId = emp.id')
+          .andWhere('att_p.tenantId = :tenantId', { tenantId });
+      }, 'presentAttendance')
+      .addSelect((sub) => {
+        return sub
+          .select('COUNT(*)')
+          .from(TaskEntity, 't')
+          .where('t.assigneeId = emp.id')
+          .andWhere("t.status = 'completed'")
+          .andWhere('t.tenantId = :tenantId', { tenantId });
+      }, 'tasksDelivered')
+      .leftJoin(
+        PerformanceEntity,
+        'perf',
+        'perf.employeeId = emp.id AND perf.reviewPeriod = :currentPeriod AND perf.tenantId = :tenantId',
+        { currentPeriod, tenantId },
+      )
+      .addSelect('perf.subjectiveScore', 'subjectiveScore');
+
+    const rawResults = await qb.getRawMany();
     const scores = [];
 
-    for (const emp of employees) {
-      const stats = await this.calculateEmployeeStats(emp.id, 30);
-      const tasksDelivered = await this.taskRepo.count({
-        where: { assigneeId: emp.id, status: 'completed' }
-      });
+    for (const row of rawResults) {
+      const totalAttendance = parseInt(row.totalAttendance, 10) || 0;
+      const presentAttendance = parseInt(row.presentAttendance, 10) || 0;
+      const tasksDelivered = parseInt(row.tasksDelivered, 10) || 0;
+      const subjectiveScore = row.subjectiveScore !== null && row.subjectiveScore !== undefined
+        ? Math.round(parseFloat(row.subjectiveScore))
+        : 80;
+
+      const total = totalAttendance || 1;
+      const attendanceRate = Math.round((presentAttendance / total) * 100);
+      const statsScore = attendanceRate;
 
       const taskScore = Math.min(100, (tasksDelivered / 10) * 100);
-      const objectiveScore = Math.round(stats.score * 0.5 + taskScore * 0.5);
-      
-      const review = await this.performanceRepo.findOne({
-        where: { employeeId: emp.id, reviewPeriod: currentPeriod }
-      });
-
-      const subjectiveScore = review ? Number(review.subjectiveScore) : 80;
+      const objectiveScore = Math.round(statsScore * 0.5 + taskScore * 0.5);
       const finalScore = Math.round(objectiveScore * 0.7 + subjectiveScore * 0.3);
+
+      const emp = this.employeeRepo.create({
+        id: row.id,
+        firstName: row.firstName,
+        lastName: row.lastName,
+        designation: row.designation,
+        departmentId: row.departmentId,
+      });
 
       // --- PDE Integration: Trigger Promotion Check ---
       if (finalScore >= 85) {
@@ -64,12 +115,12 @@ export class PerformanceManagementService {
       }
 
       scores.push({
-        id: emp.id,
-        employeeName: `${emp.firstName} ${emp.lastName}`,
+        id: row.id,
+        employeeName: `${row.firstName} ${row.lastName || ''}`.trim(),
         performanceScore: finalScore,
         objectiveScore,
         subjectiveScore,
-        targetAchievement: stats.attendanceRate,
+        targetAchievement: attendanceRate,
         tasksDelivered,
         status: finalScore > 85 ? 'healthy' : finalScore > 75 ? 'warning' : 'critical'
       });
@@ -138,21 +189,6 @@ export class PerformanceManagementService {
     return this.performanceRepo.save(review);
   }
 
-  private async calculateEmployeeStats(employeeId: string, days: number) {
-    const records = await this.attendanceRepo.find({
-      where: { employeeId }
-    });
-
-    const total = records.length || 1;
-    const present = records.filter(r => r.status === 'present').length;
-    const attendanceRate = (present / total) * 100;
-
-    return { 
-      attendanceRate: Math.round(attendanceRate), 
-      score: Math.round(attendanceRate), // Simplified for brevity
-      consistency: 100 
-    };
-  }
 
   async getLeaderboard(days: number = 30) {
     const scores = await this.getScores();
