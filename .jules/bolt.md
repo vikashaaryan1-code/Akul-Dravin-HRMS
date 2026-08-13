@@ -1,0 +1,3 @@
+## 2026-08-13 - [Optimize Attendance Service Summary Query]
+**Learning:** Consolidating multiple database counts into a single query via conditional aggregation (`SUM/CASE`) using TypeORM's `createQueryBuilder` and enforcing `TenantQueryPolicy` significantly reduces database round-trips from 4 to 1 while guaranteeing multi-tenant data isolation. It is also critical to handle physical database driver behavior by casting stringified raw aggregation results back to numbers.
+**Action:** Always replace sequential count operations on the same entity with a single query using conditional aggregation, enforce isolation with `TenantQueryPolicy.enforce`, and ensure result safety using `parseInt` or `parseFloat`.
