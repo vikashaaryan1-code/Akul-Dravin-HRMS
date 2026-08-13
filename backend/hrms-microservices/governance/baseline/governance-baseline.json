@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-24T05:26:35.363Z",
-  "description": "Accepted baseline as of 2026-05-24. Review each entry and remove once fixed.",
+  "generatedAt": "2026-08-13T00:27:03.231Z",
+  "description": "Accepted baseline as of 2026-08-13. Review each entry and remove once fixed.",
   "violations": [
     {
       "fingerprint": "316b08ba4d6532547f0f59afc7f4b149424d2dfdf3d9f7d63369301259579574",
       "ruleId": "CONTROLLER_NO_DIRECT_REPO",
-      "file": "C:/Projects/Akul Dravin HRMS/akul-dravin-hrms/backend/hrms-microservices/src/common/observability/metrics.controller.ts",
+      "file": "/app/backend/hrms-microservices/src/common/observability/metrics.controller.ts",
       "line": 4,
       "severity": "HIGH",
       "message": "[CONTROLLER_NO_DIRECT_REPO] metrics.controller.ts:4 — forbidden symbol \"InjectDataSource\" from \"@nestjs/typeorm\". Reason: @InjectRepository on a controller = policy bypass."
@@ -14,15 +14,31 @@
     {
       "fingerprint": "aff2ceb958a89aedc3602b6c58553eea638be5f8dda71b7a1966e88152cd1558",
       "ruleId": "CONTROLLER_NO_DIRECT_REPO",
-      "file": "C:/Projects/Akul Dravin HRMS/akul-dravin-hrms/backend/hrms-microservices/src/common/observability/metrics.controller.ts",
+      "file": "/app/backend/hrms-microservices/src/common/observability/metrics.controller.ts",
       "line": 5,
       "severity": "HIGH",
       "message": "[CONTROLLER_NO_DIRECT_REPO] metrics.controller.ts:5 — forbidden symbol \"DataSource\" from \"typeorm\". Reason: Direct repo in controller bypasses TransitionPolicyEngine and audit journaling."
     },
     {
+      "fingerprint": "dfff68a9085cbd0991285bb4de0c422f3bf33c9c89bad97ccb8e071569e4bbee",
+      "ruleId": "CONTROLLER_NO_DIRECT_REPO",
+      "file": "/app/backend/hrms-microservices/src/modules/ai-engine/ai-insight.controller.ts",
+      "line": 3,
+      "severity": "HIGH",
+      "message": "[CONTROLLER_NO_DIRECT_REPO] ai-insight.controller.ts:3 — forbidden symbol \"DataSource\" from \"typeorm\". Reason: Direct repo in controller bypasses TransitionPolicyEngine and audit journaling."
+    },
+    {
+      "fingerprint": "ff84a39448acd909dc71533122d3f417ca6fcfed2338057fc4356dcbf051ae7e",
+      "ruleId": "CONTROLLER_NO_DIRECT_REPO",
+      "file": "/app/backend/hrms-microservices/src/modules/analytics/dashboard.controller.ts",
+      "line": 3,
+      "severity": "HIGH",
+      "message": "[CONTROLLER_NO_DIRECT_REPO] dashboard.controller.ts:3 — forbidden symbol \"DataSource\" from \"typeorm\". Reason: Direct repo in controller bypasses TransitionPolicyEngine and audit journaling."
+    },
+    {
       "fingerprint": "8abe74b34064d8385d7766d5f032207e75a53f704ff8800a7bdcc0c672b8b77f",
       "ruleId": "CONTROLLER_NO_DIRECT_REPO",
-      "file": "C:/Projects/Akul Dravin HRMS/akul-dravin-hrms/backend/hrms-microservices/src/modules/health/health.controller.ts",
+      "file": "/app/backend/hrms-microservices/src/modules/health/health.controller.ts",
       "line": 2,
       "severity": "HIGH",
       "message": "[CONTROLLER_NO_DIRECT_REPO] health.controller.ts:2 — forbidden symbol \"DataSource\" from \"typeorm\". Reason: Direct repo in controller bypasses TransitionPolicyEngine and audit journaling."
@@ -30,7 +46,7 @@
     {
       "fingerprint": "4fcf8eb6e3b2f4ec39698c737126e9eb578a01454ac0b556d72ce7b3200c3768",
       "ruleId": "CONTROLLER_NO_DIRECT_REPO",
-      "file": "C:/Projects/Akul Dravin HRMS/akul-dravin-hrms/backend/hrms-microservices/src/modules/health/health.controller.ts",
+      "file": "/app/backend/hrms-microservices/src/modules/health/health.controller.ts",
       "line": 3,
       "severity": "HIGH",
       "message": "[CONTROLLER_NO_DIRECT_REPO] health.controller.ts:3 — forbidden symbol \"InjectDataSource\" from \"@nestjs/typeorm\". Reason: @InjectRepository on a controller = policy bypass."
