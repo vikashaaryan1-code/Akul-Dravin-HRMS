@@ -1,0 +1,3 @@
+## 2026-08-14 - Optimize Attendance Statistics Gathering
+**Learning:** Consolidating multiple sequential database `.count()` or `.findOne()` queries into a single SQL conditional aggregation (using `SUM(CASE WHEN ...)` with TypeORM's `createQueryBuilder`) significantly reduces network/database round-trips (from 4 to 1), making dashboard metrics endpoints substantially faster and scaling O(1) regardless of status card count. Ensure `TenantQueryPolicy.enforce` is called on the query builder to safely maintain multi-tenant database isolation.
+**Action:** Always inspect statistics, health, and summary endpoints for sequential database round-trips. Replace them with single aggregated queries utilizing SQL conditional aggregates or GROUP BY statements.
