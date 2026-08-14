@@ -9,6 +9,7 @@ import { FacePunchDto } from './dto/face-punch.dto';
 import { TenantContext } from '../../common/context/tenant-context';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { ShiftEntity } from '../../database/entities/shift.entity';
+import { TenantQueryPolicy } from '../../common/governance/tenant';
 
 @Injectable()
 export class AttendanceService {
@@ -145,13 +146,31 @@ export class AttendanceService {
     return this.attendanceRepo.save(record);
   }
 
+  /**
+   * Optimizes metrics gathering by consolidating multiple database count queries
+   * into a single query using conditional aggregation (SUM/CASE) and TenantQueryPolicy enforcement.
+   * Reduces database round-trips from 4 to 1.
+   */
   async getSummary() {
-    const total = await this.attendanceRepo.count();
-    if (total === 0) return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
+    const tenantId = TenantContext.getRequiredTenantId();
+    const qb = this.attendanceRepo.createQueryBuilder('attendance');
+    TenantQueryPolicy.enforce(qb, tenantId, 'attendance', 'AttendanceService', 'getSummary');
 
-    const present = await this.attendanceRepo.count({ where: { status: 'present' } });
-    const absent = await this.attendanceRepo.count({ where: { status: 'absent' } });
-    const leave = await this.attendanceRepo.count({ where: { status: 'leave' } });
+    const rawResult = await qb
+      .select('COUNT(attendance.id)', 'total')
+      .addSelect(`SUM(CASE WHEN attendance.status = 'present' THEN 1 ELSE 0 END)`, 'present')
+      .addSelect(`SUM(CASE WHEN attendance.status = 'absent' THEN 1 ELSE 0 END)`, 'absent')
+      .addSelect(`SUM(CASE WHEN attendance.status = 'leave' THEN 1 ELSE 0 END)`, 'leave')
+      .getRawOne();
+
+    const total = parseInt(rawResult?.total ?? '0', 10);
+    if (total === 0) {
+      return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
+    }
+
+    const present = parseInt(rawResult?.present ?? '0', 10);
+    const absent = parseInt(rawResult?.absent ?? '0', 10);
+    const leave = parseInt(rawResult?.leave ?? '0', 10);
 
     const presentRate = Math.round((present / total) * 100);
     return {
