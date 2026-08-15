@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { VendorEntity } from '../../database/entities/vendor.entity';
 import { VendorPurchaseOrderEntity } from '../../database/entities/vendor-purchase-order.entity';
 import { AuditLogService, AuditAction } from '../../common/audit/audit-log.service';
@@ -187,28 +188,44 @@ export class ProcurementVendorService {
   // ── Summary ──────────────────────────────────────────────────────────────────
 
   async getSummary() {
-    const [vendors, purchaseOrders] = await Promise.all([
-      this.vendorRepo.find(),
-      this.poRepo.find(),
+    // Single database round-trip batch with conditional aggregation instead of loading all entities into memory
+    const tenantId = TenantContext.getRequiredTenantId();
+
+    const now = new Date();
+    const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const startOfNextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+
+    const vendorQb = this.vendorRepo.createQueryBuilder('vendor');
+    TenantQueryPolicy.enforce(vendorQb, tenantId, 'vendor', 'ProcurementVendorService', 'getSummary');
+
+    const poQb = this.poRepo.createQueryBuilder('po');
+    TenantQueryPolicy.enforce(poQb, tenantId, 'po', 'ProcurementVendorService', 'getSummary');
+
+    const [vendorStats, poStats] = await Promise.all([
+      vendorQb
+        .select('COUNT(*)', 'totalVendors')
+        .addSelect("SUM(CASE WHEN vendor.status = 'Active' THEN 1 ELSE 0 END)", 'activeVendors')
+        .getRawOne(),
+      poQb
+        .select('COUNT(*)', 'totalOrders')
+        .addSelect(
+          "SUM(CASE WHEN po.status IN ('Raised', 'Pending Approval', 'Approved') THEN 1 ELSE 0 END)",
+          'openPurchaseOrders',
+        )
+        .addSelect(
+          'SUM(CASE WHEN po.createdAt >= :startOfMonth AND po.createdAt < :startOfNextMonth THEN po.amount ELSE 0 END)',
+          'monthlySpend',
+        )
+        .setParameters({ startOfMonth, startOfNextMonth })
+        .getRawOne(),
     ]);
 
-    const activeVendors = vendors.filter((v) => v.status === 'Active').length;
-    const openPurchaseOrders = purchaseOrders.filter(
-      (po) => ['Raised', 'Pending Approval', 'Approved'].includes(po.status),
-    ).length;
-
-    const currentMonth = new Date().toISOString().substring(0, 7);
-    const monthlyOrders = purchaseOrders.filter(
-      (po) => po.createdAt.toISOString().startsWith(currentMonth),
-    );
-    const monthlySpend = monthlyOrders.reduce((sum, po) => sum + Number(po.amount), 0);
-
     return {
-      activeVendors,
-      openPurchaseOrders,
-      monthlySpend,
-      totalVendors: vendors.length,
-      totalOrders: purchaseOrders.length,
+      activeVendors: parseInt(vendorStats?.activeVendors, 10) || 0,
+      openPurchaseOrders: parseInt(poStats?.openPurchaseOrders, 10) || 0,
+      monthlySpend: parseFloat(poStats?.monthlySpend) || 0,
+      totalVendors: parseInt(vendorStats?.totalVendors, 10) || 0,
+      totalOrders: parseInt(poStats?.totalOrders, 10) || 0,
     };
   }
 }
