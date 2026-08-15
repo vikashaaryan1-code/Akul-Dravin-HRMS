@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProcurementVendorService } from './procurement-vendor.service';
 import { AuditLogService } from '../../common/audit/audit-log.service';
 import { TenantContext } from '../../common/context/tenant-context';
+import { VendorEntity } from '../../database/entities/vendor.entity';
+import { VendorPurchaseOrderEntity } from '../../database/entities/vendor-purchase-order.entity';
 
 describe('ProcurementVendorService', () => {
   let service: ProcurementVendorService;
@@ -65,6 +68,14 @@ describe('ProcurementVendorService', () => {
           useValue: {
             log: jest.fn().mockResolvedValue(undefined),
           },
+        },
+        {
+          provide: getRepositoryToken(VendorEntity),
+          useValue: mockVendorRepo,
+        },
+        {
+          provide: getRepositoryToken(VendorPurchaseOrderEntity),
+          useValue: mockPoRepo,
         },
       ],
     }).compile();

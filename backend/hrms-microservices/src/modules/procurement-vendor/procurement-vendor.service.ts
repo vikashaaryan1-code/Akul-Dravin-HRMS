@@ -213,7 +213,7 @@ export class ProcurementVendorService {
           'openPurchaseOrders',
         )
         .addSelect(
-          'SUM(CASE WHEN po.created_at >= :startOfMonth AND po.created_at < :startOfNextMonth THEN po.amount ELSE 0 END)',
+          'SUM(CASE WHEN po.createdAt >= :startOfMonth AND po.createdAt < :startOfNextMonth THEN po.amount ELSE 0 END)',
           'monthlySpend',
         )
         .setParameters({ startOfMonth, startOfNextMonth })
