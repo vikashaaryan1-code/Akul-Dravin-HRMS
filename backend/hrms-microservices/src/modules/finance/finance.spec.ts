@@ -5,20 +5,39 @@ import { LoanService } from '../finance/loan.service';
 import { FinanceService } from '../finance/finance.service';
 
 // ─── Mock TenantContext ────────────────────────────────────────────────────────
-const mockRepo = (data: any[]) => ({
-  find:    jest.fn().mockResolvedValue(data),
-  findOne: jest.fn().mockImplementation(({ where }: any) => {
-    const item = data.find(d => d.id === where?.id);
-    return Promise.resolve(item ?? null);
-  }),
-  count:   jest.fn().mockResolvedValue(data.length),
-  create:  jest.fn().mockImplementation((dto: any) => ({ id: 'new-id', ...dto })),
-  save:    jest.fn().mockImplementation((entity: any) => Promise.resolve(entity)),
-  remove:  jest.fn().mockResolvedValue(undefined),
-  update:  jest.fn().mockResolvedValue({ affected: 1 }),
-  merge:   jest.fn().mockImplementation((base: any, updates: any) => ({ ...base, ...updates })),
-  findAndCount: jest.fn().mockResolvedValue([data, data.length]),
-});
+const mockRepo = (dataArrayRef: { data: any[] }) => {
+  const repo: any = {
+    find: jest.fn().mockImplementation(() => Promise.resolve(dataArrayRef.data)),
+    findOne: jest.fn().mockImplementation(({ where }: any) => {
+      const item = dataArrayRef.data.find(d => d.id === where?.id);
+      return Promise.resolve(item ?? null);
+    }),
+    count: jest.fn().mockImplementation(() => Promise.resolve(dataArrayRef.data.length)),
+    create: jest.fn().mockImplementation((dto: any) => ({ id: 'new-id', ...dto })),
+    save: jest.fn().mockImplementation((entity: any) => Promise.resolve(entity)),
+    remove: jest.fn().mockResolvedValue(undefined),
+    update: jest.fn().mockResolvedValue({ affected: 1 }),
+    merge: jest.fn().mockImplementation((base: any, updates: any) => ({ ...base, ...updates })),
+    findAndCount: jest.fn().mockImplementation(() => Promise.resolve([dataArrayRef.data, dataArrayRef.data.length])),
+    createQueryBuilder: jest.fn().mockImplementation(() => {
+      const builder: any = {
+        andWhere: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        getRawOne: jest.fn().mockImplementation(async () => {
+          const pendingLoans = dataArrayRef.data.filter(d => d.status === 'PENDING');
+          const pendingCount = pendingLoans.length;
+          const pendingAmount = pendingLoans.reduce((sum, l) => sum + Number(l.amount), 0);
+          return {
+            pending_count: pendingCount.toString(),
+            pending_amount: pendingAmount.toString(),
+          };
+        }),
+      };
+      return builder;
+    }),
+  };
+  return repo;
+};
 
 jest.mock('../../common/context/tenant-context', () => ({
   TenantContext: {
@@ -40,10 +59,12 @@ describe('LoanService', () => {
   ];
 
   let service: LoanService;
+  let loansRef: { data: any[] };
   let repoMock: ReturnType<typeof mockRepo>;
 
   beforeEach(async () => {
-    repoMock = mockRepo(mockLoans.map(l => ({ ...l })));
+    loansRef = { data: mockLoans.map(l => ({ ...l })) };
+    repoMock = mockRepo(loansRef);
     (TenantContext.getRepository as jest.Mock).mockImplementation(() => repoMock);
 
     const module: TestingModule = await Test.createTestingModule({
@@ -96,9 +117,9 @@ describe('LoanService', () => {
     });
 
     it('should return 0 totals when no pending loans', async () => {
-      repoMock.find.mockResolvedValue([
+      loansRef.data = [
         { id: 'loan-a', amount: 10000, status: 'APPROVED', appliedAt: new Date() },
-      ]);
+      ];
       const summary = await service.getSummary();
       expect(summary.totalPendingCount).toBe(0);
       expect(summary.totalPendingAmount).toBe(0);
@@ -125,8 +146,8 @@ describe('FinanceService', () => {
   let txRepoMock: ReturnType<typeof mockRepo>;
 
   beforeEach(async () => {
-    invoiceRepoMock = mockRepo(mockInvoices.map(i => ({ ...i })));
-    txRepoMock      = mockRepo(mockTransactions.map(t => ({ ...t })));
+    invoiceRepoMock = mockRepo({ data: mockInvoices.map(i => ({ ...i })) });
+    txRepoMock      = mockRepo({ data: mockTransactions.map(t => ({ ...t })) });
 
     (TenantContext.getRepository as jest.Mock).mockImplementation((entity) => {
       if (entity?.name === 'TransactionEntity') return txRepoMock;
