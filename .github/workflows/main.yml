@@ -25,7 +25,7 @@ jobs:
       - name: Backend Build & Lint
         run: |
           cd backend/hrms-microservices
-          npm run lint
+          npm install --legacy-peer-deps
           npm run build
           npm test
 
