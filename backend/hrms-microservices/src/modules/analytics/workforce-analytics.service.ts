@@ -82,54 +82,92 @@ export class WorkforceAnalyticsService {
   // ── Headcount ─────────────────────────────────────────────────────────────
 
   async getHeadcountSnapshot(tenantId: string): Promise<HeadcountSnapshot> {
-    const [totals, byDept, byType, byDesig] = await Promise.all([
-      this.ds.query<Array<{ total: string; active: string; on_leave: string; inactive: string }>>(
-        `SELECT
-           COUNT(*)                                               AS total,
-           COUNT(*) FILTER (WHERE status = 'active')             AS active,
-           COUNT(*) FILTER (WHERE status = 'on_leave')           AS on_leave,
-           COUNT(*) FILTER (WHERE status NOT IN ('active','on_leave')) AS inactive
-         FROM employees
-         WHERE tenant_id = $1
-           AND exit_date IS NULL`,
-        [tenantId],
-      ),
-      this.ds.query<Array<{ department_id: string; count: string }>>(
-        `SELECT department_id, COUNT(*) AS count
-         FROM employees
-         WHERE tenant_id = $1 AND exit_date IS NULL AND status = 'active'
-         GROUP BY department_id
-         ORDER BY count DESC`,
-        [tenantId],
-      ),
-      this.ds.query<Array<{ employment_type: string; count: string }>>(
-        `SELECT employment_type, COUNT(*) AS count
+    // Single consolidated database query replacing 4 individual queries
+    const result = await this.ds.query<Array<{
+      total: string | number;
+      active: string | number;
+      on_leave: string | number;
+      inactive: string | number;
+      by_dept: Array<{ departmentId: string; count: string | number }> | string;
+      by_type: Array<{ type: string; count: string | number }> | string;
+      by_desig: Array<{ designation: string; count: string | number }> | string;
+    }>>(
+      `WITH base AS (
+         SELECT status, department_id, employment_type, designation
          FROM employees
          WHERE tenant_id = $1 AND exit_date IS NULL
-         GROUP BY employment_type`,
-        [tenantId],
-      ),
-      this.ds.query<Array<{ designation: string; count: string }>>(
-        `SELECT designation, COUNT(*) AS count
-         FROM employees
-         WHERE tenant_id = $1 AND exit_date IS NULL AND status = 'active'
-         GROUP BY designation
-         ORDER BY count DESC
-         LIMIT 20`,
-        [tenantId],
-      ),
-    ]);
+       )
+       SELECT
+         COUNT(*)                                                      AS total,
+         COUNT(*) FILTER (WHERE status = 'active')                    AS active,
+         COUNT(*) FILTER (WHERE status = 'on_leave')                  AS on_leave,
+         COUNT(*) FILTER (WHERE status NOT IN ('active','on_leave')) AS inactive,
+         (
+           SELECT COALESCE(json_agg(json_build_object('departmentId', department_id, 'count', dept_count)), '[]'::json)
+           FROM (
+             SELECT department_id, COUNT(*) AS dept_count
+             FROM base
+             WHERE status = 'active'
+             GROUP BY department_id
+             ORDER BY dept_count DESC
+           ) d
+         ) AS by_dept,
+         (
+           SELECT COALESCE(json_agg(json_build_object('type', employment_type, 'count', type_count)), '[]'::json)
+           FROM (
+             SELECT employment_type, COUNT(*) AS type_count
+             FROM base
+             GROUP BY employment_type
+           ) t
+         ) AS by_type,
+         (
+           SELECT COALESCE(json_agg(json_build_object('designation', designation, 'count', desig_count)), '[]'::json)
+           FROM (
+             SELECT designation, COUNT(*) AS desig_count
+             FROM base
+             WHERE status = 'active'
+             GROUP BY designation
+             ORDER BY desig_count DESC
+             LIMIT 20
+           ) desig
+         ) AS by_desig
+       FROM base`,
+      [tenantId],
+    );
 
-    const row = totals[0] ?? { total: '0', active: '0', on_leave: '0', inactive: '0' };
+    const row = result[0] ?? {
+      total: '0',
+      active: '0',
+      on_leave: '0',
+      inactive: '0',
+      by_dept: [],
+      by_type: [],
+      by_desig: [],
+    };
+
+    const parseJson = <T>(val: T | string): T => {
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val) as T;
+        } catch {
+          return [] as unknown as T;
+        }
+      }
+      return (val || []) as T;
+    };
+
+    const depts = parseJson<Array<{ departmentId: string; count: string | number }>>(row.by_dept);
+    const types = parseJson<Array<{ type: string; count: string | number }>>(row.by_type);
+    const desigs = parseJson<Array<{ designation: string; count: string | number }>>(row.by_desig);
 
     return {
-      total:    parseInt(row.total,    10),
-      active:   parseInt(row.active,   10),
-      onLeave:  parseInt(row.on_leave, 10),
-      inactive: parseInt(row.inactive, 10),
-      byDepartment: byDept.map((r) => ({ departmentId: r.department_id, count: parseInt(r.count, 10) })),
-      byEmploymentType: byType.map((r) => ({ type: r.employment_type, count: parseInt(r.count, 10) })),
-      byDesignation: byDesig.map((r) => ({ designation: r.designation, count: parseInt(r.count, 10) })),
+      total:    parseInt(String(row.total),    10) || 0,
+      active:   parseInt(String(row.active),   10) || 0,
+      onLeave:  parseInt(String(row.on_leave), 10) || 0,
+      inactive: parseInt(String(row.inactive), 10) || 0,
+      byDepartment: depts.map((r) => ({ departmentId: r.departmentId, count: parseInt(String(r.count), 10) || 0 })),
+      byEmploymentType: types.map((r) => ({ type: r.type, count: parseInt(String(r.count), 10) || 0 })),
+      byDesignation: desigs.map((r) => ({ designation: r.designation, count: parseInt(String(r.count), 10) || 0 })),
     };
   }
 
