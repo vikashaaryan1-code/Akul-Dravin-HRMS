@@ -555,43 +555,81 @@ export class SalesAutomationService {
   }
 
   async getSalesAnalyticsSummary() {
-    const [leads, deals, targets, commissions, recruitmentJobs, recruitmentApplications] = await Promise.all([
-      this.leadRepository.find(),
-      this.dealRepository.find(),
-      this.targetRepository.find(),
-      this.commissionRepository.find(),
-      this.recruitmentJobRepository.find(),
-      this.recruitmentApplicationRepository.find(),
+    // Single aggregated database query for sales leads: total lead count and grouped pipeline stage counts
+    const leadsAgg = await this.leadRepository
+      .createQueryBuilder('lead')
+      .select('COUNT(lead.id)', 'leadCount')
+      .addSelect('lead.pipelineStage', 'stage')
+      .addSelect('COUNT(lead.id)', 'stageCount')
+      .groupBy('lead.pipelineStage')
+      .getRawMany();
+
+    let leadCount = 0;
+    const stageCountMap = new Map<string, number>();
+    for (const row of leadsAgg) {
+      const count = parseInt(row.stageCount || '0', 10);
+      leadCount += count;
+      if (row.stage) {
+        stageCountMap.set(row.stage, count);
+      }
+    }
+
+    // Single aggregated database query for sales deals: deal count, values, and status breakdowns
+    const dealAgg = await this.dealRepository
+      .createQueryBuilder('deal')
+      .select('COUNT(deal.id)', 'dealCount')
+      .addSelect('COALESCE(SUM(deal.dealValue), 0)', 'totalDealValue')
+      .addSelect('COALESCE(SUM(CASE WHEN deal.status = \'closed-won\' THEN deal.dealValue ELSE 0 END), 0)', 'wonDealValue')
+      .addSelect('COUNT(CASE WHEN deal.status = \'closed-won\' THEN 1 END)', 'closedWonCount')
+      .addSelect('COUNT(CASE WHEN deal.status = \'closed-lost\' THEN 1 END)', 'closedLostCount')
+      .getRawOne();
+
+    // Single aggregated database query for sales targets: target sums
+    const targetAgg = await this.targetRepository
+      .createQueryBuilder('target')
+      .select('COALESCE(SUM(target.targetValue), 0)', 'totalTarget')
+      .addSelect('COALESCE(SUM(target.achievedValue), 0)', 'totalAchieved')
+      .getRawOne();
+
+    // Single aggregated database query for commissions, customers, jobs, and applications
+    const [commissionAgg, customerCount, jobCount, appCount] = await Promise.all([
+      this.commissionRepository
+        .createQueryBuilder('comm')
+        .select('COALESCE(SUM(comm.calculatedCommission), 0)', 'totalCommission')
+        .getRawOne(),
+      this.customerAccountRepository.count(),
+      this.recruitmentJobRepository.count(),
+      this.recruitmentApplicationRepository.count(),
     ]);
 
-    const closedWonDeals = deals.filter((deal) => deal.status === 'closed-won');
-    const closedLostDeals = deals.filter((deal) => deal.status === 'closed-lost');
+    const totalDealValue = parseFloat(dealAgg?.totalDealValue || '0');
+    const wonDealValue = parseFloat(dealAgg?.wonDealValue || '0');
+    const closedWonCount = parseInt(dealAgg?.closedWonCount || '0', 10);
+    const closedLostCount = parseInt(dealAgg?.closedLostCount || '0', 10);
+    const dealCount = parseInt(dealAgg?.dealCount || '0', 10);
 
-    const totalDealValue = deals.reduce((sum, deal) => sum + Number(deal.dealValue), 0);
-    const wonDealValue = closedWonDeals.reduce((sum, deal) => sum + Number(deal.dealValue), 0);
+    const totalTarget = parseFloat(targetAgg?.totalTarget || '0');
+    const totalAchieved = parseFloat(targetAgg?.totalAchieved || '0');
 
-    const totalTarget = targets.reduce((sum, target) => sum + Number(target.targetValue), 0);
-    const totalAchieved = targets.reduce((sum, target) => sum + Number(target.achievedValue), 0);
-
-    const totalCommission = commissions.reduce((sum, commission) => sum + Number(commission.calculatedCommission), 0);
+    const totalCommission = parseFloat(commissionAgg?.totalCommission || '0');
 
     return {
-      leadCount: leads.length,
-      customerCount: await this.customerAccountRepository.count(),
-      dealCount: deals.length,
+      leadCount,
+      customerCount,
+      dealCount,
       totalDealValue: this.round(totalDealValue),
       wonDealValue: this.round(wonDealValue),
-      closedWonCount: closedWonDeals.length,
-      closedLostCount: closedLostDeals.length,
+      closedWonCount,
+      closedLostCount,
       targetAchievementPercent: totalTarget > 0 ? this.round((totalAchieved / totalTarget) * 100, 3) : 0,
       totalCommission: this.round(totalCommission),
       recruitmentContext: {
-        jobCount: recruitmentJobs.length,
-        applicationCount: recruitmentApplications.length,
+        jobCount,
+        applicationCount: appCount,
       },
       pipelineCounts: PIPELINE_STAGES.map((stage) => ({
         stage,
-        count: leads.filter((lead) => lead.pipelineStage === stage).length,
+        count: stageCountMap.get(stage) || 0,
       })),
     };
   }

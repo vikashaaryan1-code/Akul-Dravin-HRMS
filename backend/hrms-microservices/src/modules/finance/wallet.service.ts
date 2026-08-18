@@ -4,7 +4,7 @@ import { WalletEntity } from '../../database/entities/wallet.entity';
 import { TenantContext } from '../../common/context/tenant-context';
 import { LedgerService } from './ledger.service';
 import { LedgerAccountType, LedgerAccountEntity } from '../../database/entities/ledger-account.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID as uuidv4 } from 'crypto';
 
 @Injectable()
 export class WalletService {
