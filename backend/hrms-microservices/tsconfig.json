@@ -16,6 +16,8 @@
     "strictPropertyInitialization": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "rootDir": "src",
+    "ignoreDeprecations": "5.0",
     "moduleResolution": "node",
     "types": ["node", "jest"]
   },
