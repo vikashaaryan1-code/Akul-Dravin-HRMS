@@ -151,6 +151,22 @@ describe('FinanceService', () => {
 
   describe('getSummary()', () => {
     it('should compute revenue, expenses, and GST correctly', async () => {
+      const invoiceQb = {
+        andWhere: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        getRawOne: jest.fn().mockResolvedValue({ totalRevenue: '175000', receivables: '50000' }),
+      };
+      const txQb = {
+        andWhere: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        getRawOne: jest.fn().mockResolvedValue({ totalExpenses: '50000' }),
+      };
+
+      (invoiceRepoMock as any).createQueryBuilder = jest.fn().mockReturnValue(invoiceQb);
+      (txRepoMock as any).createQueryBuilder = jest.fn().mockReturnValue(txQb);
+
       const summary = await service.getSummary();
 
       expect(summary.totalRevenue).toBe(175000);           // 100k + 75k (PAID)
