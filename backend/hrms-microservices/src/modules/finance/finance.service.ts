@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InvoiceEntity } from '../../database/entities/invoice.entity';
 import { TransactionEntity } from '../../database/entities/transaction.entity';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 
 export interface FinanceSummaryRecord {
   totalRevenue: number;
@@ -38,28 +39,41 @@ export class FinanceService {
   }
 
   async getSummary(): Promise<FinanceSummaryRecord> {
-    const invoices = await this.invoiceRepository.find();
-    
-    // Revenue from Invoices
-    const totalRevenue = invoices
-      .filter((invoice) => invoice.status.toLowerCase().includes('paid'))
-      .reduce((sum, invoice) => sum + Number(invoice.amount), 0);
-    
-    const receivables = invoices
-      .filter((invoice) => !invoice.status.toLowerCase().includes('paid'))
-      .reduce((sum, invoice) => sum + Number(invoice.amount), 0);
-    
-    // Expenses from Transactions
-    const expenseRecords = await this.transactionRepository.find({
-      where: { type: 'DEBIT' }
-    });
-    const totalExpenses = expenseRecords.reduce((sum, tx) => sum + Number(tx.amount), 0);
-    
+    const tenantId = TenantContext.getRequiredTenantId();
+
+    // ⚡ Bolt: Aggregate invoice revenue and receivables at database level via QueryBuilder
+    const invoiceQb = this.invoiceRepository.createQueryBuilder('invoice');
+    TenantQueryPolicy.enforce(invoiceQb, tenantId, 'invoice', 'FinanceService', 'getSummary-invoices');
+    const invoiceRes = await invoiceQb
+      .select(
+        "SUM(CASE WHEN LOWER(invoice.status) LIKE '%paid%' THEN CAST(invoice.amount AS numeric) ELSE 0 END)",
+        'totalRevenue',
+      )
+      .addSelect(
+        "SUM(CASE WHEN LOWER(invoice.status) NOT LIKE '%paid%' THEN CAST(invoice.amount AS numeric) ELSE 0 END)",
+        'receivables',
+      )
+      .getRawOne();
+
+    const totalRevenue = parseFloat(invoiceRes?.totalRevenue) || 0;
+    const receivables = parseFloat(invoiceRes?.receivables) || 0;
+
+    // ⚡ Bolt: Aggregate expense DEBIT transactions directly at database level
+    const txQb = this.transactionRepository.createQueryBuilder('tx');
+    TenantQueryPolicy.enforce(txQb, tenantId, 'tx', 'FinanceService', 'getSummary-transactions');
+    const txRes = await txQb
+      .select('SUM(CAST(tx.amount AS numeric))', 'totalExpenses')
+      .andWhere('tx.type = :type', { type: 'DEBIT' })
+      .getRawOne();
+
+    const totalExpenses = parseFloat(txRes?.totalExpenses) || 0;
+
     const gstPayable = Math.round(totalRevenue * 0.18);
-    
-    const operatingMarginPercent = totalRevenue > 0
-      ? Number((((totalRevenue - totalExpenses) / totalRevenue) * 100).toFixed(1))
-      : 0;
+
+    const operatingMarginPercent =
+      totalRevenue > 0
+        ? Number((((totalRevenue - totalExpenses) / totalRevenue) * 100).toFixed(1))
+        : 0;
 
     return {
       totalRevenue,
