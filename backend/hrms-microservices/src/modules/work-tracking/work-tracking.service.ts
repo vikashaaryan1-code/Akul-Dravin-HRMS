@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { WorkActivityEntity } from '../../database/entities/work-activity.entity';
 import { WorkdaySummaryEntity } from '../../database/entities/workday-summary.entity';
 
@@ -111,13 +112,27 @@ export class WorkTrackingService {
   // ── Analytics ────────────────────────────────────────────────────────────────
 
   async getProductivitySummary() {
-    const activities = await this.activityRepo.find({ take: 500 });
-    const totalProductiveHours = activities.reduce((sum, a) => sum + Number(a.productiveHours), 0);
-    const totalTasksCompleted = activities.reduce((sum, a) => sum + a.tasksCompleted, 0);
-    const avgProductivity = activities.length > 0 ? totalProductiveHours / activities.length : 0;
+    const tenantId = TenantContext.getRequiredTenantId();
+
+    // ⚡ Bolt Optimization: Replace in-memory array fetching (take: 500) and JS reduction
+    // with database-level SQL aggregation (COUNT, SUM, AVG) enforced via TenantQueryPolicy.
+    const qb = this.activityRepo.createQueryBuilder('activity');
+    TenantQueryPolicy.enforce(qb, tenantId, 'activity', 'WorkTrackingService', 'getProductivitySummary');
+
+    const rawResult = await qb
+      .select('COUNT(activity.id)', 'totalActivities')
+      .addSelect('COALESCE(SUM(activity.productiveHours), 0)', 'totalProductiveHours')
+      .addSelect('COALESCE(SUM(activity.tasksCompleted), 0)', 'totalTasksCompleted')
+      .addSelect('COALESCE(AVG(activity.productiveHours), 0)', 'avgProductivityHours')
+      .getRawOne();
+
+    const totalActivities = parseInt(rawResult?.totalActivities || '0', 10);
+    const totalProductiveHours = parseFloat(rawResult?.totalProductiveHours || '0');
+    const totalTasksCompleted = parseInt(rawResult?.totalTasksCompleted || '0', 10);
+    const avgProductivity = parseFloat(rawResult?.avgProductivityHours || '0');
 
     return {
-      totalActivities: activities.length,
+      totalActivities,
       totalProductiveHours: Math.round(totalProductiveHours * 10) / 10,
       totalTasksCompleted,
       avgProductivityHours: Math.round(avgProductivity * 10) / 10,
