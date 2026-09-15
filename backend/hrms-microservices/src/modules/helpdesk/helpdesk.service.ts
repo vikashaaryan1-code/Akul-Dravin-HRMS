@@ -60,30 +60,38 @@ export class HelpdeskService {
 
   // ── SLA summary ────────────────────────────────────────────────────────────
 
+  /**
+   * Performance Optimization:
+   * Replaced full in-memory entity fetching (`find({ where })`) with a single database-level
+   * SQL conditional aggregation using `createQueryBuilder`.
+   * Calculates SLA compliance metrics directly in PostgreSQL, eliminating memory overhead
+   * and reducing network payload from O(N) ticket records to 1 summary result row.
+   */
   async getSlaStatus(tenantId?: string): Promise<{ name: string; value: number }[]> {
-    const where = tenantId ? { tenantId } : {};
-    const tickets = await this.ticketRepo.find({ where });
+    const qb = this.ticketRepo.createQueryBuilder('t');
 
-    const now = Date.now();
-    let withinSla = 0;
-    let nearBreach = 0;
-    let breached = 0;
-
-    for (const t of tickets) {
-      if (t.status === 'resolved' || t.status === 'closed') {
-        withinSla++;
-        continue;
-      }
-      const ageHours = (now - new Date(t.createdAt).getTime()) / 3_600_000;
-      const pct = ageHours / t.slaHours;
-      if (pct >= 1) {
-        breached++;
-      } else if (pct >= 0.75) {
-        nearBreach++;
-      } else {
-        withinSla++;
-      }
+    if (tenantId) {
+      qb.where('t.tenantId = :tenantId', { tenantId });
     }
+
+    const res = await qb
+      .select(
+        `SUM(CASE WHEN t.status IN ('resolved', 'closed') OR (EXTRACT(EPOCH FROM (NOW() - t.created_at)) / 3600.0) / GREATEST(t.sla_hours, 1) < 0.75 THEN 1 ELSE 0 END)`,
+        'withinSla',
+      )
+      .addSelect(
+        `SUM(CASE WHEN t.status NOT IN ('resolved', 'closed') AND (EXTRACT(EPOCH FROM (NOW() - t.created_at)) / 3600.0) / GREATEST(t.sla_hours, 1) >= 0.75 AND (EXTRACT(EPOCH FROM (NOW() - t.created_at)) / 3600.0) / GREATEST(t.sla_hours, 1) < 1.0 THEN 1 ELSE 0 END)`,
+        'nearBreach',
+      )
+      .addSelect(
+        `SUM(CASE WHEN t.status NOT IN ('resolved', 'closed') AND (EXTRACT(EPOCH FROM (NOW() - t.created_at)) / 3600.0) / GREATEST(t.sla_hours, 1) >= 1.0 THEN 1 ELSE 0 END)`,
+        'breached',
+      )
+      .getRawOne();
+
+    const withinSla = parseInt(res?.withinSla || res?.withinsla || '0', 10);
+    const nearBreach = parseInt(res?.nearBreach || res?.nearbreach || '0', 10);
+    const breached = parseInt(res?.breached || '0', 10);
 
     const total = withinSla + nearBreach + breached || 1;
     return [
