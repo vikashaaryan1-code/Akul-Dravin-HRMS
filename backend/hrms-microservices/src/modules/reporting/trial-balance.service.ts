@@ -23,6 +23,11 @@ export class TrialBalanceService {
   /**
    * THE CHECKSUM: TRIAL BALANCE
    * Strictly derived from Ledger entries ONLY.
+   *
+   * OPTIMIZATION:
+   * Previously executed 2 SQL queries per account in a loop (2N + 1 queries total).
+   * Replaced with 2 database-level GROUP BY aggregation queries for debit and credit totals,
+   * reducing database round-trips from 2N + 1 to 3 queries total regardless of account count.
    */
   async getReport(asOfDate?: Date): Promise<{ items: TrialBalanceRow[], totalDebit: string, totalCredit: string, isBalanced: boolean }> {
     const tenantId = TenantContext.getRequiredTenantId();
@@ -30,25 +35,84 @@ export class TrialBalanceService {
         where: { tenantId }
     });
 
+    if (!accounts.length) {
+        return {
+            items: [],
+            totalDebit: '0.0000',
+            totalCredit: '0.0000',
+            isBalanced: true
+        };
+    }
+
+    // Query 1: Grouped debit totals per account
+    const debitQuery = this.dataSource
+        .getRepository(LedgerEntryEntity)
+        .createQueryBuilder('entry')
+        .select('entry.debitAccountId', 'account_id')
+        .addSelect('SUM(entry.amount)', 'total')
+        .where('entry.tenantId = :tenantId', { tenantId });
+
+    if (asOfDate) {
+        debitQuery.andWhere('entry.createdAt <= :asOfDate', { asOfDate });
+    }
+
+    const debitRows = await debitQuery
+        .groupBy('entry.debitAccountId')
+        .getRawMany<{ account_id: string; accountid?: string; total: string }>();
+
+    // Query 2: Grouped credit totals per account
+    const creditQuery = this.dataSource
+        .getRepository(LedgerEntryEntity)
+        .createQueryBuilder('entry')
+        .select('entry.creditAccountId', 'account_id')
+        .addSelect('SUM(entry.amount)', 'total')
+        .where('entry.tenantId = :tenantId', { tenantId });
+
+    if (asOfDate) {
+        creditQuery.andWhere('entry.createdAt <= :asOfDate', { asOfDate });
+    }
+
+    const creditRows = await creditQuery
+        .groupBy('entry.creditAccountId')
+        .getRawMany<{ account_id: string; accountid?: string; total: string }>();
+
+    // Map aggregated totals by account ID
+    const debitMap = new Map<string, string>();
+    for (const row of debitRows) {
+        const id = row.account_id || row.accountid;
+        if (id) {
+            debitMap.set(id, row.total || '0.0000');
+        }
+    }
+
+    const creditMap = new Map<string, string>();
+    for (const row of creditRows) {
+        const id = row.account_id || row.accountid;
+        if (id) {
+            creditMap.set(id, row.total || '0.0000');
+        }
+    }
+
     const report: TrialBalanceRow[] = [];
     let grandTotalDebit = new BigNumber(0);
     let grandTotalCredit = new BigNumber(0);
 
     for (const account of accounts) {
-        const totals = await this.getAccountTotals(account.id, asOfDate);
-        const closing = this.calculateClosingBalance(account.type, totals.debit, totals.credit);
+        const debitTotal = debitMap.get(account.id) || '0.0000';
+        const creditTotal = creditMap.get(account.id) || '0.0000';
+        const closing = this.calculateClosingBalance(account.type, debitTotal, creditTotal);
         
         report.push({
             account_code: account.code,
             account_name: account.name,
             type: account.type,
-            total_debit: totals.debit,
-            total_credit: totals.credit,
+            total_debit: debitTotal,
+            total_credit: creditTotal,
             closing_balance: closing
         });
 
-        grandTotalDebit = grandTotalDebit.plus(totals.debit);
-        grandTotalCredit = grandTotalCredit.plus(totals.credit);
+        grandTotalDebit = grandTotalDebit.plus(debitTotal);
+        grandTotalCredit = grandTotalCredit.plus(creditTotal);
     }
 
     const isBalanced = grandTotalDebit.isEqualTo(grandTotalCredit);
@@ -61,35 +125,6 @@ export class TrialBalanceService {
         totalDebit: grandTotalDebit.toFixed(4),
         totalCredit: grandTotalCredit.toFixed(4),
         isBalanced
-    };
-  }
-
-  private async getAccountTotals(accountId: string, asOfDate?: Date): Promise<{ debit: string, credit: string }> {
-    const query = this.dataSource
-        .getRepository(LedgerEntryEntity)
-        .createQueryBuilder('entry')
-        .where('entry.tenantId = :tenantId', { tenantId: TenantContext.getRequiredTenantId() });
-
-    if (asOfDate) {
-        query.andWhere('entry.createdAt <= :asOfDate', { asOfDate });
-    }
-
-    // THE USER'S CORE LOGIC
-    const debitRes = await query
-        .clone()
-        .select('SUM(entry.amount)', 'total')
-        .andWhere('entry.debitAccountId = :accountId', { accountId })
-        .getRawOne();
-
-    const creditRes = await query
-        .clone()
-        .select('SUM(entry.amount)', 'total')
-        .andWhere('entry.creditAccountId = :accountId', { accountId })
-        .getRawOne();
-
-    return {
-        debit: debitRes?.total || '0.0000',
-        credit: creditRes?.total || '0.0000'
     };
   }
 
