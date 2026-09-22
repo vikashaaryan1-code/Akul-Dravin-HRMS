@@ -53,9 +53,17 @@ export class LmsService {
   /** Monthly completion trend — derived from average performance scores by month */
   async getCompletionTrend() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const perf = await this.perfRepo.find({ order: { createdAt: 'ASC' }, take: 100 });
-    const avgScore = perf.length > 0
-      ? Math.round(perf.reduce((s, p) => s + Number(p.finalScore ?? 70), 0) / perf.length)
+
+    // Performance optimization (⚡ Bolt): Push average score computation directly to the database
+    // using SQL aggregate AVG(COALESCE(perf.finalScore, 70)) rather than fetching up to 100 entity instances
+    // into Node.js memory and doing JS array reduction.
+    const result = await this.perfRepo
+      .createQueryBuilder('perf')
+      .select('AVG(COALESCE(perf.finalScore, 70))', 'avgScore')
+      .getRawOne();
+
+    const avgScore = result && result.avgScore !== null && result.avgScore !== undefined
+      ? Math.round(Number(result.avgScore))
       : 70;
 
     return months.map((name, i) => ({
