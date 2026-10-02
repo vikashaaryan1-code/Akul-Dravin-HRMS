@@ -22,17 +22,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Backend Build & Test
+      - name: Backend Build & Lint
         run: |
           cd backend/hrms-microservices
-          npm install --legacy-peer-deps
+          npm run lint
           npm run build
           npm test
 
-      - name: Frontend Build & Test
+      - name: Frontend Build & Lint
         run: |
           cd frontend-next
-          npm install --legacy-peer-deps
           npm run lint
           npm run build
 
