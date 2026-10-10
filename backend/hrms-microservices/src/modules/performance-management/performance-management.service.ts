@@ -5,12 +5,12 @@ import { AttendanceEntity } from '../../database/entities/attendance.entity';
 import { TaskEntity } from '../../database/entities/task.entity';
 import { PerformanceEntity } from '../../database/entities/performance.entity';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { CreatePerformanceReviewDto } from './dto/create-performance-review.dto';
 import { ExecutionGatekeeperService } from '../policy-engine/gatekeeper/execution-gatekeeper.service';
 import { CareerGrowthService } from '../career-growth/career-growth.service';
 import { CareerEventStatus } from '../../database/entities/career-growth.entity';
 import { ExecutionMode } from '../policy-engine/types/policy.types';
-
 
 @Injectable()
 export class PerformanceManagementService {
@@ -37,25 +37,87 @@ export class PerformanceManagementService {
     return TenantContext.getRepository(PerformanceEntity);
   }
 
+  /**
+   * OPTIMIZED: Replaced N-loop queries (3N+1 total queries) with batch database queries
+   * (attendance aggregation, task count aggregation, review score lookup) scoped via TenantQueryPolicy.
+   * Reduces database round-trips from O(N) to O(1) constant 4 queries.
+   */
   async getScores(period?: string) {
     const currentPeriod = period || new Date().toISOString().substring(0, 7);
+    const tenantId = TenantContext.getRequiredTenantId();
     const employees = await this.employeeRepo.find();
+    if (employees.length === 0) {
+      return [];
+    }
+
+    // 1. Fetch attendance stats across all employees in a single query
+    const attendanceQb = this.attendanceRepo.createQueryBuilder('att')
+      .select('att.employeeId', 'employeeId')
+      .addSelect('COUNT(*)', 'total')
+      .addSelect("COUNT(CASE WHEN att.status = 'present' THEN 1 END)", 'present');
+    TenantQueryPolicy.enforce(attendanceQb, tenantId, 'att', 'PerformanceManagementService', 'getScores.attendance');
+    const attendanceRaw = await attendanceQb.groupBy('att.employeeId').getRawMany();
+
+    const attendanceMap = new Map<string, { total: number; present: number }>();
+    for (const row of attendanceRaw) {
+      const empId = row.employeeId || row.employeeid;
+      if (empId) {
+        attendanceMap.set(empId, {
+          total: parseInt(row.total, 10) || 0,
+          present: parseInt(row.present, 10) || 0,
+        });
+      }
+    }
+
+    // 2. Fetch completed tasks count across all employees in a single query
+    const taskQb = this.taskRepo.createQueryBuilder('task')
+      .select('task.assigneeId', 'assigneeId')
+      .addSelect('COUNT(*)', 'tasksDelivered');
+    TenantQueryPolicy.enforce(taskQb, tenantId, 'task', 'PerformanceManagementService', 'getScores.tasks');
+    const taskRaw = await taskQb
+      .andWhere("task.status = 'completed'")
+      .groupBy('task.assigneeId')
+      .getRawMany();
+
+    const taskMap = new Map<string, number>();
+    for (const row of taskRaw) {
+      const assigneeId = row.assigneeId || row.assigneeid;
+      if (assigneeId) {
+        taskMap.set(assigneeId, parseInt(row.tasksDelivered, 10) || 0);
+      }
+    }
+
+    // 3. Fetch performance reviews for currentPeriod in a single query
+    const reviewQb = this.performanceRepo.createQueryBuilder('review')
+      .select('review.employeeId', 'employeeId')
+      .addSelect('review.subjectiveScore', 'subjectiveScore');
+    TenantQueryPolicy.enforce(reviewQb, tenantId, 'review', 'PerformanceManagementService', 'getScores.reviews');
+    const reviewRaw = await reviewQb
+      .andWhere('review.reviewPeriod = :currentPeriod', { currentPeriod })
+      .getRawMany();
+
+    const reviewMap = new Map<string, number>();
+    for (const row of reviewRaw) {
+      const empId = row.employeeId || row.employeeid;
+      const scoreVal = row.subjectiveScore ?? row.subjectivescore;
+      if (empId) {
+        reviewMap.set(empId, Number(scoreVal));
+      }
+    }
+
     const scores = [];
 
     for (const emp of employees) {
-      const stats = await this.calculateEmployeeStats(emp.id, 30);
-      const tasksDelivered = await this.taskRepo.count({
-        where: { assigneeId: emp.id, status: 'completed' }
-      });
+      const attStats = attendanceMap.get(emp.id);
+      const total = attStats?.total || 1;
+      const present = attStats?.present || 0;
+      const attendanceRate = Math.round((present / total) * 100);
 
+      const tasksDelivered = taskMap.get(emp.id) || 0;
       const taskScore = Math.min(100, (tasksDelivered / 10) * 100);
-      const objectiveScore = Math.round(stats.score * 0.5 + taskScore * 0.5);
-      
-      const review = await this.performanceRepo.findOne({
-        where: { employeeId: emp.id, reviewPeriod: currentPeriod }
-      });
+      const objectiveScore = Math.round(attendanceRate * 0.5 + taskScore * 0.5);
 
-      const subjectiveScore = review ? Number(review.subjectiveScore) : 80;
+      const subjectiveScore = reviewMap.has(emp.id) ? (reviewMap.get(emp.id) ?? 80) : 80;
       const finalScore = Math.round(objectiveScore * 0.7 + subjectiveScore * 0.3);
 
       // --- PDE Integration: Trigger Promotion Check ---
@@ -69,9 +131,9 @@ export class PerformanceManagementService {
         performanceScore: finalScore,
         objectiveScore,
         subjectiveScore,
-        targetAchievement: stats.attendanceRate,
+        targetAchievement: attendanceRate,
         tasksDelivered,
-        status: finalScore > 85 ? 'healthy' : finalScore > 75 ? 'warning' : 'critical'
+        status: finalScore > 85 ? 'healthy' : finalScore > 75 ? 'warning' : 'critical',
       });
     }
 
