@@ -69,37 +69,43 @@ export class RevenueAnalyticsService {
 
   // ── Snapshot ──────────────────────────────────────────────────────────────
 
+  /**
+   * OPTIMIZATION (⚡ Bolt):
+   * Consolidated 3 separate SQL queries into a single database call using conditional
+   * aggregation (`COUNT(*) FILTER ...`, `SUM(CASE WHEN status = 'active' THEN ... END)`).
+   * Reduces database round-trips for revenue snapshots from 3 to 1.
+   */
   async getRevenueSnapshot(): Promise<RevenueSnapshot> {
-    const [active, trial, mrr] = await Promise.all([
-      this.ds.query<Array<{ total: string; paid: string }>>(
-        `SELECT
-           COUNT(*) AS total,
-           COUNT(*) FILTER (WHERE status = 'active') AS paid
-         FROM subscriptions
-         WHERE status IN ('active','trialing')`,
-      ),
-      this.ds.query<Array<{ count: string }>>(
-        `SELECT COUNT(*) AS count FROM subscriptions WHERE status = 'trialing'`,
-      ),
-      this.ds.query<Array<{ mrr: string; tenant_count: string }>>(
-        `SELECT
-           SUM(
+    const res = await this.ds.query<Array<{
+      total: string;
+      paid: string;
+      trial_count: string;
+      mrr: string;
+      tenant_count: string;
+    }>>(
+      `SELECT
+         COUNT(*) FILTER (WHERE status IN ('active', 'trialing')) AS total,
+         COUNT(*) FILTER (WHERE status = 'active') AS paid,
+         COUNT(*) FILTER (WHERE status = 'trialing') AS trial_count,
+         SUM(
+           CASE WHEN status = 'active' THEN
              CASE billing_cycle
                WHEN 'annual'  THEN price::numeric / 12
                WHEN 'monthly' THEN price::numeric
                ELSE price::numeric
              END
-           ) AS mrr,
-           COUNT(DISTINCT tenant_id) AS tenant_count
-         FROM subscriptions
-         WHERE status = 'active'`,
-      ),
-    ]);
+           END
+         ) AS mrr,
+         COUNT(DISTINCT CASE WHEN status = 'active' THEN tenant_id END) AS tenant_count
+       FROM subscriptions
+       WHERE status IN ('active', 'trialing')`,
+    );
 
-    const mrrValue    = parseFloat(mrr[0]?.mrr ?? '0');
-    const totalActive = parseInt(active[0]?.total ?? '0', 10);
-    const paidCount   = parseInt(active[0]?.paid  ?? '0', 10);
-    const tenantCount = parseInt(mrr[0]?.tenant_count ?? '1', 10) || 1;
+    const row         = res[0];
+    const mrrValue    = parseFloat(row?.mrr ?? '0');
+    const totalActive = parseInt(row?.total ?? '0', 10);
+    const paidCount   = parseInt(row?.paid  ?? '0', 10);
+    const trialCount  = parseInt(row?.trial_count ?? '0', 10);
 
     return {
       mrr:                      Math.round(mrrValue),
@@ -107,7 +113,7 @@ export class RevenueAnalyticsService {
       arpu:                     paidCount === 0 ? 0 : Math.round(mrrValue / paidCount),
       totalActiveSubscriptions: totalActive,
       totalPaidTenants:         paidCount,
-      trialTenants:             parseInt(trial[0]?.count ?? '0', 10),
+      trialTenants:             trialCount,
     };
   }
 
@@ -146,33 +152,40 @@ export class RevenueAnalyticsService {
 
   // ── Churn ─────────────────────────────────────────────────────────────────
 
+  /**
+   * OPTIMIZATION (⚡ Bolt):
+   * Consolidated 2 separate churn queries into a single database call using conditional aggregations.
+   * Reduces churn database queries from 2 to 1.
+   */
   async getChurnMetrics(periodDays = 30): Promise<ChurnMetrics> {
     const since = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000)
       .toISOString().split('T')[0];
 
-    const [churned, startBase] = await Promise.all([
-      this.ds.query<Array<{ count: string; lost_mrr: string }>>(
-        `SELECT
-           COUNT(*) AS count,
-           SUM(
+    const res = await this.ds.query<Array<{
+      churned_count: string;
+      lost_mrr: string;
+      start_count: string;
+    }>>(
+      `SELECT
+         COUNT(*) FILTER (WHERE status = 'cancelled' AND updated_at >= $1) AS churned_count,
+         SUM(
+           CASE WHEN status = 'cancelled' AND updated_at >= $1 THEN
              CASE billing_cycle
                WHEN 'annual'  THEN price::numeric / 12
                WHEN 'monthly' THEN price::numeric
                ELSE price::numeric
              END
-           ) AS lost_mrr
-         FROM subscriptions
-         WHERE status = 'cancelled' AND updated_at >= $1`,
-        [since],
-      ),
-      this.ds.query<Array<{ count: string }>>(
-        `SELECT COUNT(*) AS count FROM subscriptions WHERE created_at < $1`,
-        [since],
-      ),
-    ]);
+           END
+         ) AS lost_mrr,
+         COUNT(*) FILTER (WHERE created_at < $1) AS start_count
+       FROM subscriptions
+       WHERE (status = 'cancelled' AND updated_at >= $1) OR created_at < $1`,
+      [since],
+    );
 
-    const churnedCount = parseInt(churned[0]?.count ?? '0', 10);
-    const startCount   = Math.max(parseInt(startBase[0]?.count ?? '1', 10), 1);
+    const row          = res[0];
+    const churnedCount = parseInt(row?.churned_count ?? '0', 10);
+    const startCount   = Math.max(parseInt(row?.start_count ?? '1', 10), 1);
     const churnRate    = parseFloat(((churnedCount / startCount) * 100).toFixed(2));
 
     return {
@@ -180,7 +193,7 @@ export class RevenueAnalyticsService {
       churned:        churnedCount,
       startBase:      startCount,
       churnRate,
-      revenueChurn:   Math.round(parseFloat(churned[0]?.lost_mrr ?? '0')),
+      revenueChurn:   Math.round(parseFloat(row?.lost_mrr ?? '0')),
       netRevenueRetentionRate: Math.max(0, 100 - churnRate),
     };
   }
