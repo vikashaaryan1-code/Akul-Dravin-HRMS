@@ -6,6 +6,7 @@ import { ExternalTransactionEntity, ReconciliationStatus } from '../../database/
 import { PayrollBatchEntity, PayrollBatchStatus } from '../../database/entities/payroll-batch.entity';
 import { AiInsightEntity } from '../../database/entities/ai-insight.entity';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import BigNumber from 'bignumber.js';
 
 
@@ -23,13 +24,13 @@ export class ForensicAdvisoryService {
 
     // 1. Reconciliation Violations (Over 48 hours unmatched)
     const cutoff48h = new Date(snapshotAt.getTime() - 48 * 60 * 60 * 1000);
-    const staleTransactions = await TenantContext.getRepository(ExternalTransactionEntity).count({
-        where: {
-            tenantId,
-            reconciliationStatus: ReconciliationStatus.UNMATCHED,
-            eventDate: LessThan(cutoff48h)
-        }
-    });
+    const qb = TenantContext.getRepository(ExternalTransactionEntity).createQueryBuilder('tx');
+    TenantQueryPolicy.enforce(qb, tenantId, 'tx', 'ForensicAdvisoryService', 'detectHardAnomalies');
+
+    const staleTransactions = await qb
+      .andWhere('tx.reconciliationStatus = :status', { status: ReconciliationStatus.UNMATCHED })
+      .andWhere('tx.eventDate < :cutoff', { cutoff: cutoff48h })
+      .getCount();
 
     if (staleTransactions > 0) {
         anomalies.push({
@@ -53,14 +54,14 @@ export class ForensicAdvisoryService {
 
     // 1. Reconciliation SLA (Within 24-48 hours)
     const cutoff24h = new Date(snapshotAt.getTime() - 24 * 60 * 60 * 1000);
-    const pendingSla = await TenantContext.getRepository(ExternalTransactionEntity).count({
-        where: {
-            tenantId,
-            reconciliationStatus: ReconciliationStatus.UNMATCHED,
-            eventDate: LessThan(snapshotAt),
-            receivedAt: MoreThan(cutoff24h)
-        }
-    });
+    const qb = TenantContext.getRepository(ExternalTransactionEntity).createQueryBuilder('tx');
+    TenantQueryPolicy.enforce(qb, tenantId, 'tx', 'ForensicAdvisoryService', 'detectWarnings');
+
+    const pendingSla = await qb
+      .andWhere('tx.reconciliationStatus = :status', { status: ReconciliationStatus.UNMATCHED })
+      .andWhere('tx.eventDate < :snapshotAt', { snapshotAt })
+      .andWhere('tx.receivedAt > :cutoff24h', { cutoff24h })
+      .getCount();
 
     if (pendingSla > 0) {
         warnings.push({
@@ -116,6 +117,7 @@ export class ForensicAdvisoryService {
 
   /**
    * RECONCILIATION SLA BREAKDOWN
+   * Single-query conditional aggregation replacing multiple count queries.
    */
   async getReconciliationSlaDetails(snapshotAt: Date) {
     const tenantId = TenantContext.getRequiredTenantId();
@@ -123,23 +125,23 @@ export class ForensicAdvisoryService {
     const slaMinutes = 30;
     const slaCutoff = new Date(snapshotAt.getTime() - slaMinutes * 60 * 1000);
 
-    const [withinSla, breachedSla] = await Promise.all([
-        repo.count({
-            where: {
-                tenantId,
-                reconciliationStatus: ReconciliationStatus.UNMATCHED,
-                eventDate: MoreThan(slaCutoff),
-                receivedAt: LessThan(snapshotAt)
-            }
-        }),
-        repo.count({
-            where: {
-                tenantId,
-                reconciliationStatus: ReconciliationStatus.UNMATCHED,
-                eventDate: LessThan(slaCutoff)
-            }
-        })
-    ]);
+    const qb = repo.createQueryBuilder('tx');
+    TenantQueryPolicy.enforce(qb, tenantId, 'tx', 'ForensicAdvisoryService', 'getReconciliationSlaDetails');
+
+    const result = await qb
+      .select([
+        `COUNT(CASE WHEN tx.eventDate > :slaCutoff AND tx.receivedAt < :snapshotAt THEN 1 END) AS "withinSla"`,
+        `COUNT(CASE WHEN tx.eventDate < :slaCutoff THEN 1 END) AS "breachedSla"`,
+      ])
+      .andWhere('tx.reconciliationStatus = :status', {
+        status: ReconciliationStatus.UNMATCHED,
+        slaCutoff,
+        snapshotAt,
+      })
+      .getRawOne();
+
+    const withinSla = parseInt(result?.withinSla || '0', 10);
+    const breachedSla = parseInt(result?.breachedSla || '0', 10);
 
     return { withinSla, breachedSla, slaMinutes };
   }
