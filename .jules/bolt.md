@@ -1,0 +1,3 @@
+## 2026-04-18 - TypeORM QueryBuilder Entity Property Mapping
+**Learning:** In TypeORM's `createQueryBuilder`, chained methods like `.select()`, `.where()`, `.orderBy()`, and `.groupBy()` must reference the Entity Class property names (e.g. `e.tenantId`, `p.totalNet`) rather than database physical snake_case column names (e.g. `e.tenant_id`, `p.total_net`). Mocking repository methods in unit tests without executing real QueryBuilder parsing can hide `EntityPropertyNotFoundError` runtime errors.
+**Action:** Always verify that `createQueryBuilder` expressions use entity property names when targeting entities, or double check with live DB integration tests or strict entity definition mapping before finalizing changes.
