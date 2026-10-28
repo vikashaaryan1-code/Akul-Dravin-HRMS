@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AiEngineService } from './ai-engine.service';
 import { AiInsightEntity } from '../../database/entities/ai-insight.entity';
-import { EmployeeService } from '../employee/employee.service';
-import { PayrollService } from '../payroll/payroll.service';
+import { EmployeeEntity } from '../../database/entities/employee.entity';
+import { PayrollBatchEntity } from '../../database/entities/payroll-batch.entity';
+import { TenantContext } from '../../common/context/tenant-context';
 
 @Injectable()
 export class AutonomousExecutiveBrainService {
@@ -14,27 +15,47 @@ export class AutonomousExecutiveBrainService {
     private readonly aiEngine: AiEngineService,
     @InjectRepository(AiInsightEntity)
     private readonly insightRepo: Repository<AiInsightEntity>,
-    private readonly employeeService: EmployeeService,
-    private readonly payrollService: PayrollService,
   ) {}
 
   /**
    * Generates a high-level business strategy report.
    * "AI CEO Mode" Executive Intelligence.
+   *
+   * PERFORMANCE OPTIMIZATION:
+   * Previously loaded all employee and payroll records into Node.js memory via
+   * `employeeService.findAll()` and `payrollService.findAll()`, causing O(N) memory allocation and JS filtering.
+   * Optimized to run SQL aggregation queries directly in the database via TypeORM's createQueryBuilder,
+   * returning consolidated metrics in constant O(1) memory.
    */
   async generateExecutiveStrategy(tenantId: string) {
     this.logger.log(`AI CEO Mode: Generating executive strategy for tenant=${tenantId}`);
 
-    // 1. Aggregate Real Data for Context
-    const employees = await this.employeeService.findAll();
-    const payrolls = await this.payrollService.findAll();
-    
+    // Direct SQL Aggregation for Employee Metrics using Entity Property Names
+    const empRepo = TenantContext.getRepository(EmployeeEntity);
+    const empStats = await empRepo
+      .createQueryBuilder('e')
+      .select('COUNT(*)', 'headcount')
+      .addSelect(`COUNT(CASE WHEN e.status = 'active' THEN 1 END)`, 'activeEmployees')
+      .addSelect('SUM(COALESCE(CAST(e.monthlyCtc AS NUMERIC), 0))', 'totalMonthlyCtc')
+      .addSelect('COUNT(DISTINCT e.departmentId)', 'departments')
+      .where('e.tenantId = :tenantId', { tenantId })
+      .getRawOne();
+
+    // Direct Query for Last Payroll Total using Entity Property Names
+    const payrollRepo = TenantContext.getRepository(PayrollBatchEntity);
+    const lastPayroll = await payrollRepo
+      .createQueryBuilder('p')
+      .select('CAST(p.totalNet AS NUMERIC)', 'totalNet')
+      .where('p.tenantId = :tenantId', { tenantId })
+      .orderBy('p.createdAt', 'DESC')
+      .getRawOne();
+
     const context = {
-      headcount: employees.length,
-      activeEmployees: employees.filter(e => e.status === 'active').length,
-      totalMonthlyCtc: employees.reduce((acc, e) => acc + Number(e.monthlyCtc || 0), 0),
-      lastPayrollTotal: payrolls.length > 0 ? payrolls[0].totalNet : 0,
-      departments: [...new Set(employees.map(e => e.departmentId))].length,
+      headcount: parseInt(empStats?.headcount ?? '0', 10),
+      activeEmployees: parseInt(empStats?.activeEmployees ?? '0', 10),
+      totalMonthlyCtc: parseFloat(empStats?.totalMonthlyCtc ?? '0'),
+      lastPayrollTotal: lastPayroll ? parseFloat(lastPayroll.totalNet ?? '0') : 0,
+      departments: parseInt(empStats?.departments ?? '0', 10),
     };
 
     const prompt = `Act as an AI CEO/CFO for tenant ${tenantId}. 
@@ -73,12 +94,21 @@ export class AutonomousExecutiveBrainService {
 
   /**
    * Detects operational and financial risks autonomously.
+   *
+   * PERFORMANCE OPTIMIZATION:
+   * Replaced loading all employee entities with a targeted SQL COUNT query in DB.
    */
   async detectOperationalRisks(tenantId: string) {
     this.logger.log(`AI Brain: Scanning for operational risks in tenant=${tenantId}`);
     
-    const employees = await this.employeeService.findAll();
-    const attritionRisk = employees.filter(e => e.status === 'on_notice').length;
+    const empRepo = TenantContext.getRepository(EmployeeEntity);
+    const result = await empRepo
+      .createQueryBuilder('e')
+      .select(`COUNT(CASE WHEN e.status = 'on_notice' THEN 1 END)`, 'attritionRisk')
+      .where('e.tenantId = :tenantId', { tenantId })
+      .getRawOne();
+
+    const attritionRisk = parseInt(result?.attritionRisk ?? '0', 10);
 
     const findings = {
       status: attritionRisk > 5 ? 'WARNING' : 'STABLE',
@@ -103,13 +133,24 @@ export class AutonomousExecutiveBrainService {
 
   /**
    * Recommends autonomous workforce adjustments.
+   *
+   * PERFORMANCE OPTIMIZATION:
+   * Replaced loading all employee entities with SQL GROUP BY departmentId aggregation query.
    */
   async recommendBudgetAllocation(tenantId: string, budget: number) {
-    const employees = await this.employeeService.findAll();
-    const deptHeadcount = employees.reduce((acc, e) => {
-      acc[e.departmentId || 'unknown'] = (acc[e.departmentId || 'unknown'] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const empRepo = TenantContext.getRepository(EmployeeEntity);
+    const rows = await empRepo
+      .createQueryBuilder('e')
+      .select(`COALESCE(e.departmentId, 'unknown')`, 'deptId')
+      .addSelect('COUNT(*)', 'cnt')
+      .where('e.tenantId = :tenantId', { tenantId })
+      .groupBy('e.departmentId')
+      .getRawMany();
+
+    const deptHeadcount: Record<string, number> = {};
+    for (const row of rows) {
+      deptHeadcount[row.deptId] = parseInt(row.cnt, 10);
+    }
 
     const prompt = `Allocate a budget of ${budget} across departments to maximize ROI. 
     Current distribution: ${JSON.stringify(deptHeadcount)}`;
