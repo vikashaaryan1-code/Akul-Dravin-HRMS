@@ -106,18 +106,38 @@ export class SuperAdminService {
     return saved;
   }
 
+  /**
+   * Returns high-level platform tenant metrics and plan distribution.
+   *
+   * PERFORMANCE OPTIMIZATION (Bolt ⚡):
+   * Replaced 4 individual table count queries with a single conditional aggregation query
+   * using TypeORM's createQueryBuilder (`COUNT(*)`, `COUNT(CASE WHEN ...)`).
+   * Reduces PostgreSQL round-trips from 5 queries down to 2 parallel queries.
+   */
   async getGlobalStats() {
-    const [total, active, trial, suspended] = await Promise.all([
-      this.tenantRepo.count(),
-      this.tenantRepo.count({ where: { status: 'active' } }),
-      this.tenantRepo.count({ where: { status: 'trial' } }),
-      this.tenantRepo.count({ where: { status: 'suspended' } }),
+    const [statsRaw, planBreakdown] = await Promise.all([
+      this.tenantRepo
+        .createQueryBuilder('t')
+        .select([
+          'COUNT(*)::int AS total',
+          "COUNT(CASE WHEN t.status = 'active' THEN 1 END)::int AS active",
+          "COUNT(CASE WHEN t.status = 'trial' THEN 1 END)::int AS trial",
+          "COUNT(CASE WHEN t.status = 'suspended' THEN 1 END)::int AS suspended",
+        ])
+        .getRawOne(),
+      this.tenantRepo
+        .createQueryBuilder('t')
+        .select('t.plan, COUNT(*) as count')
+        .groupBy('t.plan')
+        .getRawMany(),
     ]);
-    const planBreakdown = await this.tenantRepo
-      .createQueryBuilder('t')
-      .select('t.plan, COUNT(*) as count')
-      .groupBy('t.plan')
-      .getRawMany();
-    return { total, active, trial, suspended, planBreakdown };
+
+    return {
+      total: parseInt(statsRaw?.total, 10) || 0,
+      active: parseInt(statsRaw?.active, 10) || 0,
+      trial: parseInt(statsRaw?.trial, 10) || 0,
+      suspended: parseInt(statsRaw?.suspended, 10) || 0,
+      planBreakdown: planBreakdown ?? [],
+    };
   }
 }
