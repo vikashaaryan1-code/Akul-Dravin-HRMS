@@ -79,4 +79,4 @@ venv/
 .turbo/
 
 # ── Vercel / Deployment ───────────────────────────────────────────────────────
-.vercel/
+.vercel/*.tsbuildinfo
