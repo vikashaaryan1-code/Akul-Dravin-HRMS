@@ -1,0 +1,3 @@
+## 2026-11-06 - TypeORM Alias Lowercasing & Query Consolidation in SurveysService
+**Learning:** When using raw SQL column aliases with PostgreSQL via TypeORM's `createQueryBuilder` (e.g., `select('response.survey_id', '"surveyId"')`), double quotes are required around camelCase aliases to avoid Postgres lowercasing them to `surveyid`. Furthermore, N+1 count loops across parent-child entities can be replaced with a single `GROUP BY` aggregation query that executes in O(1) database trips.
+**Action:** Always wrap camelCase aliases in double quotes when selecting raw fields in TypeORM query builders, and consolidate loop queries into single grouped aggregations.
