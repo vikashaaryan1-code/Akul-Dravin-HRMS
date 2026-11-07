@@ -7,6 +7,7 @@ import { PunchInDto } from './dto/punch-in.dto';
 import { BiometricSyncDto } from './dto/biometric-sync.dto';
 import { FacePunchDto } from './dto/face-punch.dto';
 import { TenantContext } from '../../common/context/tenant-context';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { ShiftEntity } from '../../database/entities/shift.entity';
 
@@ -146,12 +147,27 @@ export class AttendanceService {
   }
 
   async getSummary() {
-    const total = await this.attendanceRepo.count();
+    const tenantId = TenantContext.getRequiredTenantId();
+
+    // ⚡ Bolt Optimization: Consolidate 4 sequential COUNT queries into a single database round-trip
+    // using conditional aggregation (SUM/CASE) and enforce TenantQueryPolicy.
+    // Reduces database round-trips by 75% (4 queries -> 1 query) and ensures tenant isolation.
+    const qb = this.attendanceRepo.createQueryBuilder('attendance');
+    TenantQueryPolicy.enforce(qb, tenantId, 'attendance', 'AttendanceService', 'getSummary');
+
+    const result = await qb
+      .select('COUNT(*)', 'total')
+      .addSelect(`COUNT(CASE WHEN attendance.status = 'present' THEN 1 END)`, 'present')
+      .addSelect(`COUNT(CASE WHEN attendance.status = 'absent' THEN 1 END)`, 'absent')
+      .addSelect(`COUNT(CASE WHEN attendance.status = 'leave' THEN 1 END)`, 'leave')
+      .getRawOne();
+
+    const total = parseInt(result?.total || '0', 10);
     if (total === 0) return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
 
-    const present = await this.attendanceRepo.count({ where: { status: 'present' } });
-    const absent = await this.attendanceRepo.count({ where: { status: 'absent' } });
-    const leave = await this.attendanceRepo.count({ where: { status: 'leave' } });
+    const present = parseInt(result?.present || '0', 10);
+    const absent = parseInt(result?.absent || '0', 10);
+    const leave = parseInt(result?.leave || '0', 10);
 
     const presentRate = Math.round((present / total) * 100);
     return {
