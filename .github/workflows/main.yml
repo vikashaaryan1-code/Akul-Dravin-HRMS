@@ -25,12 +25,14 @@ jobs:
       - name: Backend Build & Lint
         run: |
           cd backend/hrms-microservices
+          npm ci --legacy-peer-deps
           npm run build
           npm test
 
       - name: Frontend Build & Lint
         run: |
           cd frontend-next
+          npm ci --frozen-lockfile
           npm run lint
           npm run build
 
