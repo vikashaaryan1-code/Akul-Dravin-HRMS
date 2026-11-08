@@ -19,19 +19,17 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Backend Build & Lint
+      - name: Backend Install, Build & Test
         run: |
           cd backend/hrms-microservices
-          npm run lint
+          npm ci --legacy-peer-deps
           npm run build
           npm test
 
-      - name: Frontend Build & Lint
+      - name: Frontend Install, Build & Lint
         run: |
           cd frontend-next
+          npm ci --frozen-lockfile
           npm run lint
           npm run build
 

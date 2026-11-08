@@ -187,30 +187,56 @@ export class CrmService {
 
   // ── Analytics ─────────────────────────────────────────────────────────────────
 
+  /**
+   * Pipeline Summary Aggregation
+   *
+   * PERFORMANCE OPTIMIZATION (Bolt ⚡):
+   * Replaced in-memory entity fetching of up to 2,000 full lead records and JavaScript loop
+   * with a single SQL GROUP BY aggregation query.
+   * - Eliminates loading and hydrating up to 2,000 full entity instances into memory.
+   * - Removes artificial 2,000 lead cap from pipeline metrics.
+   * - Offloads aggregation (COUNT, SUM) directly to the PostgreSQL query engine.
+   * - Reduces network payload and Node.js memory footprint significantly (O(1) transfer
+   *   proportional to number of stages rather than O(N) records).
+   */
   async getPipelineSummary() {
-    const tenantId   = TenantContext.getRequiredTenantId();
-    const leads       = await this.leadRepo.find({ where: { tenantId }, take: 2000 });
-    const stageCounts: Record<string, number> = {};
-    let   totalPipelineValue = 0;
+    const tenantId = TenantContext.getRequiredTenantId();
 
-    for (const lead of leads) {
-      stageCounts[lead.stage] = (stageCounts[lead.stage] ?? 0) + 1;
-      totalPipelineValue += Number(lead.expectedValue ?? 0);
+    const [leadAggregates, customerCount, totalAnnualValue] = await Promise.all([
+      this.leadRepo
+        .createQueryBuilder('lead')
+        .select('lead.stage', 'stage')
+        .addSelect('COUNT(*)', 'count')
+        .addSelect('COALESCE(SUM(lead.expected_value), 0)', 'totalValue')
+        .where('lead.tenant_id = :tenantId', { tenantId })
+        .groupBy('lead.stage')
+        .getRawMany<{ stage: string; count: string; totalValue: string }>(),
+      this.customerRepo.count({ where: { tenantId } }),
+      this.customerRepo
+        .createQueryBuilder('c')
+        .select('SUM(c.annual_value)', 'total')
+        .where('c.tenant_id = :tenantId', { tenantId })
+        .getRawOne<{ total: string }>(),
+    ]);
+
+    let leadCount = 0;
+    let totalPipelineValue = 0;
+    const stageCounts: { stage: string; count: number }[] = [];
+
+    for (const row of leadAggregates) {
+      const count = parseInt(row.count, 10) || 0;
+      const value = parseFloat(row.totalValue) || 0;
+      leadCount += count;
+      totalPipelineValue += value;
+      stageCounts.push({ stage: row.stage, count });
     }
 
-    const customerCount     = await this.customerRepo.count({ where: { tenantId } });
-    const totalAnnualValue  = await this.customerRepo
-      .createQueryBuilder('c')
-      .select('SUM(c.annual_value)', 'total')
-      .where('c.tenant_id = :tenantId', { tenantId })
-      .getRawOne<{ total: string }>();
-
     return {
-      leadCount:          leads.length,
+      leadCount,
       customerCount,
       totalPipelineValue,
-      totalAnnualValue:   Number(totalAnnualValue?.total ?? 0),
-      stageCounts:        Object.entries(stageCounts).map(([stage, count]) => ({ stage, count })),
+      totalAnnualValue: Number(totalAnnualValue?.total ?? 0),
+      stageCounts,
     };
   }
 }
