@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    ".next",
+    "out",
+    "e2e",
+    "playwright.config.ts",
+    "tests"
+  ]
+}

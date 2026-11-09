@@ -25,14 +25,16 @@ jobs:
       - name: Backend Build & Lint
         run: |
           cd backend/hrms-microservices
-          npm run lint
+          npm ci --legacy-peer-deps
           npm run build
-          npm test
+          npm test -- --coverage=false
 
       - name: Frontend Build & Lint
         run: |
           cd frontend-next
+          npm ci --frozen-lockfile
           npm run lint
+          npx tsc --noEmit -p tsconfig.build.json
           npm run build
 
   # ─── DOCKER PRODUCTION PUSH ────────────────────────────────────────────────

@@ -9,6 +9,7 @@ import { FacePunchDto } from './dto/face-punch.dto';
 import { TenantContext } from '../../common/context/tenant-context';
 import { EmployeeEntity } from '../../database/entities/employee.entity';
 import { ShiftEntity } from '../../database/entities/shift.entity';
+import { TenantQueryPolicy } from '../../common/governance/tenant/tenant-query-policy';
 
 @Injectable()
 export class AttendanceService {
@@ -146,12 +147,25 @@ export class AttendanceService {
   }
 
   async getSummary() {
-    const total = await this.attendanceRepo.count();
+    // Bolt Optimization: Replace 4 sequential COUNT round-trips with a single conditional aggregation query
+    // Reduces database round-trips from 4 to 1 (75% reduction) and enforces tenant isolation.
+    const tenantId = TenantContext.getRequiredTenantId();
+    const qb = this.attendanceRepo.createQueryBuilder('att');
+    TenantQueryPolicy.enforce(qb, tenantId, 'att', 'AttendanceService', 'getSummary');
+
+    const raw = await qb
+      .select('COUNT(*)', 'total')
+      .addSelect("COUNT(CASE WHEN att.status = 'present' THEN 1 END)", 'present')
+      .addSelect("COUNT(CASE WHEN att.status = 'absent' THEN 1 END)", 'absent')
+      .addSelect("COUNT(CASE WHEN att.status = 'leave' THEN 1 END)", 'leave')
+      .getRawOne();
+
+    const total = parseInt(raw?.total ?? '0', 10);
     if (total === 0) return { presentRate: 0, absentRate: 0, leaveRate: 0, status: 'healthy' };
 
-    const present = await this.attendanceRepo.count({ where: { status: 'present' } });
-    const absent = await this.attendanceRepo.count({ where: { status: 'absent' } });
-    const leave = await this.attendanceRepo.count({ where: { status: 'leave' } });
+    const present = parseInt(raw?.present ?? '0', 10);
+    const absent = parseInt(raw?.absent ?? '0', 10);
+    const leave = parseInt(raw?.leave ?? '0', 10);
 
     const presentRate = Math.round((present / total) * 100);
     return {
